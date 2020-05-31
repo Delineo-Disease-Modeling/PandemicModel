@@ -41,18 +41,19 @@ if (!parsedPath.ext === '.csv') {
 const fileName = parsedPath.name
 
 // Use csvtojson module
-// parser parameters: keep periods in json headers, keep nulls, convert string to number
+// parser parameters: keep periods in json headers, remove nulls, convert string to number
 // csv file line hook: replace 'NA' with nulls
 csv({
 		flatKeys: true,
-		nullObject: true,
+		//nullObject: true,
+		ignoreEmpty: true,
 		checkType: true
 	}).fromFile(csvFilePath)
 	// globally replace "NA" with null
 	.preFileLine((fileLineString, lineIdx) => {
 		return new Promise((resolve, reject) => {
 			if (lineIdx > 0) {
-				fileLineString = fileLineString.replace(/NA/g, null)
+				fileLineString = fileLineString.replace(/NA/g, '')
 			}
 			resolve(fileLineString);
 		})
