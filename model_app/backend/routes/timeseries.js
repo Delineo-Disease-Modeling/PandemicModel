@@ -1,6 +1,6 @@
 // dependencies
 const app = require('express')
-const Timeseries = require('../models/Timeseries')
+const Timeseries = require('../models/timeseries.model')
 const router = app.Router()
 
 // middleware

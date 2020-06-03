@@ -1,7 +1,6 @@
 // dependencies
-const app = require('express')
-const Demographics = require('../models/Demographics')
-const router = app.Router()
+const Demographics = require('../models/demographics.model')
+const router = require('express').Router()
 
 // middleware
 router.param('countyId', (req, res, next, countyId) => {
@@ -29,7 +28,8 @@ router.get('/', (req, res) => {
 
 // read single date info
 router.get('/:countyId', (req, res) => {
+	demographic => res.json(demographic)
 	res.send(req.id)
 })
 
-module.exports = router
+module.exports = router;
