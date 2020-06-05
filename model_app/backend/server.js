@@ -35,13 +35,12 @@ connection.once('open', () => {
 })
 
 /**
- * Tell server where to look for demographics and counties routing instructions
+ * Tell server where to look for demographics and timeseries routing instructions
  */
-const demographicsRouter = require('./routes/demographics');
-const countiesRouter = require('./routes/counties');
-
-app.use('/demographics', demographicsRouter);
-app.use('/counties', countiesRouter);
+const router = require('./routes');
+app.use('/demographics', router.dem);
+app.use('/timeseries', router.time);
+//app.use('/counties', router.county);
 
 /**
  * Should be listening to port 5000, will tell us if not
