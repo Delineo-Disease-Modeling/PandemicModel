@@ -6,9 +6,9 @@ const router = require('express').Router()
 router.param('countyId', (req, res, next, countyId) => {
 	Demographics.findOne({FIPS: countyId}, Demographics.demographicObj, (error, id) => {
 		if (error)
-			return next(error)
-		req.id = id
-		next()	
+			return next(error);
+		req.id = id;
+		next();
 	})
 })
 
@@ -24,31 +24,31 @@ router.get('/', (req, res) => {
 
 // read single county info
 router.get('/:countyId', (req, res) => {
-	demographic => res.json(demographic)
-	res.send(req.id)
+	demographic => res.json(demographic);
+	res.send(req.id);
 })
 
 /**
- * Handles the posting of a new county into database.
+ * Handles the update of a county into database.
  */
-// I don't think we'll ever use this? I kept this here anyway though
-// If we do use this, we should do some validation/sanitization of data
-router.post((req, res) => {
-	const fips = req.body.FIPS;
-    const name = req.body.Area_Name;
-    const state = req.body.State;
-    const population = req.body.POP_ESTIMATE_2018;
+ router.put('/:countyId', (req, res) => {
+ 	// error handling: at least one required field must exist in body request
+ 	// and if FIPS exists in body, it must match the database FIPS
+ 	if (!req.body.FIPS & !req.body.Area_Name & !req.body.State & !req.body.POP_ESTIMATE_2018)
+ 		return res.status(400).json('Error: Request body is invalid');
+ 	else if (req.body.FIPS & (req.id.FIPS != req.body.FIPS))
+ 		return res.status(400).json('Error: Mismatching FIPS code');
 
-    const newCounty = new Demographics({
-    	fips,
-        name,
-        state,
-        population,
-    });
-
-    newCounty.save()
-        .then(() => res.json('County Added'))
+    if (req.body.Area_Name)
+    	req.id.Area_Name = req.body.Area_Name;
+    if (req.body.State)
+    	req.id.State = req.body.State;
+    if (req.body.POP_ESTIMATE_2018)
+    	req.id.POP_ESTIMATE_2018 = req.body.POP_ESTIMATE_2018;
+    
+	req.id.save()
+		.then(() => res.json('Date Updated'))
         .catch(err => res.status(400).json('Error: ' + err));
-});
+})
 
 module.exports = router;
