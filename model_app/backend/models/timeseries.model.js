@@ -39,7 +39,7 @@ const countySchema = mongoose.Schema({
 // Date schema
 // TODO: fill in county fips as keys?
 const schema = mongoose.Schema({
-  Date: Date,
+  date: Date,
   1001: countySchema
 }, {strict: false});
 

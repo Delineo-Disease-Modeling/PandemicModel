@@ -4,18 +4,28 @@ const Timeseries = require('../models/timeseries.model')
 const router = app.Router()
 
 // middleware
+router.param('countyId', (req, res, next, countyId) => {
+	Timeseries.findOne({}, (error, dateObj) => {
+		if (!dateObj.get(countyId)) {
+			return res.status(400).json("Error: Invalid county");
+		}
+		req.countyId = countyId;
+	next();
+	});
+})
+
 router.param('dateId', (req, res, next, dateId) => {
-	Timeseries.findOne({date: new Date(dateId)}, (error, id) => {
-		if (error)
-			return next(error)
-		req.id = id
+	Timeseries.findOne({date: new Date(dateId)}, `date ${req.countyId}`, (error, id) => {
+		if (error || !id)
+			return res.status(400).json('Error: Cannot find date in database');
+		req.id = id;
 		next()	
 	})
 })
 
-// read all
+// Read all. Limited to 10 so it doesn't take forever.
 router.get('/', (req, res) => {
-	Timeseries.find({}).limit(10)
+	Timeseries.find().limit(10)
 		.exec((error, results) => {
 			if (error)
 				return next(error)
@@ -23,11 +33,29 @@ router.get('/', (req, res) => {
 		})
 })
 
-// read single date info
-router.get('/:dateId', (req, res) => {
+// Read county + single date info
+// http://localhost:5000/timeseries/1007/1.23.20/
+router.get('/:countyId/:dateId', (req, res) => {
 	res.send(req.id)
 })
 
+// Read county with time range
+// http://localhost:5000/timeseries/1007 or
+// http://localhost:5000/timeseries/1007?start=1.22.20&end=1.23.20
+router.get('/:countyId', (req, res) => {
+	// currently hard coded default dates but should probably change
+	let startDate = req.query.start ? new Date(req.query.start) : new Date('1-22-2020');
+	let endDate = req.query.end ? new Date(req.query.end) : new Date('5-20-2020');
+
+	Timeseries.find({date: {$gte: startDate, $lte: endDate}}, `date ${req.countyId}`, (error, id) => {
+		if (error)
+			return res.status(400).json('Error: Invalid range of dates' + startDate + " " + endDate);
+		res.send(id)
+	})
+})
+
+
+// not sure if we're ever going to use these URIs
 // CRUD - create
 router.post('/', (req, res) => {
 	// TODO: data validation and sanitization

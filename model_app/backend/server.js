@@ -7,7 +7,7 @@
  * express: A Node.js web application server framework.
  * 
  * cors: Cross-Origin Resource Sharing. Protocol that allows scripts running on 
- * browser clinet to interact with resources from a different origin.
+ * browser client to interact with resources from a different origin.
  */
 const mongoose = require('mongoose')
 const express = require('express')
@@ -27,7 +27,7 @@ mongoose.connect(uri, {
 });
 
 /**
- * Let's us know if we connected to MongoDB database
+ * Lets us know if we connected to MongoDB database
  */
 const connection = mongoose.connection;
 connection.once('open', () => {
