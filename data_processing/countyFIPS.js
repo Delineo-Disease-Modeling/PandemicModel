@@ -10,12 +10,7 @@ fs.createReadStream('./data/csv/deaths_timeseries.csv')
   .pipe(csv())
   .on('data', (row) => {
     let fips;
-    fips = row["FIPS"] +':countySchema, ';
-    count++;
-    if(count >= 8){
-        count = 0;
-        fips = fips + '\n'
-    }
+    fips = row["FIPS"] +'\n';
     fs.appendFile("./data/fips.txt", fips, function(err){
       if(err){
         console.log(err);
