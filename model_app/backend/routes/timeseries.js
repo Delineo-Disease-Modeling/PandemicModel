@@ -3,25 +3,6 @@ const app = require('express')
 const Timeseries = require('../models/timeseries.model')
 const router = app.Router()
 
-// data exchange between node.js and python file
-// refer to: https://github.com/extrabacon/python-shell
-
-let {PythonShell} = require('python-shell');
-var options = {
-	mode: 'text',
-	scriptPath: 'C:\Users\Steven Tan\Documents\Github\PandemicModel\model_app\backend\algo\test.py',
-	args: ['value1']
-};
-
-PythonShell.run('../algo/test.py', options, function (err, results) {
-	if (err)
-		throw err;
-	// Results is an array consisting of messages collected during execution
-	console.log('results: %j', results);
-});
-
-
-
 // middleware
 router.param('countyId', (req, res, next, countyId) => {
 	Timeseries.findOne({}, (error, dateObj) => {
