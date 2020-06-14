@@ -19,7 +19,7 @@ require('dotenv').config(); //Allows us to use environment variables from .env f
 const uri = process.env.ATLAS_URI;
 
 app.use(cors())
-app.use(express.json()) //Let's us parse JSON since server that's server format
+app.use(express.json()) //Lets us parse JSON since server that's server format
 
 mongoose.connect(uri, {
   useNewUrlParser: true, //Fall back to old MongoDB connection string parser
@@ -36,11 +36,14 @@ connection.once('open', () => {
 
 /**
  * Tell server where to look for demographics and timeseries routing instructions
+ * For all other URIs, return 404 page not found error
  */
 const router = require('./routes');
 app.use('/demographics', router.dem);
 app.use('/timeseries', router.time);
-//app.use('/counties', router.county);
+app.use((req, res, next) => {
+	res.status(404).json('Error: Page not found');
+})
 
 /**
  * Should be listening to port 5000, will tell us if not

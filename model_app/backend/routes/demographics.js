@@ -1,12 +1,14 @@
-// dependencies
+// Dependencies
 const Demographics = require('../models/demographics.model')
 const router = require('express').Router()
 
-// middleware
+// Middleware that finds a single county and saves it to req.id if :countyId is specified
 router.param('countyId', (req, res, next, countyId) => {
 	Demographics.findOne({FIPS: countyId}, Demographics.demographicObj, (error, id) => {
 		if (error)
 			return next(error);
+		else if (!id)
+			return res.status(400).json('Error: Invalid FIPS code');
 		req.id = id;
 		next();
 	})
@@ -22,7 +24,7 @@ router.get('/', (req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 })
 
-// read single county info
+// Read single county info
 router.get('/:countyId', (req, res) => {
 	demographic => res.json(demographic);
 	res.send(req.id);
