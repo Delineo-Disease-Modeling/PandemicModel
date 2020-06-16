@@ -1,0 +1,1 @@
+export const GET_COUNTIES = 'GET_COUNTIES';
