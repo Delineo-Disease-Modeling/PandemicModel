@@ -15,11 +15,14 @@ router.param('countyId', (req, res, next, countyId) => {
 })
 
 router.param('dateId', (req, res, next, dateId) => {
-	Timeseries.findOne({date: new Date(dateId)}, `date ${req.countyId}`, (error, id) => {
-		if (error || !id)
+	temp = new Date(dateId)
+	Timeseries.findOne({date: new Date(temp - temp.getTimezoneOffset()*60*1000)}, `date ${req.countyId}`, (error, id) => {
+		if (error)
+			return next(error)
+		else if (!id)
 			return res.status(400).json('Error: Cannot find date in database');
 		req.id = id;
-		next()	
+		next()
 	})
 })
 
