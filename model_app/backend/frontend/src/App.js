@@ -23,7 +23,7 @@ function App() {
                       <Route exact path="/">
                           <Home />
                       </Route>
-                      <Route exact path="/counties">
+                      <Route exact path="/simulator">
                           <County/>
                           <Timeseries/>
                       </Route>

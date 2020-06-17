@@ -50,7 +50,8 @@ router.get('/:countyId', (req, res) => {
 	let startDate = req.query.start ? new Date(req.query.start) : new Date('1-22-2020');
 	let endDate = req.query.end ? new Date(req.query.end) : new Date('5-20-2020');
 
-	Timeseries.find({date: {$gte: startDate, $lte: endDate}}, `date ${req.countyId}`, (error, id) => {
+	Timeseries.find({date: {$gte: startDate, $lte: endDate}}, `date ${req.countyId}`, {sort: {date: 1}},
+		(error, id) => {
 		if (error)
 			return res.status(400).json('Error: Invalid range of dates' + startDate + " " + endDate);
 		res.send(id)
