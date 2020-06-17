@@ -1,8 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import AppNavbar from './components/AppNavbar';
-import County from './components/County';
+import { County, AppNavbar, Timeseries } from './components';
 import { Provider } from 'react-redux';
 import store from './store';
 
@@ -25,7 +24,8 @@ function App() {
                           <Home />
                       </Route>
                       <Route exact path="/counties">
-                          <County />
+                          <County/>
+                          <Timeseries/>
                       </Route>
                   </Switch>
               </Router>
