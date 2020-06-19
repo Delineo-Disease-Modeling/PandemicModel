@@ -6,9 +6,9 @@
     "Num_Hospitals": 150,
     
     "Hospital_numVisitors": 200,
-    "Hospital_visitLength": 48, /*in hours*/
+    "Hospital_visitLength": 48,
     "Hospital_patients": 300,
-    "Hospital_area": 10000, /*m^2, to calculate pop density*/
+    "Hospital_area": 10000, 
 
     "Num_Schools": 86,
 
@@ -35,7 +35,7 @@
     "Restaurants_numWorkers": 50,
     "Restaurants_numPatrons": 150, 
     "Restaurants_visitLength": 1.5,
-    "Restaurants_area": 0.2,
-}
+    "Restaurants_area": 0.2 
+  }
 ]
 
