@@ -50,10 +50,10 @@ class County extends Component {
 
 
 County.propTypes = {
-    getCounties: PropTypes.func.isRequired,
+//    getCounties: PropTypes.func.isRequired,
     getCounty: PropTypes.func.isRequired,
     county : PropTypes.object.isRequired,
-    fips : PropTypes.number.isRequired
+//    fips : PropTypes.number.isRequired
 }
 
 const mapStateToProps = (state) => ({

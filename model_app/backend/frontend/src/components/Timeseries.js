@@ -9,7 +9,7 @@ import LineChart from './LineChart.js'
 class Timeseries extends Component {
     constructor(props) {
         super(props);
-        this.state = {fips: 1001, start: "4-27-20", end: "05-03-20"}
+        this.state = {fips: 1001, start: "02-25-20", end: "05-03-20"}
     }
     componentDidMount() {
         this.props.getTimeseries(this.state.fips, this.state.start, this.state.end);
@@ -40,16 +40,6 @@ class Timeseries extends Component {
         );
     }
 }
-
-// <TransitionGroup className={"timeseries"}>
-//                         {timeseries.map((item) => (
-//                             //<CSSTransition key={_id} timeout={500} classNames={'fade'}>
-//                                 <ListGroupItem>
-//                                     The date is: {item.date}
-//                                 </ListGroupItem>
-//                             </CSSTransition>
-//                         ))}
-//                     </TransitionGroup>
 
 Timeseries.propTypes = {
     getTimeseries: PropTypes.func.isRequired,
