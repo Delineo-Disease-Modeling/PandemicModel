@@ -1,7 +1,6 @@
 import { GET_COUNTIES, GET_COUNTY } from "./types";
 import axios from 'axios';
 
-
 export const getCounties = () => dispatch => {
     axios
         .get('./demographics')

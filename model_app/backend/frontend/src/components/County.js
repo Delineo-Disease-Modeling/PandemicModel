@@ -4,6 +4,7 @@ import {CSSTransition, TransitionGroup } from "react-transition-group";
 import { connect } from 'react-redux';
 import { getCounties, getCounty } from '../actions/countyActions';
 import PropTypes from 'prop-types';
+import GoogleMap from './GoogleMap.js';
 
 class County extends Component {
     constructor(props) {
@@ -28,25 +29,11 @@ class County extends Component {
                         </ListGroupItem>
                     </TransitionGroup>
                 </ListGroup>
+                <GoogleMap/>
             </Container>
         );
     }
 }
-
-//From Steven
-            // <Container>
-            //     <ListGroup>
-            //         <TransitionGroup className={"county"}>
-            //             {counties.map(({_id, FIPS, Area_Name}) => (
-            //                 <CSSTransition key={_id} timeout={500} classNames={'fade'}>
-            //                     <ListGroupItem>
-            //                         The county with FIPS: {FIPS} is in {Area_Name}
-            //                     </ListGroupItem>
-            //                 </CSSTransition>
-            //             ))}
-            //         </TransitionGroup>
-            //     </ListGroup>
-            // </Container>
 
 
 County.propTypes = {
