@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
-import Axis from './Axis.js'
+//import Axis from './Axis.js'
 
 class LineChart extends Component {
     constructor(props) {
@@ -70,7 +70,7 @@ class LineChart extends Component {
     render() {
         const height = this.props.height;
         const width = this.props.width;
-        return <svg ref={node => this.node = node} width={500} height={500}></svg>;
+        return <svg ref={node => this.node = node} width={width} height={height}></svg>;
     }
 }
 
