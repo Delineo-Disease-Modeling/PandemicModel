@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import {Container, ListGroup, ListGroupItem } from 'reactstrap';
-import {CSSTransition, TransitionGroup } from "react-transition-group";
+import {Container } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getTimeseries } from '../actions/timeseriesActions.js';
 import PropTypes from 'prop-types';
@@ -11,7 +10,7 @@ class Timeseries extends Component {
         super(props);
         this.state = {fips: 1001, start: "02-25-20", end: "05-03-20"}
     }
-    
+
     componentDidMount() {
         this.props.getTimeseries(this.state.fips, this.state.start, this.state.end);
     }

@@ -1,4 +1,4 @@
-import React, {Fragment, Component} from 'react';
+import React, {Component} from 'react';
 
 class SearchBox extends Component {
   constructor(props) {

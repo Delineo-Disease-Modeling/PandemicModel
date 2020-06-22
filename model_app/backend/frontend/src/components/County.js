@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import {Container, ListGroup, ListGroupItem } from 'reactstrap';
-import {CSSTransition, TransitionGroup } from "react-transition-group";
 import { connect } from 'react-redux';
-import { getCounties, getCounty } from '../actions/countyActions';
+import { getDemographics } from '../actions/demographicsActions';
 import PropTypes from 'prop-types';
 import GoogleMap from './GoogleMap.js';
 
@@ -13,21 +12,18 @@ class County extends Component {
     }
 
     componentDidMount() {
-        this.props.getCounty(this.state.fips);
+        this.props.getDemographics(this.state.fips);
     }
 
     render() {
-        const { counties } = this.props.county;
-
+        const { demographics } = this.props.demographics;
         return (
             <Container>
                 <ListGroup>
-                    <TransitionGroup className={"county"}>
-                        <ListGroupItem>
-                            The county with FIPS: {counties.FIPS} is in {counties.Area_Name} and 
-                            has population {counties.POP_ESTIMATE_2018}
-                        </ListGroupItem>
-                    </TransitionGroup>
+                    <ListGroupItem>
+                        The county with FIPS: {demographics.FIPS} is in {demographics.Area_Name} and 
+                        has population {demographics.POP_ESTIMATE_2018}
+                    </ListGroupItem>
                 </ListGroup>
                 <GoogleMap/>
             </Container>
@@ -37,16 +33,15 @@ class County extends Component {
 
 
 County.propTypes = {
-//    getCounties: PropTypes.func.isRequired,
-    getCounty: PropTypes.func.isRequired,
-    county : PropTypes.object.isRequired,
-//    fips : PropTypes.number.isRequired
+    getDemographics: PropTypes.func.isRequired,
+    demographics : PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state) => ({
+    demographics: state.demographics,
     county: state.county
 });
 
 // first param of connect: mapStateToProp since state is immutable in Redux Architecture
 // Second param of connect is actions necessary for the component
-export default connect(mapStateToProps, { getCounty })(County);
+export default connect(mapStateToProps, { getDemographics })(County);
