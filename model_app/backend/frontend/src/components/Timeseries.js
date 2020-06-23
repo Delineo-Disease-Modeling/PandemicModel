@@ -8,20 +8,30 @@ import LineChart from './LineChart.js';
 class Timeseries extends Component {
     constructor(props) {
         super(props);
-        this.state = {fips: 1001, start: "02-25-20", end: "05-03-20"}
+        this.state = {start: "02-25-20", end: "05-03-20"}
+        this.fips = 1001;
     }
 
     componentDidMount() {
-        this.props.getTimeseries(this.state.fips, this.state.start, this.state.end);
+        this.props.getTimeseries(this.fips, this.state.start, this.state.end);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.demographics !== prevProps.demographics) {
+            const {FIPS} = this.props.demographics;
+            this.props.getTimeseries(FIPS, this.state.start, this.state.end);
+            this.fips = FIPS;
+        }
     }
 
     render() {
-        const {timeseries} = this.props.timeseries;
+        const timeseries = this.props.timeseries;
+
         const infected = timeseries.map((item) => {
-            return { date: new Date(`${item.date}`), value: Number(`${item[this.state.fips].infected}`) };
+            return { date: new Date(`${item.date}`), value: Number(`${item[this.fips].infected}`) };
         })
         const death = timeseries.map((item) => {
-            return { date: new Date(`${item.date}`), value: Number(`${item[this.state.fips].death}`) };
+            return { date: new Date(`${item.date}`), value: Number(`${item[this.fips].death}`) };
         })
 
         return (
@@ -35,11 +45,12 @@ class Timeseries extends Component {
 
 Timeseries.propTypes = {
     getTimeseries: PropTypes.func.isRequired,
-    timeseries : PropTypes.object.isRequired,
+    timeseries : PropTypes.array.isRequired,
 }
 
 const mapStateToProps = (state) => ({
-    timeseries: state.timeseries
+    timeseries: state.timeseries,
+    demographics: state.demographics
 });
 
 // first param of connect: mapStateToProp since state is immutable in Redux Architecture

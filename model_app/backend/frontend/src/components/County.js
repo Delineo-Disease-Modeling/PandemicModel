@@ -34,14 +34,14 @@ class County extends Component {
     }
 
     render() {
-        const { demographics } = this.props.demographics;
-    
+        const { FIPS, Area_Name, POP_ESTIMATE_2018 } = this.props.demographics;
+
         return (
             <Container>
                 <ListGroup>
                     <ListGroupItem>
-                        The county with FIPS: {demographics.FIPS} is in {demographics.Area_Name} and 
-                        has population {demographics.POP_ESTIMATE_2018}
+                        The county with FIPS: {FIPS} is in {Area_Name} and 
+                        has population {POP_ESTIMATE_2018}
                     </ListGroupItem>
                 </ListGroup>
                 <GoogleMap/>

@@ -22,7 +22,6 @@ class LineChart extends Component {
         const height = this.props.height;
         const margin = ({top: 20, right: 20, bottom: 30, left: 30});
 
-        //console.log(data)
         const x = d3.scaleUtc()
             .domain(d3.extent(data, d => d.date))
             .range([margin.left, width - margin.right]);
@@ -46,6 +45,9 @@ class LineChart extends Component {
                 .attr("text-anchor", "start")
                 .attr("font-weight", "bold")
                 .text(data.y));
+
+        //clear old chart
+        d3.select(node).selectAll("*").remove()
 
         d3.select(node)
             .append("path")
