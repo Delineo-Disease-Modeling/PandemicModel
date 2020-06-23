@@ -20,7 +20,7 @@ class GoogleMap extends Component {
         this.state = {
             mapApiLoaded: false,
             mapInstance: null,
-            mapApi: null,
+            mapApi: null
         };
     }
 

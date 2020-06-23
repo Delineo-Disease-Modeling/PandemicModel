@@ -15,9 +15,9 @@ export const getCounties = () => dispatch => {
 };
 */
 
-export const getDemographics = (id) => dispatch => {
+export const getDemographics = (stateId, countyId) => dispatch => {
     axios
-        .get(`./demographics/${id}`)
+        .get(`./demographics/${stateId}/${countyId}`)
         .then(res =>
             dispatch({
                 type: GET_DEMOGRAPHICS,

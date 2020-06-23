@@ -1,16 +1,10 @@
 // check action and dispatch to reducer
 import { GET_COUNTY } from "../actions/types";
 
-const initialState = {
-    county : []
-}
-
-export default function (state=initialState, action) {
+export default function (state=[], action) {
     switch (action.type) {
         case GET_COUNTY:
-            return {
-                county: action.payload
-            };
+            return action.payload['address_components'];
         default:
             return state;
     }

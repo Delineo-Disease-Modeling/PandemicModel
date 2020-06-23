@@ -6,17 +6,36 @@ import PropTypes from 'prop-types';
 import GoogleMap from './GoogleMap.js';
 
 class County extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {fips: 1001};
-    }
 
     componentDidMount() {
-        this.props.getDemographics(this.state.fips);
+        this.props.getDemographics('AL', 'Autauga County');
+    }
+
+    // only rerender if props has changed
+    componentDidUpdate(prevProps) {
+        if (this.props.county !== prevProps.county) {
+            const place = this.props.county;
+
+            let state = "";
+            let county = "";
+
+            for (let key = 0; key < place.length; key++) {
+                if (place[key].types[0] === "administrative_area_level_1")
+                    state = place[key].short_name;
+                else if (place[key].types[0] === "administrative_area_level_2")
+                    county = place[key].short_name;
+            }
+            if (!state || !county) {
+                // error handling here
+            }
+
+            this.props.getDemographics(state, county);
+        }
     }
 
     render() {
         const { demographics } = this.props.demographics;
+    
         return (
             <Container>
                 <ListGroup>

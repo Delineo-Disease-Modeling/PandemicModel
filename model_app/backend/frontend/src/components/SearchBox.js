@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 class SearchBox extends Component {
   constructor(props) {
     super(props);
+    this.state = {places: []};
     this.clearSearchBox = this.clearSearchBox.bind(this);
   }
 
