@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { County, AppNavbar, Timeseries } from './components';
+import { County, AppNavbar, Timeseries, GoogleMap } from './components';
 import { Provider } from 'react-redux';
 import store from './store';
 
@@ -25,6 +25,7 @@ function App() {
                       </Route>
                       <Route exact path="/simulator">
                           <County/>
+                          <GoogleMap/>
                           <Timeseries/>
                       </Route>
                   </Switch>

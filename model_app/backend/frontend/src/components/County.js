@@ -3,7 +3,6 @@ import {Container, ListGroup, ListGroupItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getDemographics } from '../actions/demographicsActions';
 import PropTypes from 'prop-types';
-import GoogleMap from './GoogleMap.js';
 
 class County extends Component {
 
@@ -44,7 +43,6 @@ class County extends Component {
                         has population {POP_ESTIMATE_2018}
                     </ListGroupItem>
                 </ListGroup>
-                <GoogleMap/>
             </Container>
         );
     }

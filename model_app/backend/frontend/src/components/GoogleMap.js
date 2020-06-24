@@ -4,6 +4,8 @@ import GoogleMapReact from 'google-map-react';
 import SearchBox from './SearchBox.js';
 import { getCounty } from '../actions/countyActions';
 import Marker from './Marker.js';
+import {options} from '../const/placeTypes.js';
+import Checkbox from './Checkbox.js'
 
 class GoogleMap extends Component {
     // for autauga county
@@ -21,7 +23,11 @@ class GoogleMap extends Component {
         this.state = {
             mapApiLoaded: false,
             mapInstance: null,
-            mapApi: null
+            mapApi: null,
+            checkboxes: options.reduce((options, option) => ({
+                ...options,
+                [option]: false
+            }), {})
         };
     }
 
@@ -37,12 +43,26 @@ class GoogleMap extends Component {
         this.props.getCounty(place);
     };
 
+    handleCheckboxChange = changeEvent => {
+    const { name } = changeEvent.target;
+
+    this.setState(prevState => ({
+      checkboxes: {
+        ...prevState.checkboxes,
+        [name]: !prevState.checkboxes[name]
+      }
+    }));
+  };
+
     render() {
         const { mapApiLoaded, mapInstance, mapApi } = this.state;
+        console.log(this.state.checkboxes);
 
         return (
         <Fragment>
             {mapApiLoaded && <SearchBox map={mapInstance} mapApi={mapApi} addplace={this.addPlace} />}
+            {options.map(option => ( <Checkbox key={option} isSelected={this.state.checkboxes[option]}
+                onCheckboxChange={this.handleCheckboxChange} label = {option}/> ))}
             <div style={{ height: '100vh', width: '100%' }}>
                 <GoogleMapReact
                     bootstrapURLKeys={{ key: 'AIzaSyBgND2XyCZrz8L5RbrZObu7i-zgrY688pQ',
