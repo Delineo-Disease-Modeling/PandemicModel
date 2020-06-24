@@ -26,7 +26,7 @@ class GoogleMap extends Component {
             mapApi: null,
             checkboxes: options.reduce((options, option) => ({
                 ...options,
-                [option]: false
+                [option]: true
             }), {})
         };
     }
@@ -39,24 +39,25 @@ class GoogleMap extends Component {
         });
     };
 
+    // Save to redux store
     addPlace = (place) => {
         this.props.getCounty(place);
     };
 
     handleCheckboxChange = changeEvent => {
-    const { name } = changeEvent.target;
+        const { name } = changeEvent.target;
 
-    this.setState(prevState => ({
-      checkboxes: {
-        ...prevState.checkboxes,
-        [name]: !prevState.checkboxes[name]
-      }
-    }));
-  };
+        this.setState(prevState => ({
+            checkboxes: {
+                ...prevState.checkboxes,
+                [name]: !prevState.checkboxes[name]
+            }
+        }));
+    };
 
+    // Contains SearchBox, Checkboxes, and Google Map with Marker
     render() {
-        const { mapApiLoaded, mapInstance, mapApi } = this.state;
-        console.log(this.state.checkboxes);
+        const { mapApiLoaded, mapInstance, mapApi, checkboxes } = this.state;
 
         return (
         <Fragment>
@@ -72,7 +73,7 @@ class GoogleMap extends Component {
                     yesIWantToUseGoogleMapApiInternals
                     onGoogleApiLoaded={({ map, maps }) => this.apiHasLoaded(map, maps)}
                 >
-                    {mapApiLoaded && <Marker map={mapInstance} mapApi={mapApi} />}
+                    {mapApiLoaded && <Marker map={mapInstance} mapApi={mapApi} filter={checkboxes}/>}
                 </GoogleMapReact>
             </div>
         </Fragment>
