@@ -95,7 +95,7 @@ def main():
 
   npop = 10000 # how many people in your population
   sp.generate_synthetic_population(npop,datadir,location=location, state_location=state_location,country_location=country_location,
-  sheet_name=sheet_name,level=level)
+  sheet_name=sheet_name)
   print("Population Created")
 
 
