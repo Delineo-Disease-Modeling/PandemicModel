@@ -7,41 +7,49 @@ class Marker extends Component {
         this.markers = [];
     }
 
-  componentDidUpdate(prevProps) {
-    if(this.props.place !== prevProps.place) {
-        this.nearbySearch(this.props);
+    componentDidMount({map, mapApi, place} = this.props) {
+        this.infowindow = new mapApi.InfoWindow();
     }
-  }
 
-  nearbySearch({map, mapApi, place} = this.props) {
-    this.clearMarkers();
-
-    let search = {
-        bounds: place.geometry.viewport,
-        types: ['lodging']
-      };
-    let service = new mapApi.places.PlacesService(map);
-    service.nearbySearch(search, (results, status) => {
-        if (status == mapApi.places.PlacesServiceStatus.OK) {
-            for (let i = 0; i < results.length; i++) {
-                let marker = new mapApi.Marker({ map: map,
-                            position: results[i].geometry.location});
-                this.markers.push(marker);
-            }
+    componentDidUpdate(prevProps) {
+        if(this.props.place !== prevProps.place) {
+            this.nearbySearch(this.props);
         }
-    });
-}
-
-  clearMarkers() {
-    for (let i = 0; i < this.markers.length; i++) {
-        this.markers[i].setMap(null);
     }
-    this.markers = [];
-  }
 
-  render() {
-    return null;
-  }
+    nearbySearch({ map, mapApi, place } = this.props) {
+        this.clearMarkers();
+
+        let search = {
+            bounds: place.geometry.viewport,
+            types: ['lodging']
+        };
+        let service = new mapApi.places.PlacesService(map);
+        service.nearbySearch(search, (places, status) => {
+            if (status === mapApi.places.PlacesServiceStatus.OK) {
+                places.forEach(place => {
+                let marker = new mapApi.Marker({ map: map,
+                                position: place.geometry.location
+                });
+                this.markers.push(marker);
+                mapApi.event.addListener(marker, 'click', () => {
+                        this.infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+                                    'Type: ' + place.types + '</div>');
+                        this.infowindow.open(map, marker);
+                        });
+                });
+            }
+        });
+    }
+
+    clearMarkers() {
+        this.markers.forEach(m => { m.setMap(null); });
+        this.markers = [];
+    }
+    
+    render() {
+        return null;
+    }
 }
 
 const mapStateToProps = (state) => ({
