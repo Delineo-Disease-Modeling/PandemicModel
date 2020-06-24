@@ -14,7 +14,7 @@ class County extends Component {
     // only rerender if props has changed
     componentDidUpdate(prevProps) {
         if (this.props.county !== prevProps.county) {
-            const place = this.props.county;
+            const place = this.props.county['address_components'];
 
             let state = "";
             let county = "";
