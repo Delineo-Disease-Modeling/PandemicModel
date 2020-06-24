@@ -82,7 +82,7 @@ def main():
   mc.initializeCities()
 
   #mc.printData()
-  print("HERE")
+  #print("HERE")
   sp.validate()
 
   datadir = sp.datadir # this should be where your demographics data folder resides
@@ -94,9 +94,10 @@ def main():
   level = 'county'
 
   npop = 10000 # how many people in your population
-  sp.generate_synthetic_population(npop,datadir,location=location, state_location=state_location,country_location=country_location,
-  sheet_name=sheet_name,level=level)
-  print("Population Created")
+  
+  population = sp.generate_synthetic_population(npop, sp.datadir, location=location, state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
+  print(population)
+  #print("Population Created")
 
 
 class node():
