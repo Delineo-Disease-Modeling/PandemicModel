@@ -66,7 +66,7 @@ class GoogleMap extends Component {
                 onCheckboxChange={this.handleCheckboxChange} label = {option}/> ))}
             <div style={{ height: '100vh', width: '100%' }}>
                 <GoogleMapReact
-                    bootstrapURLKeys={{ key: 'AIzaSyBgND2XyCZrz8L5RbrZObu7i-zgrY688pQ',
+                    bootstrapURLKeys={{ key: process.env.REACT_APP_MAP_API,
                                         libraries: ['places'] }}
                     defaultCenter={this.props.center}
                     defaultZoom={this.props.zoom}
