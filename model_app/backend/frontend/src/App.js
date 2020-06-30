@@ -1,41 +1,38 @@
 import React from 'react';
-//import logo from './logo.svg';
 import './App.css';
-import { County, AppNavbar, Timeseries, GoogleMap } from './components';
+import { AppNavbar } from './components';
+import { Home, About, Simulator, DevelopmentBlog, Team, Contact } from './containers';
 import { Provider } from 'react-redux';
 import store from './store';
+import leaders from './const/leader';
 
 // routers
 import {
     BrowserRouter as Router,
     Switch,
-    Route
+    Route,
+    Redirect
 } from "react-router-dom";
 
 function App() {
   return (
       <Provider store={store}>
           <div className={"App"}>
-              <AppNavbar />
               <Router>
+                  <AppNavbar />
                   <Switch>
-                      <Route exact path="/">
-                          <Home />
-                      </Route>
-                      <Route exact path="/simulator">
-                          <County/>
-                          <GoogleMap/>
-                          <Timeseries/>
-                      </Route>
+                      <Route exact path="/" component={Home} />
+                      <Route exact path="/about" component={()=> <About leaders={leaders} />} />
+                      <Route exact path="/simulator" component={Simulator} />
+                      <Route exact path="/team" component={Team} />
+                      <Route exact path="/developmentblog" component={DevelopmentBlog} />
+                      <Route exact path="/contact" component={Contact} />
+                      <Redirect to="/" />
                   </Switch>
               </Router>
           </div>
       </Provider>
   );
-}
-
-function Home() {
-    return <h2>Home Page</h2>
 }
 
 export default App;
