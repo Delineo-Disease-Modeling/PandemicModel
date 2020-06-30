@@ -28,13 +28,10 @@ address{
     color:#0f0f0f;
 }
 
-.navbar-dark {
-    background-color: navy;
-}
-/*.App {
+.App {
   text-align: center;
 }
-
+/*
 .App-logo {
   height: 40vmin;
   pointer-events: none;

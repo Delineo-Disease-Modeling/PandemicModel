@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { AppNavbar } from './components';
+import { AppNavbar, Footer } from './components';
 import { Home, About, Simulator, DevelopmentBlog, Team, Contact } from './containers';
 import { Provider } from 'react-redux';
 import store from './store';
@@ -29,6 +29,7 @@ function App() {
                       <Route exact path="/contact" component={Contact} />
                       <Redirect to="/" />
                   </Switch>
+                  <Footer />
               </Router>
           </div>
       </Provider>
