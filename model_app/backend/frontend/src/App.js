@@ -4,7 +4,6 @@ import { AppNavbar, Footer } from './components';
 import { Home, About, Simulator, DevelopmentBlog, Team, Contact } from './containers';
 import { Provider } from 'react-redux';
 import store from './store';
-import leaders from './const/leader';
 
 // routers
 import {
@@ -22,7 +21,7 @@ function App() {
                   <AppNavbar />
                   <Switch>
                       <Route exact path="/" component={Home} />
-                      <Route exact path="/about" component={()=> <About leaders={leaders} />} />
+                      <Route exact path="/about" component={About} />
                       <Route exact path="/simulator" component={Simulator} />
                       <Route exact path="/team" component={Team} />
                       <Route exact path="/developmentblog" component={DevelopmentBlog} />
