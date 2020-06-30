@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Navbar, NavbarBrand, Nav, NavbarToggler, Collapse, NavItem } from 'reactstrap';
 import {NavLink} from 'react-router-dom';
-import './AppNavbarStyle.css';
+import './AppNavbar.css';
 
 class AppNavbar extends Component{
 

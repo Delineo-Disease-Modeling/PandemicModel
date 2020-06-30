@@ -26,9 +26,11 @@ class County extends Component {
             }
             if (!state || !county) {
                 // error handling here
+                console.log('Not a county');
             }
-
-            this.props.getDemographics(state, county);
+            else {
+                this.props.getDemographics(state, county);
+            }
         }
     }
 
