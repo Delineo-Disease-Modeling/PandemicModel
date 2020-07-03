@@ -1,5 +1,8 @@
 .color{
-    background-color: #68ACE5;
+    background-color: #222629;
+    border-bottom: 5px #ffffff;
+    box-sizing: border-box;
+
 }
 
 .NavText{

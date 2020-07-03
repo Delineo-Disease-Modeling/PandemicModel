@@ -34,7 +34,8 @@ class AppNavbar extends Component{
             color: "white"
         }
 
-        return <Navbar expand="md" className="color">
+        return (
+            <Navbar expand="md" className="color">
                 <div className="container">
                 <NavbarToggler onClick={this.toggleNav} />
                 <NavbarBrand className="mr-auto" href="/">
@@ -43,27 +44,23 @@ class AppNavbar extends Component{
                 <Collapse isOpen={this.state.isNavOpen} navbar>
                     <Nav navbar className="ml-auto">
                         <NavItem>
-                            <NavLink className="nav-link" to="/"style={styleSheet} ><span style={styleSheet} className="fa fa-home fa-lg"></span> Home</NavLink>
+                            <NavLink className="nav-link" to='/about' style={styleSheet}>About</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink className="nav-link" to='/about' style={styleSheet}  ><span style={{color: "white"}} className="fa fa-info fa-lg"></span> About</NavLink>
+                            <NavLink className="nav-link" to='/team' style={styleSheet}>Team</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink className="nav-link" to='/team' style={styleSheet}><span style={{color: "white"}} className="fa fa-users fa-lg" ></span> Team</NavLink>
+                            <NavLink className="nav-link" to='/simulator' style={styleSheet}> Simulator</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink className="nav-link" to='/simulator' style={styleSheet}><span style={{color: "white"}} className="fa fa-line-chart fa-lg" ></span> Simulator</NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink className="nav-link"  to='/developmentblog' style={styleSheet}><span style={{color: "white"}} className="fa fa-list fa-lg"></span> Development Blog</NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink className="nav-link" to='/contact'style={styleSheet} ><span style={{color: "white"}}  className="fa fa-address-card fa-lg"></span> Contact Us</NavLink>
+                            <NavLink className="nav-link"  to='/developmentblog' style={styleSheet}> Development Blog</NavLink>
                         </NavItem>
                     </Nav>
                 </Collapse>
                 </div>
             </Navbar>
+            
+        );
     }
 }
 
