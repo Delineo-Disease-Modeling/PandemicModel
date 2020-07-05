@@ -34,6 +34,13 @@ class AppNavbar extends Component{
             color: "white"
         }
 
+        const active={
+            color:'#66FCF1', 
+            borderBottom: '1px solid #66FCF1', 
+            paddingBottom: '4px', 
+        
+        }
+
         return (
             <Navbar expand="md" className="color">
                 <div className="container">
@@ -43,17 +50,21 @@ class AppNavbar extends Component{
                 </NavbarBrand>
                 <Collapse isOpen={this.state.isNavOpen} navbar>
                     <Nav navbar className="ml-auto">
+
                         <NavItem>
-                            <NavLink className="nav-link" to='/about' style={styleSheet}>About</NavLink>
+                            <NavLink className="Nav-link" to='/simulator' activeClassName='active' activeStyle={active} style={styleSheet}> Simulator</NavLink>
                         </NavItem>
+
                         <NavItem>
-                            <NavLink className="nav-link" to='/team' style={styleSheet}>Team</NavLink>
+                            <NavLink className="Nav-link" to='/about' activeClassName='active' activeStyle={active} style={styleSheet}>About</NavLink>
                         </NavItem>
+
                         <NavItem>
-                            <NavLink className="nav-link" to='/simulator' style={styleSheet}> Simulator</NavLink>
+                            <NavLink className="Nav-link" to='/team' activeClassName='active' activeStyle={active} style={styleSheet}>Team</NavLink>
                         </NavItem>
+
                         <NavItem>
-                            <NavLink className="nav-link"  to='/developmentblog' style={styleSheet}> Development Blog</NavLink>
+                            <NavLink className="Nav-link"  to='/developmentblog' activeClassName='active' activeStyle={active} style={styleSheet}> Development Blog</NavLink>
                         </NavItem>
                     </Nav>
                 </Collapse>
