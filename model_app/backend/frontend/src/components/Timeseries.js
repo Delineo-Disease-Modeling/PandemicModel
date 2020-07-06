@@ -36,8 +36,16 @@ class Timeseries extends Component {
 
         return (
             <Container>
-                <LineChart data = {infected} width = {800} height = {500}/>
-                <LineChart data = {death} width = {800} height = {500}/>
+                <div style={{marginBottom:'40px'}}>
+                    <h5 style={{color:'#66FCF1'}}>Infection Rate</h5>
+                    <LineChart data = {infected} width = {800} height = {500}/>
+                </div>
+                
+                <div style={{margin:'20px'}}>
+                    <h5 style={{color:'#66FCF1'}}>Death Rate</h5>
+                    <LineChart data = {death} width = {800} height = {500}/>
+                </div>
+                
             </Container>
         );
     }

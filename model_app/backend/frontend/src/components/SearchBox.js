@@ -38,7 +38,7 @@ class SearchBox extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{marginTop:'30px', marginBottom:'15px'}}>
         <input
           ref={(ref) => {
             this.searchInput = ref;

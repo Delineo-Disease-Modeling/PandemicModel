@@ -39,12 +39,13 @@ class County extends Component {
 
         return (
             <Container>
-                <ListGroup>
-                    <ListGroupItem>
+                <div style={{backgroundColor:'#1b4441ad', height:'55px', textAlign:'center', paddingTop:'13px', border:'2px solid #66FCF1', borderRadius:'40px'}}>
+                    <h6 style={{ color:'white'}}>
                         The county with FIPS: {FIPS} is in {Area_Name} and 
                         has population {POP_ESTIMATE_2018}
-                    </ListGroupItem>
-                </ListGroup>
+                    </h6>
+                </div>
+                        
             </Container>
         );
     }

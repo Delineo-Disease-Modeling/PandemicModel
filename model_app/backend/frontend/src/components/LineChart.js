@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
+import './LineChart.css'
 
 class LineChart extends Component {
     constructor(props) {
@@ -53,19 +54,25 @@ class LineChart extends Component {
             .append("path")
             .datum(data)
             .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 1.5)
+            .attr("stroke", "#66FCF1")
+            .attr("stroke-width", 2)
             .attr("stroke-linejoin", "round")
             .attr("stroke-linecap", "round")
             .attr("d", line);
 
         d3.select(node)
             .append("g")
-            .call(xAxis);
+            .call(xAxis)
+            .attr("class", "axis")
+            .selectAll("text")
+            .style("fill", "#ffffff");
 
         d3.select(node)
             .append("g")
-            .call(yAxis);
+            .call(yAxis)
+            .attr("class", "axis")
+            .selectAll("text")
+            .style("fill", "#ffffff");
     }
 
     render() {
