@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import {Container, ListGroup, ListGroupItem } from 'reactstrap';
+import {Container } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getDemographics } from '../actions/demographicsActions';
 import PropTypes from 'prop-types';
 
 class County extends Component {
-
+    // initialize with data from Autauga County
     componentDidMount() {
         this.props.getDemographics('AL', 'Autauga County');
     }
 
-    // only rerender if props has changed
+    // only rerender if props.county has changed (i.e. the location in the search box)
     componentDidUpdate(prevProps) {
         if (this.props.county !== prevProps.county) {
             const place = this.props.county['address_components'];
@@ -18,17 +18,21 @@ class County extends Component {
             let state = "";
             let county = "";
 
+            // find the state and county the searched location resides in
+            // administrative_area_level_# is defined by Google Maps API
             for (let key = 0; key < place.length; key++) {
                 if (place[key].types[0] === "administrative_area_level_1")
                     state = place[key].short_name;
                 else if (place[key].types[0] === "administrative_area_level_2")
                     county = place[key].short_name;
             }
+
             if (!state || !county) {
                 // error handling here
                 console.log('Not a county');
             }
             else {
+                // api call to our db to get demographics info
                 this.props.getDemographics(state, county);
             }
         }

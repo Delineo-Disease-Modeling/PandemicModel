@@ -8,7 +8,7 @@ import {options} from '../const/placeTypes.js';
 import Checkbox from './Checkbox.js'
 
 class GoogleMap extends Component {
-    // for autauga county
+    // initialize for autauga county
     static defaultProps = {
         center: {
             lat: 32,
@@ -31,6 +31,7 @@ class GoogleMap extends Component {
         };
     }
 
+    // save Google Maps API in state
     apiHasLoaded = (map, maps) => {
         this.setState({
             mapApiLoaded: true,

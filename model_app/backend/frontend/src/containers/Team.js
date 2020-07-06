@@ -19,9 +19,9 @@ function Team(props){
   return(
     <>
       <Header text='Meet The Team'/>
-      <h2 class="header2" >Research Supervisor</h2>
+      <h2 className="header2" >Research Supervisor</h2>
       <SupervisorList list={supervisorList} />
-      <h2 class="header2" >Team Leaders</h2>
+      <h2 className="header2" >Team Leaders</h2>
       <LeaderList list={list}/>
     </>
   );
@@ -35,34 +35,34 @@ function LeaderList(props){
     if(counter%2){
         counter++;
         return(
-          <TeamLeaderCardRight name={leader.name} description = {leader.description} image={leader.image} />
+          <TeamLeaderCardRight key={leader.name} name={leader.name} description = {leader.description} image={leader.image} />
         );
       }
     else{
         counter++;
         return(
-          <TeamLeaderCardLeft name={leader.name} description = {leader.description} image={leader.image} />
+          <TeamLeaderCardLeft key={leader.name} name={leader.name} description = {leader.description} image={leader.image} />
         );
       }
     }
   );
-  return(<div class="LeaderList">{leaderCards}</div>);
+  return(<div className="LeaderList">{leaderCards}</div>);
 }
 
 function SupervisorList(props) {
   const supervisorCards = props.list.map(supervisor =>
-    <SupervisorCard name={supervisor.name} description={supervisor.description} image={supervisor.image}/>
+    <SupervisorCard key={supervisor.name} name={supervisor.name} description={supervisor.description} image={supervisor.image}/>
   );
   return <div>{supervisorCards}</div>;
 }
 
 function TeamLeaderCardLeft(props){
   return(
-    <div align= "left" class="Card">
-        <img src={props.image} width="150px" height="150px" class="LeaderImage"></img>
-        <div class="Inner">
-          <h4 class="LeaderName">{props.name}</h4>
-          <p class="Text">
+    <div align= "left" className="Card">
+        <img alt='team leader' src={props.image} width="150px" height="150px" className="LeaderImage"></img>
+        <div className="Inner">
+          <h4 className="LeaderName">{props.name}</h4>
+          <p className="Text">
             {props.description}
           </p>
         </div>
@@ -74,11 +74,11 @@ function TeamLeaderCardLeft(props){
 
 function TeamLeaderCardRight(props){
   return(
-    <div align= "left" class="Card">
-        <img src={props.image} width="150px" height="150px" class="LeaderImageRight"></img>
-        <div class="InnerRight">
-          <h4 class="LeaderNameRight">{props.name}</h4>
-          <p class="TextRight">
+    <div align= "left" className="Card">
+        <img  alt='team leader' src={props.image} width="150px" height="150px" className="LeaderImageRight"></img>
+        <div className="InnerRight">
+          <h4 className="LeaderNameRight">{props.name}</h4>
+          <p className="TextRight">
             {props.description}
           </p>
         </div>
@@ -88,11 +88,11 @@ function TeamLeaderCardRight(props){
 
 function SupervisorCard(props){
   return(
-    <div align= "left" class="Card">
-        <img src={props.image} width="250px" height="250px" class="LeaderImage"></img>
-        <div class="Inner">
-          <h4 class="LeaderName">{props.name}</h4>
-          <p class="Text">
+    <div align= "left" className="Card">
+        <img  alt='supervisor' src={props.image} width="250px" height="250px" className="LeaderImage"></img>
+        <div className="Inner">
+          <h4 className="LeaderName">{props.name}</h4>
+          <p className="Text">
             {props.description}
           </p>
         </div>

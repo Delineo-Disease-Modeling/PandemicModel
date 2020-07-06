@@ -42,6 +42,7 @@
     width:100%;
     max-width: 100%;
     height: 5%;
+    color: black;
   }
   
   .LeaderImageRight {
@@ -56,6 +57,7 @@
     width:100%;
     max-width: 100%;
     height: 5%;
+    color: black;
   }
   .InnerRight {
     text-align: right;

@@ -50,6 +50,7 @@ class LineChart extends Component {
         //clear old chart
         d3.select(node).selectAll("*").remove()
 
+        // add line
         d3.select(node)
             .append("path")
             .datum(data)
@@ -60,6 +61,7 @@ class LineChart extends Component {
             .attr("stroke-linecap", "round")
             .attr("d", line);
 
+        // add x axis
         d3.select(node)
             .append("g")
             .call(xAxis)
@@ -67,6 +69,7 @@ class LineChart extends Component {
             .selectAll("text")
             .style("fill", "#ffffff");
 
+        // add y axis
         d3.select(node)
             .append("g")
             .call(yAxis)

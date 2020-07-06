@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 
+// SearchBox is a stateless component that handles search box operations like
+// clicking on the box, typing/autocomplete, and most importantly saving the
+// searched location in our redux store
 class SearchBox extends Component {
   constructor(props) {
     super(props);
-    this.state = {places: []};
     this.clearSearchBox = this.clearSearchBox.bind(this);
   }
 
@@ -17,6 +19,7 @@ class SearchBox extends Component {
     mapApi.event.clearInstanceListeners(this.searchInput);
   }
 
+  // change map view and save the place in redux store (this is addplace method passed from props)
   onPlacesChanged = ({ map, addplace } = this.props) => {
     const selected = this.searchBox.getPlaces();
     const { 0: place } = selected;

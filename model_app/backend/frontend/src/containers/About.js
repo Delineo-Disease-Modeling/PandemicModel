@@ -5,8 +5,8 @@ function About(props) {
 
     return(
         
-        <div class='CardBackground'>
-            <div class='CardGreenBackground'>
+        <div className='CardBackground'>
+            <div className='CardGreenBackground'>
                 <h2>About Us</h2>
                 <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature 
                     from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, 
