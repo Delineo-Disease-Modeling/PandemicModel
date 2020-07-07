@@ -44,7 +44,6 @@ const schema = mongoose.Schema({
   date: Date,
 }, {strict: false});
 
-
 var reader = require('line-reader');
 
 reader.eachLine('fips.txt', function(line, last) {

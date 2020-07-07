@@ -1,0 +1,89 @@
+.Card {
+    overflow: hidden;
+    padding:20px;
+    border: 1px solid #ffffff;
+    width: 85%;
+    height: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 25px;
+    box-shadow: 5px 10px 20px grey; 
+    display: inline-block;
+    box-sizing: border-box; 
+    margin-top: 35px;
+    margin-bottom: 20px;
+  }
+  
+  .Inner {
+    position: sticky;
+    padding:1px;
+    float: left;
+    margin-left: 2%;
+    width: 70%;
+    height: fit-content;
+  
+  }
+  
+  .LeaderImage {
+    float: left;
+    border-radius: 50%;
+    border:1px solid;
+  
+  } 
+  
+  .LeaderName{
+    text-align: left;
+    font-size: 20px;
+    font-weight: normal;
+  }
+  
+  .Text {
+    text-align: left;
+    width:100%;
+    max-width: 100%;
+    height: 5%;
+    color: black;
+  }
+  
+  .LeaderImageRight {
+    float: right;
+    border-radius: 50%;
+    border:1px solid;
+  
+  } 
+  
+  .TextRight {
+    text-align: right;
+    width:100%;
+    max-width: 100%;
+    height: 5%;
+    color: black;
+  }
+  .InnerRight {
+    text-align: right;
+    padding:1px;
+    float: right;
+    margin-right: 2%;
+    width: 70%;
+    height: fit-content;
+  
+  }
+  
+  .LeaderNameRight{
+    text-align: right;
+    font-size: 20px;
+    font-weight: normal;
+  } 
+  
+  .header {
+    margin-top: 1%;
+    margin-bottom: 0%;
+  }
+  
+  .header2 {
+    float: left;
+    margin-left: 8%;
+    margin-right: auto;
+    margin-top: 1%;
+    font-size: 25px;
+  } 

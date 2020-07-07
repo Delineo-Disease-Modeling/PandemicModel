@@ -1,0 +1,22 @@
+.color{
+    background-color: #222629;
+    border-bottom:2px solid #66FCF1;
+    padding-bottom:0
+
+}
+
+.NavText{
+    color: white;
+
+}
+
+.Nav-link:link {
+    color: #ffffff;
+    font-size: 15px;
+    line-height: 1.6rem;
+    margin-right: 15px;
+    text-decoration: none;
+    padding-right: 0;
+    padding-left: 0;
+  }
+  

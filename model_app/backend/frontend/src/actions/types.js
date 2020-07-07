@@ -1,0 +1,3 @@
+export const GET_COUNTY = 'GET_COUNTY';
+export const GET_DEMOGRAPHICS = 'GET_DEMOGRAPHICS';
+export const GET_TIMESERIES = 'GET_TIMESERIES';

@@ -1,0 +1,13 @@
+
+  .axis line{
+    stroke: white;
+  }
+  
+  .axis path{
+    stroke: white;
+  }
+  
+  .axis text{
+    fill: white;
+  }  
+    

@@ -15,10 +15,9 @@ router.param('countyId', (req, res, next, countyId) => {
 })
 
 router.param('dateId', (req, res, next, dateId) => {
-	temp = new Date(dateId)
-	Timeseries.findOne({date: new Date(temp - temp.getTimezoneOffset()*60*1000)}, `date ${req.countyId}`, (error, id) => {
+	Timeseries.findOne({date: convertDate(dateId)}, `date ${req.countyId}`, (error, id) => {
 		if (error)
-			return next(error)
+			throw error;
 		else if (!id)
 			return res.status(400).json('Error: Cannot find date in database');
 		req.id = id;
@@ -31,7 +30,7 @@ router.get('/', (req, res) => {
 	Timeseries.find().limit(10)
 		.exec((error, results) => {
 			if (error)
-				return next(error)
+				throw error;
 			res.send(results)
 		})
 })
@@ -47,12 +46,15 @@ router.get('/:countyId/:dateId', (req, res) => {
 // http://localhost:5000/timeseries/1007?start=1.22.20&end=1.23.20
 router.get('/:countyId', (req, res) => {
 	// currently hard coded default dates but should probably change
-	let startDate = req.query.start ? new Date(req.query.start) : new Date('1-22-2020');
-	let endDate = req.query.end ? new Date(req.query.end) : new Date('5-20-2020');
+	let startDate = req.query.start ? convertDate(req.query.start) : convertDate('1-22-2020');
+	let endDate = req.query.end ? convertDate(req.query.end) : convertDate('5-20-2020');
 
-	Timeseries.find({date: {$gte: startDate, $lte: endDate}}, `date ${req.countyId}`, (error, id) => {
+	Timeseries.find({date: {$gte: startDate, $lte: endDate}}, `date ${req.countyId}`, {sort: {date: 1}},
+		(error, id) => {
 		if (error)
-			return res.status(400).json('Error: Invalid range of dates' + startDate + " " + endDate);
+			throw error;
+		else if (!id)
+			return res.status(400).json('Error: Invalid range of dates ' + startDate + " through " + endDate);
 		res.send(id)
 	})
 })
@@ -86,5 +88,13 @@ router.delete('/:dateId', (req, res) => {
 		res.send(results)
 	})
 })
+
+// Converts date to UTC
+// Params: local date as string
+// Returns: UTC date as Date object
+const convertDate = (date) => {
+	date = new Date(date);
+	return new Date(date - date.getTimezoneOffset()*60*1000);
+}
 
 module.exports = router
