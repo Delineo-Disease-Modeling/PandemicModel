@@ -9,13 +9,15 @@ router.post('/', (req, res) => {
 
 	let options = {
 		mode: 'text',
-		scriptPath: '..\algo\test.py',
-		args: [input]
+		scriptPath: process.env.SCRIPT_PATH,
+		pythonPath: process.env.PYTHON_PATH,
+		pythonOptions: ['-u'],
+		//args: ['file.json']
 	};
 
 	// data exchange between node.js and python file
 	// refer to: https://github.com/extrabacon/python-shell
-	PythonShell.run('../algo/test.py', options, function (err, results) {
+	PythonShell.run('main.py', options, function (err, results) {
 		if (err)
 			throw err;
 		// Results is an array consisting of messages collected during execution

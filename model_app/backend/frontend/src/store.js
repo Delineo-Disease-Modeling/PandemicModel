@@ -13,13 +13,6 @@ const store = createStore(
     composeWithDevTools(
         applyMiddleware(...middleware)
     )
-
-    // encounter bug with directly using window.__REDUX configuration
-    // compose(
-    //     applyMiddleware(...middleware),
-    //     window.__REDUX_DEVTOOLS_EXTENSION__ &&
-    //     window.__REDUX_DEVTOOLS_EXTENSION__()
-    // )
 );
 
 export default store;
