@@ -9,6 +9,9 @@ router.param('countyId', (req, res, next, countyId) => {
 		if (!dateObj.get(countyId)) {
 			return res.status(400).json("Error: Invalid county");
 		}
+		else if (error) {
+			throw error;
+		}
 		req.countyId = countyId;
 	next();
 	});
