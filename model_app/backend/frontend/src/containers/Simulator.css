@@ -1,7 +1,7 @@
 .CardBackground{
     background-color: #222629;
     height: 100%;
-    width: 100vh;
+    width: 100%;
     min-height: 100%;
     min-width: 100%;
     margin:0;
@@ -36,6 +36,19 @@ h3{
     padding: 10px;
 }
 
+.col3{
+    float: left;
+    width: 100px;
+    padding: 10px;
+}
+
+.col2{
+    float: right;
+    width: 50%;
+    padding: 10px;
+    align-content: left;
+}
+
 .label{
     color:#ffffff;
     margin-right: 5px;
@@ -49,4 +62,36 @@ h3{
 
 td{
     padding-bottom: 15px;
+}
+
+.button{
+    padding:5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-top: 10px;
+    background-color: #66FCF1;
+    border:none;
+    border-radius: 20px;
+    
+}
+
+.dotted {
+    border:none;
+    border-top:2px dotted #66FCF1;
+    color:#fff;
+    background-color:#1b4441c2;
+    height:1px;
+    width:92%;
+    margin-left:15px;
+    margin-top: 1;
+  }
+
+.text{
+    color:white
+}
+
+.durationText{
+
+    color:white;
+
 }
