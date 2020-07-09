@@ -124,3 +124,7 @@ td{
     width: 30%;
     padding: 10px;
 }
+
+i:hover{
+    color:#66fcf275
+}
