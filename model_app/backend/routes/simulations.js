@@ -48,8 +48,8 @@ router.post('/', (req, res) => {
 					id.Results = results;
 					id.save(e => {if (e) throw e;});
 				});
-				em.emit('finished');
-				console.log('saved results to db');
+				em.emit(jobId);
+				//console.log('saved results to db');
 			});
 		})
 		.catch(err => res.status(400).json('Error: ' + err));
@@ -62,8 +62,8 @@ router.get('/:id', (req, res) => {
 		res.send(req.obj.Results);
 	}
 
-	em.on('finished', () => {
-		console.log('got here');
+	em.on(req.obj._id, () => {
+		//console.log('triggered for ' + req.obj._id);
 		// there's a small delay saving to db, so i temporarily hard coded a delay for 1.5 ms
 		setTimeout(() => {
 			Simulations.findById(req.obj._id, (error, obj) => {
