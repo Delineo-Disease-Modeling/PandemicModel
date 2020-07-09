@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { County, Timeseries, GoogleMap } from '../components';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import './Simulator.css'
-
+import axios from 'axios';
 
 
 
@@ -39,12 +39,17 @@ class OptionMenu extends Component{
     }
 
     save = ()=>{
+<<<<<<< HEAD
         if(this.state.duration != '' && this.state.selectedPolicy != 'Policy'){
             let newPolicy = {
                 policy: this.state.selectedPolicy,
                 duration:this.state.duration,
             }
             this.setState({policyComponent:[...this.state.policyComponent, newPolicy]})
+=======
+        if(this.state.duration !== '' && this.state.selectedPolicy !== 'Policy'){
+            this.setState({policyComponent:[...this.state.policyComponent, <Intervention policy={this.state.selectedPolicy} days={this.state.duration}/>]})
+>>>>>>> 2381b4ab1beab676d96ef4afbfadb5e4028d9f8d
             let array = this.state.policyList;
             let pos = array.indexOf(this.state.selectedPolicy); 
             if(pos>-1){
@@ -71,7 +76,7 @@ class OptionMenu extends Component{
                             <DropdownMenu>
                                 {this.state.policyList.map((item)=>{
                                     return(
-                                    <DropdownItem onClick={()=>{this.setState({selectedPolicy:item})}}>{item}</DropdownItem>
+                                    <DropdownItem key={item} onClick={()=>{this.setState({selectedPolicy:item})}}>{item}</DropdownItem>
                                     );
                                 })}
                             </DropdownMenu>
@@ -79,7 +84,7 @@ class OptionMenu extends Component{
                         </div>
 
                         <div align='left' className='col4'>
-                            <text style={{color:'white'}}>Duration (in days): </text>
+                            <p style={{color:'white'}}>Duration (in days): </p>
                             <input required size='15' type='text' style={{marginRight:'10px'}} onChange={event=> this.setState({duration:event.target.value})}></input>
                             
                         </div>
@@ -216,11 +221,56 @@ class Simulator extends Component{
         this.state={
             hidden:false,
             policy:'',
+            loading: false,
+            data: '',
+            jobId: null
         }
+    }
+
+    handleOnClick = () => {
+        // if user had an existing job request, delete that 
+        if (this.state.jobId) {
+            axios.delete(`./simulations/${this.state.jobId}`)
+                .catch(err => console.log(err) );
+        }
+
+        // configure post body with specific model params
+        let body = {};
+
+        // send post request
+        axios.post('./simulations', body)
+            .then(res => {
+                // only upon successful post request, update state with in progress state and 
+                if (res.status === 200) {
+                    this.setState({jobId: `${res.data}`, loading: true});
+                    console.log('post sent with job id ' + res.data);
+
+                    axios.get(`./simulations/${res.data}`)
+                        .then(result => {
+                            this.setState({
+                                loading: false,
+                                data: [...result.data],
+                            });
+
+                            console.log('simulation finished running');
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+
+                    // should probably save data to redux store
+                    // maybe also save jobId? idk yet
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                throw err;
+            });
     }
 
 
     render(){
+        const {data, loading} = this.state;
 
         return(
             <div className='CardBackground'>
@@ -241,15 +291,17 @@ class Simulator extends Component{
 
                     
                     <br></br>
-                    <button className='button' >Run Simulation</button>
+                    <button className='button' onClick={this.handleOnClick}>Run Simulation</button>
 
                 </div>
                 
+                {loading ? <p>loading...</p> :
                 <div className='GreenBackground'>
                     <h3>Analysis</h3>
+                    <p>{data}</p>
                     <Timeseries/>
                 </div>
-                
+                }
                 
             </div>
         );
