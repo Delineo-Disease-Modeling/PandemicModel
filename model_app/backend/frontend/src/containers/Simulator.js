@@ -18,6 +18,7 @@ class OptionMenu extends Component{
             policyComponent: [],
             policyList:["Schools", "Travel Ban", ">500 Gatherings","Restuarants", ">50 Gatherings"]
         };
+        this.deleteItem = this.deleteItem.bind(this);
     }
 
     handleAdd = ()=>{
@@ -27,9 +28,23 @@ class OptionMenu extends Component{
 
     toggle = () => this.setState({dropdownOpen: !this.state.dropdownOpen});
 
+    deleteItem = (pos, policy)=>{
+        
+        this.setState({policyComponent: this.state.policyComponent.filter((item)=> item.policy!= policy)});
+
+        let list = this.state.policyList;
+        list.push(policy);
+        this.setState({policyList:list});
+        console.log("Item has been removed: "+this.state.policyComponent.length);
+    }
+
     save = ()=>{
         if(this.state.duration != '' && this.state.selectedPolicy != 'Policy'){
-            this.setState({policyComponent:[...this.state.policyComponent, <Intervention policy={this.state.selectedPolicy} days={this.state.duration}/>]})
+            let newPolicy = {
+                policy: this.state.selectedPolicy,
+                duration:this.state.duration,
+            }
+            this.setState({policyComponent:[...this.state.policyComponent, newPolicy]})
             let array = this.state.policyList;
             let pos = array.indexOf(this.state.selectedPolicy); 
             if(pos>-1){
@@ -38,12 +53,15 @@ class OptionMenu extends Component{
             this.setState({policyList:array, selectedPolicy:'Policy', hidden:!this.state.hidden});
         }
     }
+ 
 
 
     render(){
         return(
             <div>
-                {this.state.policyComponent}
+                {this.state.policyComponent.map((item)=>{
+                    return(<Intervention policy={item.policy} days={item.duration} remove={this.deleteItem.bind(this)}/>);
+                })}
                 <div align='left' className={this.state.hidden? 'hidden':''}>
                     <div className='row'>
 
@@ -88,29 +106,40 @@ class OptionMenu extends Component{
 }
 
 
-function Intervention(props){
+class Intervention extends Component{
 
-    return(
-        <div align='left' className='row'>
+    constructor(){
+        super(); 
+    }
 
-            <div className='col'>
-            <text style={{color:'white', marginRight:'10px', textAlign:'left'}}>{props.policy}</text>
+    remove = ()=>{
+        this.props.remove(this.props.position, this.props.policy);
+    }
+    render(){
+        return(
+            <div align='left' className='row'>
+
+                <div className='col'>
+                <text style={{color:'white', marginRight:'10px', textAlign:'left'}}>{this.props.policy}</text>
+                </div>
+                
+                <div className='col'>
+                    <text style={{color:'white', marginRight:'20px'}} >Duration :</text>
+                    <text className='durationText' style={{backgroundColor:'#1b4441ad', padding:'5px', textAlign:'center', border:'2px solid #66FCF1', borderRadius:'40px', minWidth:'90px'}}>{this.props.days} days</text>
+                </div>
+                
+                <div className='col2'>
+                    <i align='right' onClick={this.remove} class="fa fa-close" style={{fontSize:'30px', color:'#66FCF1'}}></i>
+                </div>
+                
+                <hr align='left' className='dotted'></hr>
+
             </div>
-            
-            <div className='col'>
-                <text style={{color:'white', marginRight:'20px'}} >Duration :</text>
-                <text className='durationText' style={{backgroundColor:'#1b4441ad', padding:'5px', textAlign:'center', border:'2px solid #66FCF1', borderRadius:'40px', minWidth:'90px'}}>{props.days} days</text>
-            </div>
-            
-            <div className='col2'>
-                <i align='right' class="fa fa-close" style={{fontSize:'30px', color:'#66FCF1'}}></i>
-            </div>
-            
+        );
 
-            <hr align='left' className='dotted'></hr>
+    }
 
-        </div>
-    );
+
 }
 
 
@@ -221,8 +250,6 @@ class Simulator extends Component{
                     <Timeseries/>
                 </div>
                 
-                
-
                 
             </div>
         );
