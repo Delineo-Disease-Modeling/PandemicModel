@@ -35,21 +35,15 @@ class OptionMenu extends Component{
         let list = this.state.policyList;
         list.push(policy);
         this.setState({policyList:list});
-        console.log("Item has been removed: "+this.state.policyComponent.length);
     }
 
     save = ()=>{
-<<<<<<< HEAD
         if(this.state.duration != '' && this.state.selectedPolicy != 'Policy'){
             let newPolicy = {
                 policy: this.state.selectedPolicy,
                 duration:this.state.duration,
             }
             this.setState({policyComponent:[...this.state.policyComponent, newPolicy]})
-=======
-        if(this.state.duration !== '' && this.state.selectedPolicy !== 'Policy'){
-            this.setState({policyComponent:[...this.state.policyComponent, <Intervention policy={this.state.selectedPolicy} days={this.state.duration}/>]})
->>>>>>> 2381b4ab1beab676d96ef4afbfadb5e4028d9f8d
             let array = this.state.policyList;
             let pos = array.indexOf(this.state.selectedPolicy); 
             if(pos>-1){
@@ -59,7 +53,7 @@ class OptionMenu extends Component{
         }
     }
  
-
+ 
 
     render(){
         return(
