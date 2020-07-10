@@ -3,10 +3,6 @@ import '../containers/Simulator.css'
 
 class Intervention extends Component{
 
-    constructor(){
-        super(); 
-    }
-
     remove = ()=>{
         this.props.remove(this.props.position, this.props.policy);
     }

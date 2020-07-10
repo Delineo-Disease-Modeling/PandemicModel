@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
-import { County, Timeseries, GoogleMap} from '../components';
+import { County, Timeseries, GoogleMap, Parameters, OptionMenu } from '../components';
 import './Simulator.css'
 import axios from 'axios';
-import Parameters from '../components/ConfigurationParameters.js'
-import OptionMenu from '../components/OptionMenu.js'
 
 
 class Simulator extends Component{
@@ -60,6 +58,13 @@ class Simulator extends Component{
             });
     }
 
+    componentWillUnmount() {
+        // remove existing job request, if it existed
+        if (this.state.jobId) {
+            axios.delete(`./simulations/${this.state.jobId}`)
+                .catch(err => console.log(err) );
+        }
+    }
 
     render(){
         const {data, loading} = this.state;

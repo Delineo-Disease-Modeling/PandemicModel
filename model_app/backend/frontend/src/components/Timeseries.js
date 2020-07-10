@@ -9,7 +9,7 @@ class Timeseries extends Component {
     constructor(props) {
         super(props);
         this.state = {start: "02-25-20", end: "05-03-20"}
-        this.fips = 1001;
+        this.fips = this.props.demographics ? this.props.demographics.FIPS : 1001;
     }
 
     componentDidMount() {

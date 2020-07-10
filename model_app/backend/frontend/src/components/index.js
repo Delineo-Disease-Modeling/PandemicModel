@@ -5,5 +5,8 @@ import LineChart from './LineChart';
 import GoogleMap from './GoogleMap';
 import Header from './Header';
 import Footer from './Footer';
+import Parameters from './ConfigurationParameters';
+import OptionMenu from './OptionMenu';
 
-export { County, AppNavbar, Timeseries, LineChart, GoogleMap, Header, Footer }
+export { County, AppNavbar, Timeseries, LineChart, GoogleMap, Header, Footer,
+Parameters, OptionMenu };

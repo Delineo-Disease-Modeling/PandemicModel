@@ -27,7 +27,7 @@ class OptionMenu extends Component{
 
     deleteItem = (pos, policy)=>{
         
-        this.setState({policyComponent: this.state.policyComponent.filter((item)=> item.policy!= policy)});
+        this.setState({policyComponent: this.state.policyComponent.filter((item)=> item.policy!== policy)});
 
         let list = this.state.policyList;
         list.push(policy);
@@ -35,7 +35,7 @@ class OptionMenu extends Component{
     }
 
     save = ()=>{
-        if(this.state.duration != '' && this.state.selectedPolicy != 'Policy'){
+        if(this.state.duration !== '' && this.state.selectedPolicy !== 'Policy'){
             let newPolicy = {
                 policy: this.state.selectedPolicy,
                 duration:this.state.duration,
