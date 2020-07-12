@@ -17,13 +17,15 @@ function Team(props){
   });
 
   return(
-    <>
-      <Header text='Meet The Team'/>
+     <div className = 'CardBackground'>
+      <div className = 'CardGreenBackground'>
+      <Header text='Meet The Team' />
       <h2 className="header2" >Research Supervisor</h2>
       <SupervisorList list={supervisorList} />
       <h2 className="header2" >Team Leaders</h2>
       <LeaderList list={list}/>
-    </>
+      </div>
+    </div>
   );
 }
 
