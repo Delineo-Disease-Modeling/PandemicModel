@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 
 // SearchBox is a stateless component that handles search box operations like
 // clicking on the box, typing/autocomplete, and most importantly saving the
@@ -21,8 +22,34 @@ class SearchBox extends Component {
 
   // change map view and save the place in redux store (this is addplace method passed from props)
   onPlacesChanged = ({ map, addplace } = this.props) => {
+  	// if we already searched for a place, clear that polygon overlay
+  	if (this.feature) {
+  		map.data.remove(this.feature[0]);
+  	}
+
+  	// update with new searched place
     const selected = this.searchBox.getPlaces();
     const { 0: place } = selected;
+
+    // get polygon boundaries from nominatim api if they exist
+    // don't use place.name since there are multiple counties with same name
+    axios.get(`https://nominatim.openstreetmap.org/search?q=${place.formatted_address}&format=json&addressdetails=1&limit=1&polygon_geojson=1`)
+    	.then(res => {
+    		const { 0: data } = res['data'];
+    		if (data['geojson']) {
+    			this.polygonOverlay(data['geojson']);
+    		}
+    		else {
+    			// another axios request, if polygon boundaries aren't included in nominatim
+    			// use osm relation id we got from nominatim
+    			axios.get(`http://polygons.openstreetmap.fr/get_geojson.py?id=${data['place_id']}&params=0`)
+    				.then(results => this.polygonOverlay(results));
+    		}
+
+    		// probably call addplace here if we want to add osm relation id to redux store
+    	})
+    	.catch(err => console.log(err));
+
     if (!place.geometry) return;
     if (place.geometry.viewport) {
       map.fitBounds(place.geometry.viewport);
@@ -31,9 +58,18 @@ class SearchBox extends Component {
       map.setZoom(17);
     }
 
+    // should probably save to osm relation id to redux store too? see above
     addplace(selected);
     this.searchInput.blur();
   };
+
+  polygonOverlay(geojson) {
+  	let formattedGeojson = geojson;
+  	if (geojson['type'] !== "Feature" && geojson['type']!== "FeatureCollection") {
+  		formattedGeojson = { "type": "Feature", "geometry": geojson, "properties": {} };
+  	}
+  	this.feature = this.props.map.data.addGeoJson(formattedGeojson);
+  }
 
   clearSearchBox() {
     this.searchInput.value = '';
