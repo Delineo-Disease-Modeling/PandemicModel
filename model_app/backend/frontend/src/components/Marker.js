@@ -95,7 +95,7 @@ class Marker extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    place: state.county
+    place: state.place
 });
 
 export default connect(mapStateToProps, null)(Marker);

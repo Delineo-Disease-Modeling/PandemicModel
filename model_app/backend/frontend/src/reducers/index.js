@@ -1,11 +1,11 @@
 // meeting place
 import { combineReducers } from 'redux';
-import countyReducer from "./countyReducer";
+import placeReducer from "./placeReducer";
 import timeseriesReducer from "./timeseriesReducer";
 import demographicsReducer from "./demographicsReducer";
 
 export default combineReducers({
-   county: countyReducer,
+   place: placeReducer,
    demographics: demographicsReducer,
    timeseries: timeseriesReducer
 });

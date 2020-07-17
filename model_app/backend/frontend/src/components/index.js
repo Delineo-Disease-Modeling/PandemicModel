@@ -1,4 +1,4 @@
-import County from './County';
+import Place from './Place';
 import AppNavbar from './AppNavbar';
 import Timeseries from './Timeseries';
 import LineChart from './LineChart';
@@ -8,5 +8,5 @@ import Footer from './Footer';
 import Parameters from './ConfigurationParameters';
 import OptionMenu from './OptionMenu';
 
-export { County, AppNavbar, Timeseries, LineChart, GoogleMap, Header, Footer,
+export { Place, AppNavbar, Timeseries, LineChart, GoogleMap, Header, Footer,
 Parameters, OptionMenu };

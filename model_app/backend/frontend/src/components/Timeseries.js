@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Container } from 'reactstrap';
+import { Container } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getTimeseries } from '../actions/timeseriesActions.js';
 import PropTypes from 'prop-types';

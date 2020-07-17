@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { County, Timeseries, GoogleMap, Parameters, OptionMenu } from '../components';
+import { Place, Timeseries, GoogleMap, Parameters, OptionMenu } from '../components';
 import './Simulator.css'
 import axios from 'axios';
 
@@ -74,7 +74,7 @@ class Simulator extends Component{
 
                 <div className='GreenBackground'>
                     <h3>Map</h3>
-                    <County/>
+                    <Place/>
                     <GoogleMap/> 
                 </div>
 

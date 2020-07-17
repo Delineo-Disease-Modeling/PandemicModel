@@ -2,7 +2,7 @@ import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
 import GoogleMapReact from 'google-map-react';
 import SearchBox from './SearchBox.js';
-import { getCounty } from '../actions/countyActions';
+import { getPlace } from '../actions/placeActions';
 import Marker from './Marker.js';
 import {options} from '../const/placeTypes.js';
 import Checkbox from './Checkbox.js'
@@ -42,7 +42,7 @@ class GoogleMap extends Component {
 
     // Save to redux store
     addPlace = (place) => {
-        this.props.getCounty(place);
+        this.props.getPlace(place);
     };
 
     handleCheckboxChange = changeEvent => {
@@ -83,7 +83,7 @@ class GoogleMap extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    county: state.county
+    place: state.place
 });
 
-export default connect(mapStateToProps, {getCounty})(GoogleMap);
+export default connect(mapStateToProps, {getPlace})(GoogleMap);

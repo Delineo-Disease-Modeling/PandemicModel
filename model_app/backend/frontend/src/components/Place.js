@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import {Container } from 'reactstrap';
+import { Container } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getDemographics } from '../actions/demographicsActions';
 import PropTypes from 'prop-types';
 
-class County extends Component {
+class Place extends Component {
     // initialization (DOM rendered)
     componentDidMount() {
         // initialize with actual data if a search was performed
@@ -64,16 +64,16 @@ class County extends Component {
 }
 
 
-County.propTypes = {
+Place.propTypes = {
     getDemographics: PropTypes.func.isRequired,
     demographics : PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state) => ({
     demographics: state.demographics,
-    place: state.county['address_components']
+    place: state.place['address_components']
 });
 
 // first param of connect: mapStateToProp since state is immutable in Redux Architecture
 // Second param of connect is actions necessary for the component
-export default connect(mapStateToProps, { getDemographics })(County);
+export default connect(mapStateToProps, { getDemographics })(Place);
