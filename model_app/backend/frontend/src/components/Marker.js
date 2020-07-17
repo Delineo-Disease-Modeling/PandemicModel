@@ -38,6 +38,9 @@ class Marker extends Component {
     nearbySearch({ map, mapApi, place } = this.props) {
         this.clearMarkers();
 
+        let areaId = (place['osmType'] === "relation") ? place['osmId']+3600000000 : place['osmId']+2400000000; 
+        console.log(areaId);
+
         options.forEach(option => {
             // initialize search param
             let search = {

@@ -36,17 +36,23 @@ class SearchBox extends Component {
     axios.get(`https://nominatim.openstreetmap.org/search?q=${place.formatted_address}&format=json&addressdetails=1&limit=1&polygon_geojson=1`)
     	.then(res => {
     		const { 0: data } = res['data'];
+
     		if (data['geojson']) {
     			this.polygonOverlay(data['geojson']);
     		}
     		else {
     			// another axios request, if polygon boundaries aren't included in nominatim
-    			// use osm relation id we got from nominatim
-    			axios.get(`http://polygons.openstreetmap.fr/get_geojson.py?id=${data['place_id']}&params=0`)
-    				.then(results => this.polygonOverlay(results));
+    			// use osm id we got from nominatim
+    			axios.get(`http://polygons.openstreetmap.fr/get_geojson.py?id=${data['osm_id']}&params=0`)
+    				.then(results => {
+              this.polygonOverlay(results);
+            });
     		}
 
-    		// probably call addplace here if we want to add osm relation id to redux store
+    		// add osm relation id to redux store so we have access to it for nearby search
+        place['osmId'] = data['osm_id'];
+        place['osmType'] = data['osm_type'];
+        addplace(place);
     	})
     	.catch(err => console.log(err));
 
@@ -58,8 +64,6 @@ class SearchBox extends Component {
       map.setZoom(17);
     }
 
-    // should probably save to osm relation id to redux store too? see above
-    addplace(selected);
     this.searchInput.blur();
   };
 
