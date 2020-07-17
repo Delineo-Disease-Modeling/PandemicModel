@@ -49,12 +49,15 @@ def main():
   sheet_name = 'United States of America'
   level = 'county'
 
-  npop = 1000 # how many people in your population
+  npop = 1132 # how many people in your population
+  num_households = 459
+  num_workplaces = 200
   
-  population = sp.generate_synthetic_population(npop, sp.datadir, location=location, state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
+  population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location, state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
+  print(population)
 
   # initialize params
-  timestep = 100;
+  timestep = 100
   states = ['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead']
   currentState = {key: states[0] for key in range(npop)}
   currentState[0] = 'Mild'
