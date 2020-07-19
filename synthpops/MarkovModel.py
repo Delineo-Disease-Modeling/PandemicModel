@@ -1,6 +1,7 @@
 import synthpops as sp
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 
 def transitionProb(currentState, population, i):
@@ -140,9 +141,9 @@ def main():
     num_households = 459
     num_workplaces = 200
 
-    population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
+    population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, location=location,
                                                              state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
-    print(population)
+    #print(population)
 
     # takes in custom param
     initial_list = get_user_input(npop)
@@ -155,6 +156,19 @@ def main():
     currentState[1] = 'Severe'  # todo
     print(population[0]['contacts'])
     print(population[1]['contacts'])
+
+
+    # set initial state params from initial_list
+    populationKeys = list(population.keys()); 
+    random.shuffle(populationKeys) 
+
+    start = 0
+    for num in range(len(initial_list)): 
+        end = start + initial_list[num]
+        for z in range (start, end): 
+            index = populationKeys[z]
+            currentState[index] = states[num] 
+        start = end
 
     # intialize results list
     results = {}
