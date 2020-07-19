@@ -722,7 +722,7 @@ def generate_workplace_sizes(workplace_size_distr_by_bracket, workplace_size_bra
     prob_by_sorted_brackets = [workplace_size_distr_by_bracket[b] for b in sorted_brackets]
 
     workplace_sizes = []
-    #count_num_workplaces = num_workplaces
+    count_num_workplaces = num_workplaces
 
     while nworkers > 0 and count_num_workplaces > 0:
         size_bracket = np.random.choice(sorted_brackets, p=prob_by_sorted_brackets)

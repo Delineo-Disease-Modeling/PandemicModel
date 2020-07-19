@@ -141,7 +141,7 @@ def main():
     num_households = 459
     num_workplaces = 200
 
-    population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, location=location,
+    population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
                                                              state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
     #print(population)
 
