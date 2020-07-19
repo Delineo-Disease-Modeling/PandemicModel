@@ -9,7 +9,7 @@ print("}, 'schools': {")
 for i in range(3):
     print(str(i) + ":{(" + str(float(decimal.Decimal(random.randrange(3600, 3700)/100))) + "," + str(float(decimal.Decimal(random.randrange(-9700, -9600)/100))) + ")},")
 print("}, 'workplaces': {")
-for i in range(40):
+for i in range(200):
     print(str(i) + ":{(" + str(float(decimal.Decimal(random.randrange(3600, 3700)/100))) + "," + str(float(decimal.Decimal(random.randrange(-9700, -9600)/100))) + ")},")
 print("}, 'restaurants': {")
 for i in range(10):

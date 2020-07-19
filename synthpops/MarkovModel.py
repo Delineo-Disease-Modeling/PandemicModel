@@ -22,7 +22,7 @@ def transitionProb(currentState, population, i):
   # for now no beta bc it decreases the probability by way too much i think
   # also this is totally wrong bc i normalized probabilities with #contacts which for sure is not right
   if (totContactLayer):
-    a = sum(s[k] for k in ['H', 'S', 'W'])/totContactLayer#*beta[k]
+    a = sum(s[k] for k in ['H', 'S', 'W'])/totContactLayer#*beta[k] 
   
   if (a > 1):
     raise Exception('probability>1')
@@ -54,7 +54,6 @@ def main():
   num_workplaces = 200
   
   population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location, state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
-  print(population)
 
   # initialize params
   timestep = 100

@@ -61,7 +61,7 @@ def generate_fixed_household_size_fixed_pop_size(N, Nhomes, hh_size_distr):
     #check difference between generated population size and actual population size. 
     people_to_add_or_remove = totalpop - N
 
-    print(str(totalpop) + " people and " + str(num_households) + " households initially created. Off by " + str(people_to_add_or_remove))
+    print("\n" + str(totalpop) + " people and " + str(num_households) + " households initially created. Off by " + str(people_to_add_or_remove))
 
     # create lists of household sizes and respective probabilities from hh distribution
     hh_size_keys = [k for k in hh_size_distr]
@@ -125,7 +125,7 @@ def generate_fixed_household_size_fixed_pop_size(N, Nhomes, hh_size_distr):
     for i in range(0, len(hh_sizes)):
         totalpop = totalpop + hh_sizes[i] * (i + 1)
         num_households = num_households + hh_sizes[i]
-    print(str(totalpop) + " people and " + str(num_households) + " households created after reshuffling.")
+    print(str(totalpop) + " people and " + str(num_households) + " households created after reshuffling.\n")
     return hh_sizes
 
 
@@ -701,7 +701,7 @@ def get_uids_potential_workers(syn_school_uids, employment_rates, age_by_uid_dic
     return potential_worker_uids, potential_worker_uids_by_age, potential_worker_ages_left_count
 
 
-def generate_workplace_sizes(workplace_size_distr_by_bracket, workplace_size_brackets, workers_by_age_to_assign_count):
+def generate_workplace_sizes(workplace_size_distr_by_bracket, workplace_size_brackets, workers_by_age_to_assign_count, num_workplaces):
     """
     Given a number of individuals employed, generate a list of workplace sizes to place everyone in a workplace.
 
@@ -722,15 +722,27 @@ def generate_workplace_sizes(workplace_size_distr_by_bracket, workplace_size_bra
     prob_by_sorted_brackets = [workplace_size_distr_by_bracket[b] for b in sorted_brackets]
 
     workplace_sizes = []
+    #count_num_workplaces = num_workplaces
 
-    while nworkers > 0:
+    while nworkers > 0 and count_num_workplaces > 0:
         size_bracket = np.random.choice(sorted_brackets, p=prob_by_sorted_brackets)
         size = np.random.choice(workplace_size_brackets[size_bracket])
         nworkers -= size
         workplace_sizes.append(size)
+        #count_num_workplaces -= 1
     if nworkers < 0:
         workplace_sizes[-1] = workplace_sizes[-1] + nworkers
+    """
+    print(str(len(workplace_sizes)) + " workplaces initially created and " + str(nworkers) + " people leftover.")
+    # if overflow of workers, add one to each workplace
+    if nworkers > 0:
+        for i in range(nworkers):
+            workplace_sizes[i % num_workplaces] += 1
+    # if too many empty workplaces, add people to them
+    elif count_num_workplaces > 0:
+    """
     np.random.shuffle(workplace_sizes)
+
     return workplace_sizes
 
 
@@ -1057,7 +1069,7 @@ def write_workplaces_by_age_and_uid(datadir, location, state_location, country_l
     fh_uid.close()
 
 
-def generate_synthetic_population(n, datadir, num_households, location='seattle_metro', state_location='Washington', country_location='usa', sheet_name='United States of America', school_enrollment_counts_available=False, verbose=False, plot=False, write=False, return_popdict=False, use_default=False):
+def generate_synthetic_population(n, datadir, num_households, num_workplaces, location='seattle_metro', state_location='Washington', country_location='usa', sheet_name='United States of America', school_enrollment_counts_available=False, verbose=False, plot=False, write=False, return_popdict=False, use_default=False):
     """
     Wrapper function that calls other functions to generate a full population with their contacts in the household, school, and workplace layers,
     and then writes this population to appropriate files.
@@ -1203,7 +1215,7 @@ def generate_synthetic_population(n, datadir, num_households, location='seattle_
     # Generate non-school workplace sizes needed to send everyone to work
     workplace_size_brackets = spdata.get_workplace_size_brackets(datadir, state_location=state_location, country_location=country_location, use_default=use_default)
     workplace_size_distr_by_brackets = spdata.get_workplace_size_distr_by_brackets(datadir, state_location=state_location, country_location=country_location, use_default=use_default)
-    workplace_sizes = generate_workplace_sizes(workplace_size_distr_by_brackets, workplace_size_brackets, workers_by_age_to_assign_count)
+    workplace_sizes = generate_workplace_sizes(workplace_size_distr_by_brackets, workplace_size_brackets, workers_by_age_to_assign_count, num_workplaces)
 
     verbose = False
     if verbose:
