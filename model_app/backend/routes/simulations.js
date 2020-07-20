@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
 
 			// data exchange between node.js and python file
 			// refer to: https://github.com/extrabacon/python-shell
-			PythonShell.run('main.py', options, (err, results) => {
+			PythonShell.run('MarkovModel.py', options, (err, results) => {
 				if (err)
 					throw err;
 				// Results is an array consisting of messages collected during execution

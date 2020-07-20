@@ -1048,7 +1048,7 @@ def write_workplaces_by_age_and_uid(datadir, location, state_location, country_l
         None
     """
     file_path = os.path.join(datadir, 'demographics', 'contact_matrices_152_countries', country_location, state_location, 'contact_networks')
-    os.makedirs(file_path, exist_ok=True)
+    os.makedirs(file_path, exist_ok=False) # don't print file location
     workplaces_by_age_path = os.path.join(file_path, location + '_' + str(n) + '_synthetic_workplaces_with_ages.dat')
     workplaces_by_uid_path = os.path.join(file_path, location + '_' + str(n) + '_synthetic_workplaces_with_uids.dat')
 
