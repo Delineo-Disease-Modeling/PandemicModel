@@ -1,17 +1,20 @@
 import synthpops as sp
-import json
+import json 
 
 # Meant to intialize a "county" of cities 
 class masterController():
 
   data = [] #list of dictionaries
   cities = {} #dictionary to store initialized city objects
+  households = {} #dictionary to store household locations 
+  dict = {} #all submodules
 
-  def __init__(self, filename):
+  def __init__(self, filename, dictname):
     # Reads in json file and stores the data in the data instance variable
     jsonfile = open(filename, 'r')
     jsondata = jsonfile.read()
     self.data = json.loads(jsondata)
+    self.dict = eval(open(dictname).read())
 
   def initializeCities(self):
     # For each city in the data
@@ -29,6 +32,7 @@ class masterController():
   def printData(self):
     print(self.data)
     print(self.cities)
+    print(self.dict)
 
 
 class city(masterController):
@@ -50,7 +54,6 @@ class city(masterController):
     for i in range(3):
       self.submodules.append(subModule("submodule data", "filler_type"))
     #print(self.submodules)
-
 
   # TODO
   def initializeHouseholds(self):
@@ -76,14 +79,12 @@ class household(city):
   def __init__(self, data):
     self.householdData = data
 
-def main():   
+def main():           
   # exercise the class methods
-  # this script is running in backend, not backend/synthpops
-  mc = masterController('synthpops/file.json')
+  mc = masterController("file.json", "dict.txt")
   mc.initializeCities()
 
   #mc.printData()
-  #print("HERE")
   sp.validate()
 
   datadir = sp.datadir # this should be where your demographics data folder resides
@@ -94,11 +95,21 @@ def main():
   sheet_name = 'United States of America'
   level = 'county'
 
-  npop = 10000 # how many people in your population
-  
-  population = sp.generate_synthetic_population(npop, sp.datadir, location=location, state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
-  #print(population)
-  print("Population Created")
+  num_households = 459
+  npop = 1132
+  num_workplaces = 200
+
+  pop, homes_dic = sp.generate_synthetic_population(npop,datadir, num_households, num_workplaces, location=location, state_location=state_location,country_location=country_location,
+  sheet_name=sheet_name, return_popdict=True)
+
+  #print(pop) #uncomment to print population dictionary
+  #print(homes_dic) #uncomment to print households of every size
+  num_households = 0
+  num_pop = 0
+  for i in range(1,len(homes_dic) + 1):
+    num_households = num_households + len(homes_dic[i])
+    num_pop = num_pop + len(homes_dic[i]) * i
+  print("Population Created, total " + str(num_pop) + " people, " + str(num_households) + " households")
 
 
 class node():
@@ -114,7 +125,6 @@ class node():
   def createSubModule(self):
     self.subModule = subModule("submodule data", "filler_type")
   
-
 
 """
 class graph():
