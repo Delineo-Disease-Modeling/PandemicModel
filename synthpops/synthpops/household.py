@@ -16,7 +16,6 @@ def generate_household_dictionary(contacts):
     household_dict = {}
 
     for key in contacts.keys():
-        person_index = key
         hhid = contacts[key]['hhid']
         if hhid not in household_dict.keys():
             household_dict[hhid] = [key]
