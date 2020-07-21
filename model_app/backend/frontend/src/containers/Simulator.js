@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import { Place, Timeseries, GoogleMap, Parameters, OptionMenu } from '../components';
+import { Place, GoogleMap, Parameters, OptionMenu, SimulationTimeseries } from '../components';
 import './Simulator.css'
 import axios from 'axios';
 
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
 
 class Simulator extends Component{
 
@@ -11,41 +13,48 @@ class Simulator extends Component{
         this.state={
             hidden:false,
             policy:'',
+            data: [],
             loading: false,
-            data: '',
             jobId: null
-        }
+        };
+        this._isMounted = false;
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
     }
 
     handleOnClick = () => {
         // if user had an existing job request, delete that 
         if (this.state.jobId) {
-            axios.delete(`./simulations/${this.state.jobId}`)
-                .catch(err => console.log(err) );
+            axios.delete(`./simulations/${this.state.jobId}`, {cancelToken: source.token})
+            .catch(err => {
+                    if (axios.isCancel(err)) {
+                        console.log('Request canceled', err.message);
+                    } else { console.log(err) }
+                });
         }
 
         // configure post body with specific model params
         let body = {};
 
         // send post request
-        axios.post('./simulations', body)
+        axios.post('./simulations', body, { cancelToken: source.token })
             .then(res => {
                 // only upon successful post request, update state with in progress state and 
                 if (res.status === 200) {
-                    this.setState({jobId: `${res.data}`, loading: true});
+                    this._isMounted && this.setState({jobId: `${res.data}`, loading: true});
                     console.log('post sent with job id ' + res.data);
 
-                    axios.get(`./simulations/${res.data}`)
+                    axios.get(`./simulations/${res.data}`, {cancelToken: source.token})
                         .then(result => {
-                            this.setState({
-                                loading: false,
-                                data: [...result.data],
-                            });
-
+                            this._isMounted && this.setState({ loading: false, data: [...result.data] });
                             console.log('simulation finished running');
                         })
                         .catch(err => {
-                            console.log(err);
+                            if (axios.isCancel(err)) {
+                                console.log('Request canceled', err.message);
+                            } else { console.log(err) }
                         });
 
                     // should probably save data to redux store
@@ -53,12 +62,16 @@ class Simulator extends Component{
                 }
             })
             .catch(err => {
-                console.log(err);
-                throw err;
+                if (axios.isCancel(err)) {
+                    console.log('Request canceled', err.message);
+                } else { console.log(err) }
             });
     }
 
     componentWillUnmount() {
+        this._isMounted = false;
+        source.cancel('Operation canceled by the user.');
+
         // remove existing job request, if it existed
         if (this.state.jobId) {
             axios.delete(`./simulations/${this.state.jobId}`)
@@ -67,8 +80,9 @@ class Simulator extends Component{
     }
 
     render(){
-        const {data, loading} = this.state;
+        const {data, jobId, loading} = this.state;
 
+        // no timeseries: replace with simulation timeseries
         return(
             <div className='CardBackground'>
 
@@ -92,14 +106,12 @@ class Simulator extends Component{
 
                 </div>
                 
-                {loading ? <p>loading...</p> :
+                {jobId ? (loading ? <p>loading...</p> :
                 <div className='GreenBackground'>
                     <h3>Analysis</h3>
-                    <p>{data}</p>
-                    <Timeseries/>
-                </div>
-                }
-                
+                    <SimulationTimeseries infected={data[1]} deaths={data[2]}/>
+                </div>)
+                 : null}
             </div>
         );
 

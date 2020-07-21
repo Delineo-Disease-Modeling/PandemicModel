@@ -18,23 +18,41 @@ class LineChart extends Component {
 
     createLineChart() {
         const node = this.node;
-        const data = this.props.data;
+        let data = this.props.data;
         const width = this.props.width;
         const height = this.props.height;
         const margin = ({top: 20, right: 20, bottom: 30, left: 30});
 
-        const x = (data[0] && data[0].date) ? d3.scaleUtc()
-            .domain(d3.extent(data, d => d.date))
-            .range([margin.left, width - margin.right])
-            : d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.key)])
-            .range([margin.left, width - margin.right]);
-        const y = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.value)]).nice()
-            .range([height - margin.bottom, margin.top]);
-        const line = d3.line()
-            .x(d => x(d.date))
-            .y(d => y(d.value));
+        let x = () => {};
+        let y = () => {};
+        let line = () => {};
+
+        // this is for timeseries
+        if (data instanceof Object) {
+            x = d3.scaleUtc()
+                .domain(d3.extent(data, d => d.date))
+                .range([margin.left, width - margin.right]);
+            y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.value)]).nice()
+                .range([height - margin.bottom, margin.top]);
+            line = d3.line()
+                .x(d => x(d.date))
+                .y(d => y(d.value));
+
+        }
+        else { // this is for simulationTimeseries
+            // convert data from string to array
+            data = data.substring(1, data.length-1).replace(/ /g, '').split(',').map(Number);
+            x = d3.scaleLinear()
+                .domain([0, data.length])
+                .range([margin.left, width - margin.right]);
+            y = d3.scaleLinear()
+                .domain(d3.extent(data)).nice()
+                .range([height - margin.bottom, margin.top]);
+            line = d3.line()
+                .x((d,i) => x(i))
+                .y(d => y(d));
+        };
 
         const xAxis = g => 
             g.attr("transform", `translate(0,${height - margin.bottom})`)

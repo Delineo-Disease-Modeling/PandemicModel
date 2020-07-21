@@ -20,6 +20,7 @@ from . import data_distributions as spdata
 from . import sampling as spsamp
 from . import contacts as spct
 
+from sys import stderr #print everything to stderr except for results
 
 def generate_household_sizes(Nhomes, hh_size_distr):
     """
@@ -61,7 +62,7 @@ def generate_fixed_household_size_fixed_pop_size(N, Nhomes, hh_size_distr):
     #check difference between generated population size and actual population size. 
     people_to_add_or_remove = totalpop - N
 
-    print("\n" + str(totalpop) + " people and " + str(num_households) + " households initially created. Off by " + str(people_to_add_or_remove))
+    print("\n" + str(totalpop) + " people and " + str(num_households) + " households initially created. Off by " + str(people_to_add_or_remove), file=stderr)
 
     # create lists of household sizes and respective probabilities from hh distribution
     hh_size_keys = [k for k in hh_size_distr]
@@ -73,7 +74,7 @@ def generate_fixed_household_size_fixed_pop_size(N, Nhomes, hh_size_distr):
     #if not enough people were created
     if people_to_add_or_remove < 0:
         people_to_add = people_to_add_or_remove * -1
-        print("Initial household distribution:" + str(hh_sizes))
+        print("Initial household distribution:" + str(hh_sizes), file=stderr)
 
         #list with household sizes that should not be increased
         temp = [1]
@@ -97,7 +98,7 @@ def generate_fixed_household_size_fixed_pop_size(N, Nhomes, hh_size_distr):
     # if there are too many people
     elif people_to_add_or_remove > 0:
         people_to_remove = people_to_add_or_remove
-        print("Initial household distribution: " + str(hh_sizes))
+        print("Initial household distribution: " + str(hh_sizes), file=stderr)
 
         #list with household sizes that should not be increased
         temp = [len(hh_sizes)]
@@ -116,7 +117,7 @@ def generate_fixed_household_size_fixed_pop_size(N, Nhomes, hh_size_distr):
             hh_sizes[j - 1] = hh_sizes[j - 1] + 1
             hh_sizes[j] = hh_sizes[j] - 1
 
-    print("Final household distribution:  " + str(hh_sizes))
+    print("Final household distribution:  " + str(hh_sizes), file=stderr)
     hh_sizes = hh_sizes.astype(int) 
 
     #testing purposes only
@@ -125,7 +126,7 @@ def generate_fixed_household_size_fixed_pop_size(N, Nhomes, hh_size_distr):
     for i in range(0, len(hh_sizes)):
         totalpop = totalpop + hh_sizes[i] * (i + 1)
         num_households = num_households + hh_sizes[i]
-    print(str(totalpop) + " people and " + str(num_households) + " households created after reshuffling.\n")
+    print(str(totalpop) + " people and " + str(num_households) + " households created after reshuffling.\n", file=stderr)
     return hh_sizes
 
 
@@ -378,7 +379,7 @@ def write_homes_by_age_and_uid(datadir, location, state_location, country_locati
         None
     """
     file_path = os.path.join(datadir, 'demographics', 'contact_matrices_152_countries', country_location, state_location, 'contact_networks')
-    os.makedirs(file_path, exist_ok=True)
+    os.makedirs(file_path, exist_ok=False)
 
     households_by_age_path = os.path.join(file_path, location + '_' + str(len(age_by_uid_dic)) + '_synthetic_households_with_ages.dat')
     households_by_uid_path = os.path.join(file_path, location + '_' + str(len(age_by_uid_dic)) + '_synthetic_households_with_uids.dat')
@@ -1012,7 +1013,7 @@ def write_schools_by_age_and_uid(datadir, location, state_location, country_loca
         None
     """
     file_path = os.path.join(datadir, 'demographics', 'contact_matrices_152_countries', country_location, state_location, 'contact_networks')
-    os.makedirs(file_path, exist_ok=True)
+    os.makedirs(file_path, exist_ok=False)
     schools_by_age_path = os.path.join(file_path, location + '_' + str(n) + '_synthetic_schools_with_ages.dat')
     schools_by_uid_path = os.path.join(file_path, location + '_' + str(n) + '_synthetic_schools_with_uids.dat')
 

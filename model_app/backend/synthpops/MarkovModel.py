@@ -157,20 +157,17 @@ def main():
     #print(population[0]['contacts'])
     #print(population[1]['contacts'])
 
+    # # set initial state params from initial_list
+    # populationKeys = list(population.keys()); 
+    # random.shuffle(populationKeys) 
 
-    # set initial state params from initial_list
-    populationKeys = list(population.keys()); 
-    random.shuffle(populationKeys) 
-
-"""
-    start = 0
-    for num in range(len(initial_list)): 
-        end = start + initial_list[num]
-        for z in range (start, end): 
-            index = populationKeys[z]
-            currentState[index] = states[num] 
-        start = end
-        """
+    # start = 0
+    # for num in range(len(initial_list)): 
+    #     end = start + initial_list[num]
+    #     for z in range (start, end): 
+    #         index = populationKeys[z]
+    #         currentState[index] = states[num] 
+    #     start = end
 
     # intialize results list
     results = {}
