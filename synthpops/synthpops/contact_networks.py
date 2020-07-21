@@ -9,6 +9,7 @@ from collections import Counter
 import sciris as sc
 import numpy as np
 import pandas as pd
+import operator as op
 
 import matplotlib as mplt
 import matplotlib.pyplot as plt
@@ -33,6 +34,98 @@ def generate_household_sizes(Nhomes, hh_size_distr):
     """
     max_size = max(hh_size_distr.keys())
     hh_sizes = np.random.multinomial(Nhomes, [hh_size_distr[s] for s in range(1, max_size+1)], size=1)[0]
+    return hh_sizes
+
+def generate_fixed_household_size_fixed_pop_size(N, Nhomes, hh_size_distr):
+    """
+    Given a number of homes and a household size distribution, generate the number of homes of each size. Then, correct to match a fixed population size.
+
+    Args:
+        N   (int)            : The number of people in the population.
+        Nhomes (int)         : The number of homes.
+        hh_size_distr (dict) : The distribution of household sizes.
+
+    Returns:
+        An array with the count of households of size s at index s-1.
+    """
+    #create population from household sizes
+    hh_sizes = generate_household_sizes(Nhomes, hh_size_distr)
+
+    #testing purposes only
+    totalpop = 0
+    num_households = 0
+    for i in range(0, len(hh_sizes)):
+        totalpop = totalpop + hh_sizes[i] * (i + 1)
+        num_households = num_households + hh_sizes[i]
+    
+    #check difference between generated population size and actual population size. 
+    people_to_add_or_remove = totalpop - N
+
+    print("\n" + str(totalpop) + " people and " + str(num_households) + " households initially created. Off by " + str(people_to_add_or_remove))
+
+    # create lists of household sizes and respective probabilities from hh distribution
+    hh_size_keys = [k for k in hh_size_distr]
+    hh_size_distr_array = [hh_size_distr[k] for k in hh_size_keys]
+
+    #copy original hosuehold size distribution for future checking
+    hh_sizes_orig = deepcopy(hh_sizes)
+
+    #if not enough people were created
+    if people_to_add_or_remove < 0:
+        people_to_add = people_to_add_or_remove * -1
+        print("Initial household distribution:" + str(hh_sizes))
+
+        #list with household sizes that should not be increased
+        temp = [1]
+
+        for i in range(int(people_to_add)):
+            #make sure that all of the household sizes have an adequate number of households (should not decrease by more than half. This prevents negative values)
+            #based on Seattle's household distribution, the majority of households will be removed from single person households.
+            #TODO: see if other household distributions follow similar pattern; change temp[] list contents if not
+            j = 1
+            if (hh_sizes_orig[len(temp) - 1] / 2) > hh_sizes[len(temp) - 1]:
+                temp.append(len(temp) + 1)
+
+            #choose a random household size based on household distribution probabilities. Does not include sizes in temp list
+            while j in temp:
+                j = np.random.choice(hh_size_keys, p=hh_size_distr_array)
+
+            #add one more household to size j and remove one household to size j - 1; this adds one person to the population
+            hh_sizes[j - 1] = hh_sizes[j - 1] + 1
+            hh_sizes[j - 2] = hh_sizes[j - 2] - 1
+
+    # if there are too many people
+    elif people_to_add_or_remove > 0:
+        people_to_remove = people_to_add_or_remove
+        print("Initial household distribution: " + str(hh_sizes))
+
+        #list with household sizes that should not be increased
+        temp = [len(hh_sizes)]
+
+        for i in range(int(people_to_remove)):
+            #make sure that all of the household sizes have an adequate number of households (should not decrease by more than half. This prevents negative values)
+            j = len(hh_size_distr)
+            if (hh_sizes_orig[len(hh_sizes) - len(temp)] / 2) > hh_sizes[len(hh_sizes) - len(temp)]:
+                temp.append(len(hh_sizes) - len(temp))
+
+            #choose a random household size based on household distribution probabilities. Does not include sizes in temp list
+            while j in temp:
+                j = np.random.choice(hh_size_keys, p=hh_size_distr_array)
+            
+            #add one more household to size j - 1 and remove one household to size j; this removes one person from the population
+            hh_sizes[j - 1] = hh_sizes[j - 1] + 1
+            hh_sizes[j] = hh_sizes[j] - 1
+
+    print("Final household distribution:  " + str(hh_sizes))
+    hh_sizes = hh_sizes.astype(int) 
+
+    #testing purposes only
+    totalpop = 0
+    num_households = 0
+    for i in range(0, len(hh_sizes)):
+        totalpop = totalpop + hh_sizes[i] * (i + 1)
+        num_households = num_households + hh_sizes[i]
+    print(str(totalpop) + " people and " + str(num_households) + " households created after reshuffling.\n")
     return hh_sizes
 
 
@@ -63,6 +156,7 @@ def generate_household_sizes_from_fixed_pop_size(N, hh_size_distr):
     # did not create household sizes to match or exceed the population size so add count for households needed
     hh_size_keys = [k for k in hh_size_distr]
     hh_size_distr_array = [hh_size_distr[k] for k in hh_size_keys]
+    #if there aren't enough people in the population
     if people_to_add_or_remove < 0:
 
         people_to_add = -people_to_add_or_remove
@@ -607,7 +701,7 @@ def get_uids_potential_workers(syn_school_uids, employment_rates, age_by_uid_dic
     return potential_worker_uids, potential_worker_uids_by_age, potential_worker_ages_left_count
 
 
-def generate_workplace_sizes(workplace_size_distr_by_bracket, workplace_size_brackets, workers_by_age_to_assign_count):
+def generate_workplace_sizes(workplace_size_distr_by_bracket, workplace_size_brackets, workers_by_age_to_assign_count, num_workplaces):
     """
     Given a number of individuals employed, generate a list of workplace sizes to place everyone in a workplace.
 
@@ -628,15 +722,27 @@ def generate_workplace_sizes(workplace_size_distr_by_bracket, workplace_size_bra
     prob_by_sorted_brackets = [workplace_size_distr_by_bracket[b] for b in sorted_brackets]
 
     workplace_sizes = []
+    count_num_workplaces = num_workplaces
 
-    while nworkers > 0:
+    while nworkers > 0 and count_num_workplaces > 0:
         size_bracket = np.random.choice(sorted_brackets, p=prob_by_sorted_brackets)
         size = np.random.choice(workplace_size_brackets[size_bracket])
         nworkers -= size
         workplace_sizes.append(size)
+        #count_num_workplaces -= 1
     if nworkers < 0:
         workplace_sizes[-1] = workplace_sizes[-1] + nworkers
+    """
+    print(str(len(workplace_sizes)) + " workplaces initially created and " + str(nworkers) + " people leftover.")
+    # if overflow of workers, add one to each workplace
+    if nworkers > 0:
+        for i in range(nworkers):
+            workplace_sizes[i % num_workplaces] += 1
+    # if too many empty workplaces, add people to them
+    elif count_num_workplaces > 0:
+    """
     np.random.shuffle(workplace_sizes)
+
     return workplace_sizes
 
 
@@ -963,7 +1069,7 @@ def write_workplaces_by_age_and_uid(datadir, location, state_location, country_l
     fh_uid.close()
 
 
-def generate_synthetic_population(n, datadir, location='seattle_metro', state_location='Washington', country_location='usa', sheet_name='United States of America', school_enrollment_counts_available=False, verbose=False, plot=False, write=False, return_popdict=False, use_default=False):
+def generate_synthetic_population(n, datadir, num_households, num_workplaces, location='seattle_metro', state_location='Washington', country_location='usa', sheet_name='United States of America', school_enrollment_counts_available=False, verbose=False, plot=False, write=False, return_popdict=False, use_default=False):
     """
     Wrapper function that calls other functions to generate a full population with their contacts in the household, school, and workplace layers,
     and then writes this population to appropriate files.
@@ -1041,7 +1147,9 @@ def generate_synthetic_population(n, datadir, location='seattle_metro', state_lo
         syn_age_distr[syn_age_keys[i]] = syn_age_distr_unordered[syn_age_keys[i]]
 
     # actual household sizes
-    hh_sizes = generate_household_sizes_from_fixed_pop_size(n, household_size_distr)
+    #hh_sizes = generate_household_sizes_from_fixed_pop_size(n, household_size_distr)
+    #hh_sizes = generate_household_sizes(num_households, household_size_distr)
+    hh_sizes = generate_fixed_household_size_fixed_pop_size(n, num_households, household_size_distr)
     totalpop = get_totalpopsize_from_household_sizes(hh_sizes)
 
     hha_brackets = spdata.get_head_age_brackets(datadir, country_location=country_location, use_default=use_default)
@@ -1107,7 +1215,7 @@ def generate_synthetic_population(n, datadir, location='seattle_metro', state_lo
     # Generate non-school workplace sizes needed to send everyone to work
     workplace_size_brackets = spdata.get_workplace_size_brackets(datadir, state_location=state_location, country_location=country_location, use_default=use_default)
     workplace_size_distr_by_brackets = spdata.get_workplace_size_distr_by_brackets(datadir, state_location=state_location, country_location=country_location, use_default=use_default)
-    workplace_sizes = generate_workplace_sizes(workplace_size_distr_by_brackets, workplace_size_brackets, workers_by_age_to_assign_count)
+    workplace_sizes = generate_workplace_sizes(workplace_size_distr_by_brackets, workplace_size_brackets, workers_by_age_to_assign_count, num_workplaces)
 
     verbose = False
     if verbose:
@@ -1136,4 +1244,4 @@ def generate_synthetic_population(n, datadir, location='seattle_metro', state_lo
 
     if return_popdict:
         popdict = spct.make_contacts_from_microstructure_objects(age_by_uid_dic, homes_by_uids, gen_school_uids, gen_workplace_uids)
-        return popdict
+        return popdict, homes_dic
