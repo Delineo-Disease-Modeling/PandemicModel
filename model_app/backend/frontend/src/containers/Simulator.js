@@ -3,8 +3,8 @@ import { Place, GoogleMap, Parameters, OptionMenu, SimulationTimeseries } from '
 import './Simulator.css'
 import axios from 'axios';
 
-const CancelToken = axios.CancelToken;
-const source = CancelToken.source();
+//const CancelToken = axios.CancelToken;
+//const source = CancelToken.source();
 
 class Simulator extends Component{
 
@@ -22,12 +22,13 @@ class Simulator extends Component{
 
     componentDidMount() {
         this._isMounted = true;
+        this.source = axios.CancelToken.source();
     }
 
     handleOnClick = () => {
         // if user had an existing job request, delete that 
         if (this.state.jobId) {
-            axios.delete(`./simulations/${this.state.jobId}`, {cancelToken: source.token})
+            axios.delete(`./simulations/${this.state.jobId}`, {cancelToken: this.source.token})
             .catch(err => {
                     if (axios.isCancel(err)) {
                         console.log('Request canceled', err.message);
@@ -39,14 +40,14 @@ class Simulator extends Component{
         let body = {};
 
         // send post request
-        axios.post('./simulations', body, { cancelToken: source.token })
+        axios.post('./simulations', body, { cancelToken: this.source.token })
             .then(res => {
                 // only upon successful post request, update state with in progress state and 
                 if (res.status === 200) {
                     this._isMounted && this.setState({jobId: `${res.data}`, loading: true});
                     console.log('post sent with job id ' + res.data);
 
-                    axios.get(`./simulations/${res.data}`, {cancelToken: source.token})
+                    axios.get(`./simulations/${res.data}`, {cancelToken: this.source.token})
                         .then(result => {
                             this._isMounted && this.setState({ loading: false, data: [...result.data] });
                             console.log('simulation finished running');
@@ -70,7 +71,7 @@ class Simulator extends Component{
 
     componentWillUnmount() {
         this._isMounted = false;
-        source.cancel('Operation canceled by the user.');
+        this.source.cancel('Operation canceled by the user.');
 
         // remove existing job request, if it existed
         if (this.state.jobId) {

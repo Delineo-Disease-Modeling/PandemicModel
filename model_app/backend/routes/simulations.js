@@ -37,16 +37,20 @@ router.post('/', (req, res) => {
 
 			// data exchange between node.js and python file
 			// refer to: https://github.com/extrabacon/python-shell
-			PythonShell.run('MarkovModel.py', options, (err, results) => {
+			let pyshell = PythonShell.run('MarkovModel.py', options, (err, results) => {
 				if (err)
 					throw err;
 				// Results is an array consisting of messages collected during execution
 				Simulations.findById(jobId, (error, id) => {
 					if (error)
 						throw error;
-					id.Status = "complete";
-					id.Results = results;
-					id.save(e => {if (e) throw e;});
+					else if (!id)
+						console.log(`Error: No simulation request with id ${id}`);
+					else {
+						id.Status = "complete";
+						id.Results = results;
+						id.save(e => {if (e) throw e;});
+					}
 				});
 				em.emit(jobId);
 				//console.log('saved results to db');
@@ -82,7 +86,7 @@ router.delete('/:id', (req, res) => {
 		if (error)
 			return next(error)
 		res.send(results)
-	})
+	});
 })
 
 module.exports = router
