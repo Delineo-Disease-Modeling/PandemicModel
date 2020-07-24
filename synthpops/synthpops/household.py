@@ -4,16 +4,16 @@ import numpy as np
 
 def generate_household_dictionary(contacts):
     """
-    Given a dictionary of contacts of a person derived from generate_synthetic_populaton, 
+    Given a dictionary of contacts of a person derived from generate_synthetic_populaton,
     generate a household_dict.
 
     Args:
         contacts(dict) : The contact dictionary
 
     Returns:
-        a household dict of  {household_index: 
-                                {'member_list': [member_list], 
-                                'socio-econ': -1, 
+        a household dict of  {household_index:
+                                {'member_list': [member_list],
+                                'socio-econ': -1,
                                 location: '',
                                 size: xxxx}
                             }
@@ -113,6 +113,9 @@ def make_socio_econ_status(hhdict, npop, lowest=.59, middle=.32, high=.08, highe
         while (remaining_dict[se_class] > 0):  # this makes each category slightly over
             se_dict[se_class].append(household_dict[hhid])
             remaining_dict[se_class] -= household_dict[hhid]['size']
+            household_dict[hhid]['socio-econ'] = se_class
+            # for member in household[hhid]['member_list']:
+                # member['socio-econ'] = se_class                            ### commented out first because this field may not have been created when creating people
             hhid += 1
             if hhid == len(household_dict):
                 break
@@ -131,4 +134,8 @@ def make_socio_econ_status(hhdict, npop, lowest=.59, middle=.32, high=.08, highe
                     se_dict['se_highest'].append(hh)
                     remaining_dict[se_class] += hh['size']
                     remaining_dict['se_highest'] -= hh['size']
+                    hh['socio-econ'] = 'se_highest'
+                    # for member in household[hhid]['member_list']:
+                        # member['socio-econ'] = se_class                            ### commented out first because this field may not have been created when creating people
+
                     break
