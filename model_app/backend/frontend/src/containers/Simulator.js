@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
-import { Place, GoogleMap, Parameters, OptionMenu, SimulationTimeseries } from '../components';
+import { Place, Timeseries, GoogleMap, Parameters, OptionMenu, SimulationTimeseries } from '../components';
 import './Simulator.css'
 import axios from 'axios';
-
-//const CancelToken = axios.CancelToken;
-//const source = CancelToken.source();
 
 class Simulator extends Component{
 
@@ -104,7 +101,7 @@ class Simulator extends Component{
                     
                     <br></br>
                     <button className='button' onClick={this.handleOnClick}>Run Simulation</button>
-
+<div><Timeseries/></div>
                 </div>
                 
                 {jobId ? (loading ? <p>loading...</p> :
