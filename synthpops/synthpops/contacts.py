@@ -104,6 +104,8 @@ def make_popdict(n=None, uids=None, ages=None, sexes=None, location=None, state_
         popdict[uid]['sex'] = sexes[i]
         popdict[uid]['loc'] = None
         popdict[uid]['contacts'] = {'M': set()}
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
 
     return popdict
 
@@ -804,6 +806,8 @@ def make_contacts_from_microstructure(datadir, location, state_location, country
         popdict[uid]['scid'] = -1
         popdict[uid]['wpid'] = -1
         popdict[uid]['wpindcode'] = -1
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
         for k in ['H', 'S', 'W', 'C']:
             popdict[uid]['contacts'][k] = set()
 
@@ -892,8 +896,8 @@ def make_contacts_from_microstructure_objects(age_by_uid_dic, homes_by_uids, sch
         popdict[uid]['scid'] = -1
         popdict[uid]['wpid'] = -1
         popdict[uid]['wpindcode'] = -1
-        # updated
-        popdict[uid]['socio_econ'] = -1
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
         for k in ['H', 'S', 'W', 'C']:
             popdict[uid]['contacts'][k] = set()
 
@@ -976,6 +980,8 @@ def make_contacts_with_facilities_from_microstructure(datadir, location, state_l
         popdict[uid]['scid'] = -1
         popdict[uid]['wpid'] = -1
         popdict[uid]['snfid'] = None
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
         for k in ['H', 'S', 'W', 'C', 'LTCF']:
             popdict[uid]['contacts'][k] = set()
 
@@ -1101,6 +1107,8 @@ def make_contacts_with_facilities_from_microstructure_objects(age_by_uid_dic, ho
         popdict[uid]['scid'] = -1
         popdict[uid]['wpid'] = -1
         popdict[uid]['snfid'] = None
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
         for k in ['H', 'S', 'W', 'C', 'LTCF']:
             popdict[uid]['contacts'][k] = set()
 
@@ -1406,3 +1414,115 @@ def show_layers(popdict, show_ages=False, show_n=20):
             print(uid, popdict[uid]['age'])
             for k in layers:
                 print(k, popdict[uid]['contacts'][k])
+
+
+def assign_socio_econ_status_from_contacts_dict(npop, lowest_percentage=1, middle_percentage=0, high_percentage=0, highest_percentage=0):
+    # update according to Barnsdall data first
+    lowest = .59
+    middle = .32
+    high = .08
+    highest = 1 - lowest - middle - high
+
+    num_lowest = int(npop * lowest)
+    num_middle = int(npop * middle)
+    num_higher = int(npop * high)
+    num_highest = int(npop * highest)
+
+    round_off_diff = npop - (num_lowest + num_middle + num_higher + num_highest)
+    # naive way... just add all to lower income brackets since I assumed there is a more likelihood
+    # of running down from there. need to change
+    if round_off_diff == 1:
+        num_lowest += 1
+    elif round_off_diff == 2:
+        num_lowest += 1
+        num_middle += 1
+    elif round_off_diff == 3:
+        num_lowest += 1
+        num_middle += 1
+        num_higher += 1
+    elif round_off_diff == 4:
+        num_lowest += 1
+        num_middle += 1
+        num_higher += 1
+        num_highest += 1
+
+    se_dict = {
+        'se_lowest': [],
+        'se_middle': [],
+        'se_high': [],
+        'se_highest': [],
+    }
+
+    remaining_dict = {
+        'se_lowest': num_lowest,
+        'se_middle': num_middle,
+        'se_high': num_higher,
+        'se_highest': num_highest
+    }
+
+    # for better indexing
+    se_list = list(se_dict)
+    # this tracks if each se class' total assigned hh sizes matche with the expected number
+    # 0 is not matching, 1 is matching.
+    # only size of 3 cuz only the lowest, middle, high categories have potential need to adjust
+    se_list_full = [0, 0, 0]
+
+    # this puts the ppl of the first household while assigning the later categories with the household
+    # size of the remaining num to fill the last category until it matches with the expected number
+    adjusting_dict = {
+        'se_lowest': [],
+        'se_middle': [],
+        'se_high': [],
+    }
+
+    class_to_num = {
+        'se_lowest': 0,
+        'se_middle': 1,
+        'se_high': 2,
+        'se_highest': 3
+    }
+
+    hh_set = set()
+
+    temp = 0
+    counter = 0
+    for person in contacts.keys():
+        hh_id = contacts[person]['hhid']
+        hh_size = len(contacts[person]['contacts']['H']) + 1
+        if hh_id not in hh_set:
+            se_class = se_list[counter]
+            hh_set.add(hh_id)
+
+            # try adjusting for the previous category
+            if counter >= 1 and se_list_full[counter - 1] == 0:
+                difference = remaining_dict[se_list[counter - 1]]
+                if hh_size <= difference:
+                    remaining_dict[se_list[counter - 1]] -= hh_size
+                    if remaining_dict[se_list[counter - 1]] == 0:
+                        se_list_full[counter - 1] = 1
+                    adjusting_dict[se_list[counter - 1]].append(person)
+                    for fam_member in contacts[person]['contacts']['H']:
+                        adjusting_dict[se_list[counter - 1]].append(fam_member)
+                    continue
+            # put into the current category
+            if remaining_dict[se_class] - hh_size >= 0:
+                temp += 1
+                remaining_dict[se_class] -= hh_size
+                # the exact number of fam sizes are distributed, no need to adjust later
+                if remaining_dict[se_class] == 0:
+                    se_list_full[counter] = 1
+            else:
+                counter += 1
+            contacts[person]['socio-econ'] = class_to_num[se_class]
+
+        else:
+            contacts[person]['socio-econ'] = class_to_num[se_class]
+
+    # manually adjust the chosen fams' se class
+    for se_class in adjusting_dict.keys():
+        for person in adjusting_dict[se_class]:
+            contacts[person]['socio-econ'] = class_to_num[se_class]
+
+    print(se_list_full)
+    print(remaining_dict)
+    print(adjusting_dict)
