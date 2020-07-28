@@ -95,9 +95,9 @@ def main():
   sheet_name = 'United States of America'
   level = 'county'
 
-  num_households = 4590
-  npop = 10000
-  num_workplaces = 200
+  num_households = 8
+  npop = 25
+  num_workplaces = 8
 
   pop, homes_dic = sp.generate_synthetic_population(npop,datadir, num_households, num_workplaces, location=location, state_location=state_location,country_location=country_location,
   sheet_name=sheet_name, return_popdict=True)
@@ -109,8 +109,8 @@ def main():
   for i in range(1,len(homes_dic) + 1):
     num_households = num_households + len(homes_dic[i])
     num_pop = num_pop + len(homes_dic[i]) * i
-  print("Population Created, total " + str(num_pop) + " people, " + str(num_households) + " households")
-
+  #print("Population Created, total " + str(num_pop) + " people, " + str(num_households) + " households")
+  print(pop)
 
 class node():
   def __init__(self, lat, lon, plus):
