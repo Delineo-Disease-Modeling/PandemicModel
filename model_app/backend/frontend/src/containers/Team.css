@@ -120,8 +120,12 @@ h3{
 
 .LeaderList{
   display: block;
-  width:100%;
+  width:90%;
   margin-left: 7.5%;
   margin-top:-20px;
   padding:0;
+}
+
+.MainHeader{
+  margin-top: -40px;
 }

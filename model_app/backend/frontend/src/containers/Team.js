@@ -18,7 +18,9 @@ function Team(props){
 
   return(
      <div className = 'CardBackground'>
-      <h2>Meet The Team</h2>
+       <div className="MainHeader">
+         <h2>Meet The Team</h2>
+       </div>
       <div className = 'CardGreenBackground1'>
         <h3 align='left'>Research Supervisor</h3>
         <SupervisorList list={supervisorList} />
