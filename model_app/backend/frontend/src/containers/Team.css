@@ -1,6 +1,6 @@
 .SuperCard {
     overflow: hidden;
-    padding:20px;
+    padding-left: 20px;
     border: 1px transparent;
     width: 90%;
     height: fit-content;
@@ -9,23 +9,20 @@
     border-radius: 25px;
     display: inline-block;
     box-sizing: border-box; 
-    margin-top: 35px;
     margin-bottom: 20px;
   }
 
   .LeaderCard {
     overflow: hidden;
-    padding:20px;
+    padding:0px;
     border: 1px transparent;
-    width: 33.3%;
+    width: 30%;
     height: fit-content;
-    margin-left: auto;
-    margin-right: auto;
     border-radius: 25px;
-    display: inline-block;
     box-sizing: border-box; 
-    margin-top: 35px;
-    margin-bottom: 20px;
+    margin-top: 0px;
+    margin-bottom: 15px;
+    display: inline-block;
   }
 
   .CardBackground{
@@ -36,11 +33,10 @@
     min-width: 100%;
     margin:0;
     align-content: center;
-    padding-top: 5%;
     padding-bottom: 5%;
 } 
 
-   .CardGreenBackground{
+   .CardGreenBackground1{
   margin-top: 0%;
   margin-left: auto;
   margin-right: auto;
@@ -61,7 +57,6 @@
 }
   
   .Inner {
-    position: sticky;
     padding:1px;
     float: left;
     margin-left: 2%;
@@ -72,12 +67,13 @@
   
   .LeaderName{
     text-align: left;
-    font-size: 30px;
+    font-size: 20px;
     font-weight: normal;
     color: #66FCF1;
   }
   
   .Text {
+    float: left;
     text-align: left;
     width:100%;
     max-width: 100%;
@@ -99,3 +95,33 @@
     font-size: 25px;
     color: white;
   } 
+
+h2{
+    color: white;
+    padding-bottom: 2%;
+}
+
+h3{
+  color: white;
+  padding-top: 2%;
+  padding-bottom: 3%;
+  margin-right: auto;
+  margin-left: 8%;
+  font-size: 10px;
+  
+}
+
+.ProfessionText{
+  text-align: left;
+  font-size: 15px;
+  font-weight: normal;
+  color: #ffffff;
+} 
+
+.LeaderList{
+  display: block;
+  width:100%;
+  margin-left: 7.5%;
+  margin-top:-20px;
+  padding:0;
+}
