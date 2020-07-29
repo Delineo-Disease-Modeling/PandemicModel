@@ -43,7 +43,7 @@ export const LEADERS = [
     },
     {
       id: 4,
-      name: 'Team Leader 3',
+      name: 'Team Leader 4',
       image: ProfileImg,
       designation: 'Team Leader',
       major:'Team Leader Major'

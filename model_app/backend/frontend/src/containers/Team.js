@@ -43,25 +43,6 @@ function LeaderList(props){
     return(
       <TeamLeaderCardLeft key={leader.name} name={leader.name} description = {leader.major} />
     );
-    /*
-    if(counter%3){
-        counter++;
-        return(
-          <TeamLeaderCardLeft key={leader.name} name={leader.name} description = {leader.major} />
-        );
-      }
-    else if(counter%3 === 1){
-      counter++;
-        return(
-          <TeamLeaderCardCenter key={leader.name} name={leader.name} description = {leader.major} />
-        );
-    }
-    else{
-        counter++;
-        return(
-          <TeamLeaderCardRight key={leader.name} name={leader.name} description = {leader.major} />
-        );
-      }*/
     }
   );
   return(<div>{leaderCards}</div>);
