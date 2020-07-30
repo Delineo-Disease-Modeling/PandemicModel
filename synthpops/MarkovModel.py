@@ -3,29 +3,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-
-def transitionProb(currentState, population, i):
+def transitionProb(currentState, population, i, toggle):
     # currently hard coded but these should be those diff eq / agent specific age + demographics
     b = 0.2
     c = 0.2
     d = 0.3
     e = 0.5
 
-    a = 0
-    s = {keys: 0 for keys in ['H', 'S', 'W']}
-    beta = {'H': 0.1, 'S': 0.01, 'W': 0.02}
-    totContactLayer = 0
-    for k in ['H', 'S', 'W']:
-        contactLayer = population[i]['contacts'][k]
-        if len(contactLayer):
-            s[k] = sum(currentState[j] == 'Mild' or currentState[j] ==
-                       'Severe' or currentState[j] == 'Critical' for j in contactLayer)
-            totContactLayer += len(contactLayer)
+    # temporary correction for susceptible people in the first few runs of simulation
+    if toggle:
+        a=1
+    else:
+        a = 0
+        s = {keys: 0 for keys in ['H', 'S', 'W']}
+        beta = {'H': 0.1, 'S': 0.01, 'W': 0.02}
+        for k in ['H', 'S', 'W']:
+            contactLayer = population[i]['contacts'][k]
+            if len(contactLayer):
+                s[k] = sum(currentState[j] == 'Mild' or currentState[j] ==
+                           'Severe' or currentState[j] == 'Critical' for j in contactLayer)
 
-    # for now no beta bc it decreases the probability by way too much i think
-    # also this is totally wrong bc i normalized probabilities with #contacts which for sure is not right
-    if (totContactLayer):
-        a = sum(s[k] for k in ['H', 'S', 'W'])/totContactLayer  # *beta[k]
+        # normalize probability with total #infected in all contact networks
+        if (sum(s.values())):
+            a = sum(s[k]*beta[k] for k in ['H', 'S', 'W'])/sum(s.values())
 
     if (a > 1):
         raise Exception('probability>1')
@@ -149,7 +149,7 @@ def main():
     initial_list = get_user_input(npop)
 
     # initialize params
-    timestep = 100
+    timestep = 10
     states = ['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead']
     currentState = {key: states[0] for key in range(npop)}
     currentState[0] = 'Mild'
@@ -170,36 +170,36 @@ def main():
             currentState[index] = states[num] 
         start = end
 
-    # intialize results list
+    # initialize results list
     results = {}
     nextState = {key: states[0] for key in range(npop)}
     infected = [0 for t in range(timestep)]
     deaths = [0 for t in range(timestep)]
+    infected[0] = sum(currentState[j] == 'Mild' or currentState[j] ==
+                    'Severe' or currentState[j] == 'Critical' for j in population)
+    deaths[0] = sum(currentState[j] == 'Dead' for j in population)
 
     # run simulation
-    for t in range(timestep):
+    for t in range(timestep-1):
         results[t] = currentState
         for i in range(len(population)):
             # create transition probabilities for current state of ith agent
-            p = transitionProb(currentState, population, i)
-            # print(p)
+            p = transitionProb(currentState, population,i,(t<4))
 
             # get next state with probability distribution p
             try:
                 nextState[i] = np.random.choice(states, p=p)
             except:
-                print(i)
-                print(p)
-                print(currentState[i])
                 raise Exception('bad probability')
 
             # add to results
             if (nextState[i] == 'Mild' or nextState[i] == 'Severe' or nextState[i] == 'Critical'):
-                infected[t] += 1
+                infected[t+1] += 1
             elif (nextState[i] == 'Dead'):
-                deaths[t] += 1
+                deaths[t+1] += 1
 
             currentState = nextState
+    results[timestep-1] = currentState
 
     print("infected")
     print(infected)
