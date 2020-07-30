@@ -21,10 +21,12 @@ class Polygon extends Component {
       circleOptions: {
         clickable: true,
         editable: true,
+        draggable: true
       },
       polygonOptions: {
         clickable: true,
         editable: true,
+        draggable: true
       }
     });
 
