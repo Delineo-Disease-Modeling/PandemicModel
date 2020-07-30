@@ -1,11 +1,13 @@
 import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
+import { Button } from 'reactstrap';
 import GoogleMapReact from 'google-map-react';
 import SearchBox from './SearchBox.js';
 import { getPlace } from '../actions/placeActions';
 import Marker from './Marker.js';
 import {options} from '../const/placeTypes.js';
 import Checkbox from './Checkbox.js'
+import Polygon from './Polygon.js';
 
 class GoogleMap extends Component {
     // initialize for autauga county
@@ -27,7 +29,8 @@ class GoogleMap extends Component {
             checkboxes: options.reduce((options, option) => ({
                 ...options,
                 [option]: true
-            }), {})
+            }), {}),
+            editPolygon: false
         };
     }
 
@@ -56,6 +59,12 @@ class GoogleMap extends Component {
         }));
     };
 
+    handleButtonChange = () => {
+        this.setState({
+            editPolygon: !this.state.editPolygon
+        })
+    }
+
     // Contains SearchBox, Checkboxes, and Google Map with Marker
     render() {
         const { mapApiLoaded, mapInstance, mapApi, checkboxes } = this.state;
@@ -65,10 +74,12 @@ class GoogleMap extends Component {
             {mapApiLoaded && <SearchBox map={mapInstance} mapApi={mapApi} addplace={this.addPlace} />}
             {options.map(option => ( <Checkbox key={option} isSelected={this.state.checkboxes[option]}
                 onCheckboxChange={this.handleCheckboxChange} label = {option}/> ))}
+            <Button onClick={this.handleButtonChange}>Draw Polygon!</Button>
+            {mapApiLoaded && <Polygon map={mapInstance} mapApi={mapApi} editable={this.state.editPolygon} />}
             <div style={{ height: '100vh', width: '100%' }}>
                 <GoogleMapReact
                     bootstrapURLKeys={{ key: process.env.REACT_APP_MAP_API,
-                                        libraries: ['places'] }}
+                                        libraries: ['places', 'drawing'] }}
                     defaultCenter={this.props.center}
                     defaultZoom={this.props.zoom}
                     yesIWantToUseGoogleMapApiInternals

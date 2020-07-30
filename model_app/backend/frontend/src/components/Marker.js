@@ -12,7 +12,7 @@ class Marker extends Component {
             }), {})
     }
 
-    // These are only initialized once.
+    // Initialize once
     componentDidMount({map, mapApi} = this.props) {
         this.infowindow = new mapApi.InfoWindow();
         this.service = new mapApi.places.PlacesService(map);
@@ -38,8 +38,11 @@ class Marker extends Component {
     nearbySearch({ map, mapApi, place } = this.props) {
         this.clearMarkers();
 
-        let areaId = (place['osmType'] === "relation") ? place['osmId']+3600000000 : place['osmId']+2400000000; 
-        console.log(areaId);
+        // TODO: fix commmunication with redux store + polygon shape. for osm search if we're doing this?
+        // if it's smth with defined borders like a county then this is easy
+        // if it's some rando shape then this will kind of be a mess lol
+        //let areaId = (place['osmType'] === "relation") ? place['osmId']+3600000000 : place['osmId']+2400000000; 
+        //console.log(areaId);
 
         options.forEach(option => {
             // initialize search param

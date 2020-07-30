@@ -56,6 +56,9 @@ class SearchBox extends Component {
     	})
     	.catch(err => console.log(err));
 
+    //osm relation id and type isn't saved to redux store
+    //addplace(place);
+
     if (!place.geometry) return;
     if (place.geometry.viewport) {
       map.fitBounds(place.geometry.viewport);

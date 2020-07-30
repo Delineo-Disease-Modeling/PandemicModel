@@ -1,22 +1,20 @@
 import React from 'react';
-import { Container } from 'reactstrap';
-import LineChart from './LineChart.js';
+import SimpleLineChart from './LineChart.js';
+
+const formatString = (str) => {
+    return str.substring(1, str.length-1).replace(/ /g, '').split(',').map(Number);
+}
 
 function SimulationTimeseries(props) {
-    return (
-            <Container>
-                <div style={{marginBottom:'40px'}}>
-                    <h5 style={{color:'#66FCF1'}}>Expected Infection Rate</h5>
-                    <LineChart data = {props.infected} width = {800} height = {500}/>
-                </div>
-                
-                <div style={{margin:'20px'}}>
-                    <h5 style={{color:'#66FCF1'}}>Expected Death Rate</h5>
-                    <LineChart data = {props.deaths} width = {800} height = {500}/>
-                </div>
-                
-            </Container>
-        );
+    //convert into array 
+    const infected = formatString(props.infected);
+    const deaths = formatString(props.deaths);
+
+    const data = infected.map((d,i) => {
+        return { name: i, infected: d, deaths: deaths[i] }
+    });
+
+    return <SimpleLineChart data = {data} width = {800} height = {500}/>;
 }
 
 export default SimulationTimeseries;

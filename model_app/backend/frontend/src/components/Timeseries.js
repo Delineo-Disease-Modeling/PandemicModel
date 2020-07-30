@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Container } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getTimeseries } from '../actions/timeseriesActions.js';
 import PropTypes from 'prop-types';
-import LineChart from './LineChart.js';
+import SimpleLineChart from './LineChart.js';
 
 class Timeseries extends Component {
     constructor(props) {
@@ -27,26 +26,13 @@ class Timeseries extends Component {
     render() {
         const timeseries = this.props.timeseries;
 
-        const infected = timeseries.map((item) => {
-            return { date: new Date(`${item.date}`), value: Number(`${item[this.fips].infected}`) };
-        })
-        const death = timeseries.map((item) => {
-            return { date: new Date(`${item.date}`), value: Number(`${item[this.fips].death}`) };
-        })
+        const data = timeseries.map((item) => {
+            return { name: `${item.date}`.substring(5,10), infected: Number(`${item[this.fips].infected}`),
+                deaths: Number(`${item[this.fips].death}`) };
+        });
 
         return (
-            <Container>
-                <div style={{marginBottom:'40px'}}>
-                    <h5 style={{color:'#66FCF1'}}>Infection Rate</h5>
-                    <LineChart data = {infected} width = {800} height = {500}/>
-                </div>
-                
-                <div style={{margin:'20px'}}>
-                    <h5 style={{color:'#66FCF1'}}>Death Rate</h5>
-                    <LineChart data = {death} width = {800} height = {500}/>
-                </div>
-                
-            </Container>
+            <SimpleLineChart data = {data} width = {800} height = {500}/>
         );
     }
 }

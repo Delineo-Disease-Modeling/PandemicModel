@@ -75,9 +75,9 @@ class OptionMenu extends Component{
                         </div>
 
                         <div align='left' className='col4'>
-                            <p style={{color:'white'}}>Duration (in days): </p>
-                            <input required size='15' type='text' style={{marginRight:'10px'}} onChange={event=> this.setState({duration:event.target.value})}></input>
-                            
+                            <label for='usr' style={{color:'white'}}>Duration (in days): </label>
+                            <input align='left' required size='15' type='text' style={{marginRight:'30px', marginLeft:'0px'}} onChange={event=> this.setState({duration:event.target.value})}></input>
+                
                         </div>
 
                         <div align='left' className='col4'>

@@ -10,15 +10,14 @@
     padding-bottom: 5%;
 }
 
-.CardGreenBackground{
+.CardGreenBackground3{
     margin-top: 0%;
     margin-left: auto;
     margin-right: auto;
-    background-color: #1b4441c2;
+    background-color: #222629;
     width: 85%;
     align-self: center;
     align-items: center;
-    box-shadow: 10px 10px 4px #2b46447e;
 }
 
 * {
@@ -43,7 +42,7 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     padding: 0px;
     text-align: center;
-    background-color: lightblue;
+    background-color: #1B4441;
 }
 
 .card-img-top {
@@ -58,3 +57,10 @@
         margin-bottom: 20px;
     }
 } 
+
+.MainHeader2{
+    margin-top: -30px;
+} 
+ .TitleText{
+     color: #66FCF1;
+ }
