@@ -33,7 +33,7 @@ class Polygon extends Component {
     mapApi.event.addListener(this.drawingManager, 'overlaycomplete', function(event) {
       console.log(event.overlay)
       //var lon_lat_array = event.overlay.getPath().getArray();
-      //console.log(lon_lat_array);
+      //console.log(lon_lat_array.toString());
     });
 
     this.props.editable ? this.drawingManager.setMap(this.props.map) : this.drawingManager.setMap(null);
