@@ -19,12 +19,12 @@ class Polygon extends Component {
         ]
       },
       circleOptions: {
-        fillColor: '#ffff00',
-        fillOpacity: 1,
-        strokeWeight: 5,
-        clickable: false,
+        clickable: true,
         editable: true,
-        zIndex: 1
+      },
+      polygonOptions: {
+        clickable: true,
+        editable: true,
       }
     });
 
