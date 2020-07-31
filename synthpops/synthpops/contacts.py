@@ -35,8 +35,10 @@ def make_popdict(n=None, uids=None, ages=None, sexes=None, location=None, state_
 
     min_people = 1000
 
-    if location             is None: location = 'seattle_metro'
-    if state_location is None: state_location = 'Washington'
+    if location is None:
+        location = 'seattle_metro'
+    if state_location is None:
+        state_location = 'Washington'
 
     # A list of UIDs was supplied as the first argument
     if uids is not None:  # UIDs were supplied, use them
@@ -58,17 +60,19 @@ def make_popdict(n=None, uids=None, ages=None, sexes=None, location=None, state_
                 gen_ages = spsamp.get_age_n(datadir, n=n, location=location, state_location=state_location, country_location=country_location)
                 gen_sexes = list(np.random.binomial(1, p=0.5, size=n))
             else:
-                if location is None: location, state_location = 'seattle_metro', 'Washington'
+                if location is None:
+                    location, state_location = 'seattle_metro', 'Washington'
                 gen_ages, gen_sexes = spsamp.get_usa_age_sex_n(datadir, location=location, state_location=state_location, country_location=country_location, n_people=n)
         else:
             # if location is None:
             gen_ages, gen_sexes = spsamp.get_age_sex_n(None, None, None, n_people=n)
-                # raise NotImplementedError('Currently, only locations in the US are supported. Next version!')
+            # raise NotImplementedError('Currently, only locations in the US are supported. Next version!')
 
     # you only have ages...
     elif ages is not None and sexes is None:
         if country_location == 'usa':
-            if location is None: location, state_location = 'seattle_metro', 'Washington'
+            if location is None:
+                location, state_location = 'seattle_metro', 'Washington'
             gen_ages, gen_sexes = spsamp.get_usa_sex_n(datadir, ages, location=location, state_location=state_location, country_location=country_location)
         else:
             gen_ages = ages
@@ -78,7 +82,8 @@ def make_popdict(n=None, uids=None, ages=None, sexes=None, location=None, state_
     # you only have sexes...
     elif ages is None and sexes is not None:
         if country_location == 'usa':
-            if location is None: location, state_location = 'seattle_metro', 'Washington'
+            if location is None:
+                location, state_location = 'seattle_metro', 'Washington'
             gen_ages, gen_sexes = spsamp.get_usa_age_n(datadir, sexes, location=location, state_location=state_location, country_location=country_location)
         else:
             # gen_sexes = sexes
@@ -99,6 +104,8 @@ def make_popdict(n=None, uids=None, ages=None, sexes=None, location=None, state_
         popdict[uid]['sex'] = sexes[i]
         popdict[uid]['loc'] = None
         popdict[uid]['contacts'] = {'M': set()}
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
 
     return popdict
 
@@ -446,7 +453,7 @@ def make_contacts_with_social_layers_and_sex(popdict, n_contacts_dic, location, 
     # use a contact matrix dictionary and n_contacts_dic for the average number of contacts in each layer
     uids_by_age_dic = spb.get_uids_by_age_dic(popdict)
     # if country_location is None:
-        # raise NotImplementedError
+    # raise NotImplementedError
 
     age_brackets = spdata.get_census_age_brackets(datadir, state_location=state_location, country_location=country_location)
     age_by_brackets_dic = spb.get_age_by_brackets_dic(age_brackets)
@@ -661,7 +668,7 @@ def create_reduced_contacts_with_group_types(popdict, group_1, group_2, setting,
 
             # if the person's degree is too high, cut out some contacts
             if len(group_1_neighbors) > average_degree:
-                ncut = len(group_1_neighbors) - average_degree # rough number to cut
+                ncut = len(group_1_neighbors) - average_degree  # rough number to cut
                 # ncut = spsamp.pt(ncut) # sample from poisson that number
                 # ncut = min(len(group_1_neighbors), ncut)  # make sure the number isn't greater than the people available to cut
                 for k in range(ncut):
@@ -737,7 +744,7 @@ def create_reduced_contacts_with_group_types(popdict, group_1, group_2, setting,
         popdict[id_i]['contacts'][setting].add(id_j)
         popdict[id_j]['contacts'][setting].add(id_i)
         # if id_i in r2 and id_j in r2:
-            # group_2_edges.append(e)
+        # group_2_edges.append(e)
 
     # print('group 2 only edges', len(group_1), len(group_2),len(group_2_edges))
 
@@ -799,6 +806,8 @@ def make_contacts_from_microstructure(datadir, location, state_location, country
         popdict[uid]['scid'] = -1
         popdict[uid]['wpid'] = -1
         popdict[uid]['wpindcode'] = -1
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
         for k in ['H', 'S', 'W', 'C']:
             popdict[uid]['contacts'][k] = set()
 
@@ -887,6 +896,8 @@ def make_contacts_from_microstructure_objects(age_by_uid_dic, homes_by_uids, sch
         popdict[uid]['scid'] = -1
         popdict[uid]['wpid'] = -1
         popdict[uid]['wpindcode'] = -1
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
         for k in ['H', 'S', 'W', 'C']:
             popdict[uid]['contacts'][k] = set()
 
@@ -969,6 +980,8 @@ def make_contacts_with_facilities_from_microstructure(datadir, location, state_l
         popdict[uid]['scid'] = -1
         popdict[uid]['wpid'] = -1
         popdict[uid]['snfid'] = None
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
         for k in ['H', 'S', 'W', 'C', 'LTCF']:
             popdict[uid]['contacts'][k] = set()
 
@@ -1094,6 +1107,8 @@ def make_contacts_with_facilities_from_microstructure_objects(age_by_uid_dic, ho
         popdict[uid]['scid'] = -1
         popdict[uid]['wpid'] = -1
         popdict[uid]['snfid'] = None
+        popdict[uid]['socio-econ'] = -1
+        # added, socio-econ will be assigned a number later
         for k in ['H', 'S', 'W', 'C', 'LTCF']:
             popdict[uid]['contacts'][k] = set()
 
@@ -1235,29 +1250,41 @@ def make_contacts(popdict=None, n_contacts_dic=None, location=None, state_locati
 
     '''
     ### Defaults ###
-    if location             is None: location = 'seattle_metro'
-    if state_location       is None: state_location = 'Washington'
-    if country_location     is None: country_location = 'usa'
-    if sheet_name           is None: sheet_name = 'United States of America'
+    if location is None:
+        location = 'seattle_metro'
+    if state_location is None:
+        state_location = 'Washington'
+    if country_location is None:
+        country_location = 'usa'
+    if sheet_name is None:
+        sheet_name = 'United States of America'
 
-    if n_contacts_dic       is None: n_contacts_dic = {'H': 4, 'S': 20, 'W': 20, 'C': 20}
+    if n_contacts_dic is None:
+        n_contacts_dic = {'H': 4, 'S': 20, 'W': 20, 'C': 20}
 
-    if network_distr_args   is None: network_distr_args = {'average_degree': 30, 'directed': False, 'network_type': 'poisson_degree'}  # general we should default to undirected because directionality doesn't make sense for infectious diseases
-    if 'network_type' not in network_distr_args: network_distr_args['network_type'] = 'poisson_degree'
-    if 'directed' not in network_distr_args: network_distr_args['directed'] = False
-    if 'average_degree' not in network_distr_args: network_distr_args['average_degree'] = 30
+    if network_distr_args is None:
+        network_distr_args = {'average_degree': 30, 'directed': False, 'network_type': 'poisson_degree'}  # general we should default to undirected because directionality doesn't make sense for infectious diseases
+    if 'network_type' not in network_distr_args:
+        network_distr_args['network_type'] = 'poisson_degree'
+    if 'directed' not in network_distr_args:
+        network_distr_args['directed'] = False
+    if 'average_degree' not in network_distr_args:
+        network_distr_args['average_degree'] = 30
 
-    ### Rationale behind default activity_args parameters
+    # Rationale behind default activity_args parameters
     # college_age_max: 22: Because many people in the usa context finish tertiary school of some form (vocational, community college, university), but not all and this is a rough cutoff
     # student_teacher_ratio: 30: King County, WA records seem to indicate median value near that (many many 1 student classrooms skewing the average) - could vary and may need to be lowered to account for extra staff in schools
     # worker_age_min: 23: to keep ages for different activities clean
     # worker_age_max: 65: age at which people are able to retire in many places
     # activity_args might also include different n_contacts for college kids ....
-    if activity_args        is None: activity_args = {'student_age_min': 4, 'student_age_max': 18, 'student_teacher_ratio': 30, 'worker_age_min': 23, 'worker_age_max': 65, 'college_age_min': 18, 'college_age_max': 23}
+    if activity_args is None:
+        activity_args = {'student_age_min': 4, 'student_age_max': 18, 'student_teacher_ratio': 30, 'worker_age_min': 23, 'worker_age_max': 65, 'college_age_min': 18, 'college_age_max': 23}
 
     options_keys = ['use_age', 'use_sex', 'use_loc', 'use_social_layers', 'use_activity_rates', 'use_microstructure', 'use_age_mixing', 'use_industry_code', 'use_long_term_care_facilities', 'use_two_group_reduction']
-    if options_args is None: options_args = dict.fromkeys(options_keys, False)
-    if options_args.get('average_LTCF_degree') is None: options_args['average_LTCF_degree'] = 20
+    if options_args is None:
+        options_args = dict.fromkeys(options_keys, False)
+    if options_args.get('average_LTCF_degree') is None:
+        options_args['average_LTCF_degree'] = 20
 
     # fill in the other keys as False!
     for key in options_keys:
@@ -1266,7 +1293,8 @@ def make_contacts(popdict=None, n_contacts_dic=None, location=None, state_locati
 
     # to call in pre-generated contact networks that exhibit real-world-like clustering and age-specific mixing
     if options_args['use_microstructure']:
-        if 'Npop' not in network_distr_args: network_distr_args['Npop'] = 10000
+        if 'Npop' not in network_distr_args:
+            network_distr_args['Npop'] = 10000
         country_location = 'usa'
         if options_args['use_long_term_care_facilities']:
             popdict = make_contacts_with_facilities_from_microstructure(datadir, location, state_location, country_location, network_distr_args['Npop'], options_args['use_two_group_reduction'], options_args['average_LTCF_degree'])
@@ -1304,7 +1332,6 @@ def choose_contacts(a, size):
 
 
 def trim_contacts(contacts, trimmed_size_dic=None, use_clusters=False, verbose=False):
-
     """
     Trim down contacts in school or work environments from everyone.
 
@@ -1387,3 +1414,115 @@ def show_layers(popdict, show_ages=False, show_n=20):
             print(uid, popdict[uid]['age'])
             for k in layers:
                 print(k, popdict[uid]['contacts'][k])
+
+
+def assign_socio_econ_status_from_contacts_dict(npop, lowest_percentage=1, middle_percentage=0, high_percentage=0, highest_percentage=0):
+    # update according to Barnsdall data first
+    lowest = .59
+    middle = .32
+    high = .08
+    highest = 1 - lowest - middle - high
+
+    num_lowest = int(npop * lowest)
+    num_middle = int(npop * middle)
+    num_higher = int(npop * high)
+    num_highest = int(npop * highest)
+
+    round_off_diff = npop - (num_lowest + num_middle + num_higher + num_highest)
+    # naive way... just add all to lower income brackets since I assumed there is a more likelihood
+    # of running down from there. need to change
+    if round_off_diff == 1:
+        num_lowest += 1
+    elif round_off_diff == 2:
+        num_lowest += 1
+        num_middle += 1
+    elif round_off_diff == 3:
+        num_lowest += 1
+        num_middle += 1
+        num_higher += 1
+    elif round_off_diff == 4:
+        num_lowest += 1
+        num_middle += 1
+        num_higher += 1
+        num_highest += 1
+
+    se_dict = {
+        'se_lowest': [],
+        'se_middle': [],
+        'se_high': [],
+        'se_highest': [],
+    }
+
+    remaining_dict = {
+        'se_lowest': num_lowest,
+        'se_middle': num_middle,
+        'se_high': num_higher,
+        'se_highest': num_highest
+    }
+
+    # for better indexing
+    se_list = list(se_dict)
+    # this tracks if each se class' total assigned hh sizes matche with the expected number
+    # 0 is not matching, 1 is matching.
+    # only size of 3 cuz only the lowest, middle, high categories have potential need to adjust
+    se_list_full = [0, 0, 0]
+
+    # this puts the ppl of the first household while assigning the later categories with the household
+    # size of the remaining num to fill the last category until it matches with the expected number
+    adjusting_dict = {
+        'se_lowest': [],
+        'se_middle': [],
+        'se_high': [],
+    }
+
+    class_to_num = {
+        'se_lowest': 0,
+        'se_middle': 1,
+        'se_high': 2,
+        'se_highest': 3
+    }
+
+    hh_set = set()
+
+    temp = 0
+    counter = 0
+    for person in contacts.keys():
+        hh_id = contacts[person]['hhid']
+        hh_size = len(contacts[person]['contacts']['H']) + 1
+        if hh_id not in hh_set:
+            se_class = se_list[counter]
+            hh_set.add(hh_id)
+
+            # try adjusting for the previous category
+            if counter >= 1 and se_list_full[counter - 1] == 0:
+                difference = remaining_dict[se_list[counter - 1]]
+                if hh_size <= difference:
+                    remaining_dict[se_list[counter - 1]] -= hh_size
+                    if remaining_dict[se_list[counter - 1]] == 0:
+                        se_list_full[counter - 1] = 1
+                    adjusting_dict[se_list[counter - 1]].append(person)
+                    for fam_member in contacts[person]['contacts']['H']:
+                        adjusting_dict[se_list[counter - 1]].append(fam_member)
+                    continue
+            # put into the current category
+            if remaining_dict[se_class] - hh_size >= 0:
+                temp += 1
+                remaining_dict[se_class] -= hh_size
+                # the exact number of fam sizes are distributed, no need to adjust later
+                if remaining_dict[se_class] == 0:
+                    se_list_full[counter] = 1
+            else:
+                counter += 1
+            contacts[person]['socio-econ'] = class_to_num[se_class]
+
+        else:
+            contacts[person]['socio-econ'] = class_to_num[se_class]
+
+    # manually adjust the chosen fams' se class
+    for se_class in adjusting_dict.keys():
+        for person in adjusting_dict[se_class]:
+            contacts[person]['socio-econ'] = class_to_num[se_class]
+
+    print(se_list_full)
+    print(remaining_dict)
+    print(adjusting_dict)
