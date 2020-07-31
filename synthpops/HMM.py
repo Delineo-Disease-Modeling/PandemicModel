@@ -87,21 +87,39 @@ def most_likely_states_for_person(timestamps=20, initial_prob={}, transition_mat
         observation = observations[timestamp]
         # a dict of all states (key) and the max likelihood of one path from one of the states from the previous timestamp
         max_prob_of_states = {key: 0 for key in likelihood_matrix.keys()}
+        magnified_max_prob_of_states = {
+            key: 0 for key in likelihood_matrix.keys()}
         for state, max_likelihood in max_prob_of_states.items():
             # all probs from paths of each of the states (key) to state s from the previous timestamp t to t+1,
             # the maximum here would be put into max_prob_of_state as value of state s
             paths_from_previous_states = {
                 key: 0 for key in likelihood_matrix.keys()}
-            for (curr_state, likelihood) in paths_from_previous_states.items():
-                likelihood = current_states[curr_state] * \
-                    transition_matrix[curr_state][state_to_index[state]] * \
-                    likelihood_matrix[state][observation]
 
             # manually magnify prob by x1000 times, otherwise too small, will print 0
             magnified_states_prob = {}
+
+            # if this is 1, each probability will be magnified by 100 times
+            # cuz if calc likelihood is too small it will be rounded off to 0
+            magnify = 0
             for (curr_state, likelihood) in paths_from_previous_states.items():
-                magnified_states_prob[curr_state] = 1000 * likelihood
-            max_likelihood = max(magnified_states_prob.values())
+                # aims to guarantee total number does not become 0. need to change
+                if (curr_state == 'Suspicious' and likelihood <= 0.01):
+                    magnify = 1
+                    likelihood = 1000 * current_states[curr_state] * \
+                        transition_matrix[curr_state][state_to_index[state]] * \
+                        likelihood_matrix[state][observation]
+                elif (curr_state != 'Suspicious' and magnify == 1):
+                    likelihood = 1000 * current_states[curr_state] * \
+                        transition_matrix[curr_state][state_to_index[state]] * \
+                        likelihood_matrix[state][observation]
+                else:
+                    likelihood = current_states[curr_state] * \
+                        transition_matrix[curr_state][state_to_index[state]] * \
+                        likelihood_matrix[state][observation]
+                paths_from_previous_states[curr_state] = likelihood
+            max_prob_of_states[state] = max(
+                paths_from_previous_states.values())
+            magnify = 0
 
         current_states = max_prob_of_states
 
