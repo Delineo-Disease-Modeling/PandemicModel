@@ -40,8 +40,11 @@ def most_likely_states_for_person(timestamps=20, initial_prob={}, transition_mat
         # no rationale, just making things up here. few recovered will be tested
         'Recovered': [error, 0.1-error, 0.9],
         # say if symptoms gets this bad they will definitely be tested positive. id Pr(pos | dead) = 1
-        'Dead': [1, 0, 0]
+        'Dead': [0.01, 0, 0.99]
     }
+
+    # note on dead: Pr 0.1 for positive, 0.9 for untested does not mean 0.01 tested positive people died,
+    # but people died on the day has 0.01 prob they tested on the day, and 0.99 prob they died w/out being tested
 
     # harded coded for now but needs to be replaced, eg by # of each category within the population / population size
     initial_prob = {
@@ -129,6 +132,14 @@ def most_likely_states_for_person(timestamps=20, initial_prob={}, transition_mat
                     paths_from_previous_states.values())
 
                 magnify = 0
+
+            if (timestamp == 13):
+                print(str(timestamp) + ':')
+                print(max_prob_of_states)
+
+            if (timestamp == 14):
+                print(str(timestamp) + ':')
+                print(max_prob_of_states)
 
             current_states = max_prob_of_states
 
