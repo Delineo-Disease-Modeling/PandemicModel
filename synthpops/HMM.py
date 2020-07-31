@@ -1,69 +1,32 @@
-
-
-def hmm_propogation(npop=10, population_dict={}, observables={}, states=[], total_timestamps=10):
-    """
-        This function creates a graph coupled hidden Markov Model and update disease state from each day.
-
-        ## missing: param explanations for now
-    """
-
-    # too few people, keep it low
-    total_timestamps = 3
-
-    population_dict = {}
-    # initialize
-    for i in range(0, npop):
-        population_dict[i] = {'state': -1, 'observable': 0}
-
-    # we decided to go with num of positive tests, num of negative tests, num of untested as three observables
-    observables = {}
-    for i in range(0, total_timestamps):
-        observables[i] = {'positive': i, 'negative': i, 'untested': npop - 2*i}
-
-    # dummy graph: unchanging network for all timestamps, will supply an actual network
-    # use adjencency list since graph likely to be sparse, this will be quicker
-    network_permanent = {  # we can assume this is all household network only for now
-        0: [1, 2, 3],
-        1: [0, 2, 3],
-        2: [0, 1, 3],
-        3: [0, 1, 2],
-        4: [5],
-        5: [4],
-        6: [],
-        7: [8, 9],
-        8: [7, 9],
-        9: [7, 8],
-    }
-
-    # dictionary of timestamp:graph_of_networks
-    network_dict = {}
-    # i put 100 timestamps of unchanging networks here
-    for i in range(0, total_timestamps):
-        network_dict[i] = network_permanent
-
-    states_at_timestamps = {}
-    for i in range(0, total_timestamps):
-        states_at_timestamps[i] = {'susceptible': 0, 'mild': 0,
-                                   'severe': 0, 'Critical': 0, 'Recovered': 0, 'Dead': 0}
+def most_likely_states_for_person(timestamps=20, initial_prob={}, transition_matrix={}, likelihood_matrix={}, o_next=[]):
+    '''
+        This function takes in all relavant info of a person and calculates his state in all timestamps from his
+        observable traits (in this case, the tests results / not tested status)
+        It will output something like [0,0,0,0,1,2,3,...] as how the person's disease status progresses
+    '''
+    # 2 means not tested, 1 means tested negative, 0 means tested positive
+    observations = [2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2,
+                    2, 2, 2, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2]
 
     # the transition matrix from previous state qi to current state qj: currently also dummy values only
+    a = 0
     b = 0.2
     c = 0.2
     d = 0.3
     e = 0.5
 
+    # hard-coded for now but need to be replaced to take contacts into consideration
+    # may vary from person to person, based on contacts and also socio-econ class, race, etc.
     transition_matrix = {
-        'Susceptible': [1-a, a, 0, 0, 0, 0],
-        'Mild': [0, (1-c)/2, c, 0, (1-c)/2, 0],
-        'Severe': [0, 0, (1-d)/2, d, (1-d)/2, 0],
-        'Critical': [0, 0, 0, (1-e)/2, (1-e)/2, e],
-        'Recovered': [1-b, 0, 0, 0, b, 0],
-        'Dead': [0, 0, 0, 0, 0, 1]
+        'Susceptible': [1-a, a, 0, 0, 0, 0],                # state 0
+        'Mild': [0, (1-c)/2, c, 0, (1-c)/2, 0],  # 1
+        'Severe': [0, 0, (1-d)/2, d, (1-d)/2, 0],  # 2
+        'Critical': [0, 0, 0, (1-e)/2, (1-e)/2, e],  # 3
+        'Recovered': [1-b, 0, 0, 0, b, 0],  # 4
+        'Dead': [0, 0, 0, 0, 0, 1]  # 5
     }
 
-    # observation_likelihood: the state observation likelihood of the observation symbol o_t given
-    # the current state j
-    error = 0.0001  # tested, actually sick but results coming negative
+    error = 0.0001
     likelihood_matrix = {
         'Susceptible': [0, 0, 1],
         # a susceptible person has 0 prob of testing positive, 0 prob of testing negative,
@@ -77,8 +40,83 @@ def hmm_propogation(npop=10, population_dict={}, observables={}, states=[], tota
         'Dead': [1, 0, 0]
     }
 
-    # calculation of disease spreading
+    # harded coded for now but needs to be replaced, eg by # of each category within the population / population size
+    initial_prob = {
+        'Susceptible': 0.99,
+        'Mild': 0.009,
+        'Severe': 0.001,
+        'Critical': 0,
+        'Recovered': 0,
+        'Dead': 0
+    }
+
+    # initialize the disease states dictionary of one person's status at different times
+    disease_states = {}
+    for timestamp in range(0, timestamps+1):
+        disease_states[timestamp] = 0
+
+    # initialize for time zero
+    for state in initial_prob.keys():
+        observation = observations[0]
+        initial_prob[state] = initial_prob[state] * \
+            likelihood_matrix[state][observation]
+    current_states = {}
+    current_states = initial_prob
+    next_state = 'Susceptible'
+    state_prob = initial_prob['Susceptible']
+    for state in initial_prob.keys():
+        if initial_prob[state] > state_prob:
+            next_state = state
+            state_prob = initial_prob[state]
+    disease_states[0] = next_state
+
+    if timestamps == 1:
+        return disease_states
+
+    state_to_index = {
+        'Susceptible': 0,
+        'Mild': 1,
+        'Severe': 2,
+        'Critical': 3,
+        'Recovered': 4,
+        'Dead': 5
+    }
+
+    # recursive step
+    for timestamp in range(1, timestamps + 1):
+        observation = observations[timestamp]
+        # a dict of all states (key) and the max likelihood of one path from one of the states from the previous timestamp
+        max_prob_of_states = {key: 0 for key in likelihood_matrix.keys()}
+        for state, max_likelihood in max_prob_of_states.items():
+            # all probs from paths of each of the states (key) to state s from the previous timestamp t to t+1,
+            # the maximum here would be put into max_prob_of_state as value of state s
+            paths_from_previous_states = {
+                key: 0 for key in likelihood_matrix.keys()}
+            for (curr_state, likelihood) in paths_from_previous_states.items():
+                likelihood = current_states[curr_state] * \
+                    transition_matrix[curr_state][state_to_index[state]] * \
+                    likelihood_matrix[state][observation]
+
+            # manually magnify prob by x1000 times, otherwise too small, will print 0
+            magnified_states_prob = {}
+            for (curr_state, likelihood) in paths_from_previous_states.items():
+                magnified_states_prob[curr_state] = 1000 * likelihood
+            max_likelihood = max(magnified_states_prob.values())
+
+        current_states = max_prob_of_states
+
+        # pick the most likely state at the new timestamp: the one that gives the largest prob in max_prob_of_states
+        next_state = 'Susceptible'
+        temp_prob = max_prob_of_states['Susceptible']
+        for state in max_prob_of_states.keys():
+            if max_prob_of_states[state] > temp_prob:  # todo change
+                temp_prob = max_prob_of_states[state]
+                next_states = state
+        disease_states[timestamp] = next_state
+
+    print(disease_states)
 
 
 if __name__ == "__main__":
-    hmm_propogation()
+    # hmm_propogation()
+    most_likely_states_for_person()
