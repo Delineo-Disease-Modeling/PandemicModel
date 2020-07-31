@@ -133,6 +133,7 @@ def most_likely_states_for_person(timestamps=20, initial_prob={}, transition_mat
 
                 magnify = 0
 
+            ############## for debugging #################
             if (timestamp == 13):
                 print(str(timestamp) + ':')
                 print(max_prob_of_states)
