@@ -30,11 +30,26 @@ class Polygon extends Component {
       }
     });
 
+    //make a call to the overpass api here
     mapApi.event.addListener(this.drawingManager, 'overlaycomplete', function(event) {
-      console.log(event.overlay)
-      //var lon_lat_array = event.overlay.getPath().getArray();
-      //console.log(lon_lat_array.toString());
+      var path = event.overlay.getPath()
+      var lon_lat_array = event.overlay.getPath().getArray();
+      console.log(lon_lat_array.toString());
+
+      // new vertex listener
+      mapApi.event.addListener(path, 'insert_at', function(event) {
+        console.log(path)//new path
+        var lon_lat_array = path.getArray();
+        console.log(lon_lat_array.toString());
+      }); 
+      // move vertex listener
+      mapApi.event.addListener(path, 'set_at', function(event) {
+        console.log(path)//new path
+        var lon_lat_array = path.getArray();
+        console.log(lon_lat_array.toString());
+      });
     });
+
 
     this.props.editable ? this.drawingManager.setMap(this.props.map) : this.drawingManager.setMap(null);
   }
