@@ -27,26 +27,49 @@ class Polygon extends Component {
         clickable: true,
         editable: true,
         draggable: true
+      },
+      rectangleOptions : {
+        clickable: true,
+        editable: true,
+        draggable: true
       }
     });
 
-    //make a call to the overpass api here
-    mapApi.event.addListener(this.drawingManager, 'overlaycomplete', function(event) {
-      var path = event.overlay.getPath()
-      var lon_lat_array = event.overlay.getPath().getArray();
-      console.log(lon_lat_array.toString());
+    mapApi.event.addListener(this.drawingManager, 'circlecomplete', function(circle) {
+      console.log("drawing circle");
+      var radius = circle.getRadius();
+      console.log(radius.toString());
+      mapApi.event.addListener(circle,'radius_changed', function() {
+        console.log("editing");
+        radius = circle.getRadius();
+        console.log(radius.toString());
+      });
+    });
 
-      // new vertex listener
-      mapApi.event.addListener(path, 'insert_at', function(event) {
-        console.log(path)//new path
-        var lon_lat_array = path.getArray();
-        console.log(lon_lat_array.toString());
-      }); 
-      // move vertex listener
-      mapApi.event.addListener(path, 'set_at', function(event) {
-        console.log(path)//new path
-        var lon_lat_array = path.getArray();
-        console.log(lon_lat_array.toString());
+    mapApi.event.addListener(this.drawingManager, 'rectanglecomplete', function(rectangle) {
+      console.log("drawing rectangle");
+      var bounds = rectangle.getBounds();
+      console.log(bounds.toString());
+      mapApi.event.addListener(rectangle,'bounds_changed', function() {
+        console.log("editing");
+        bounds = rectangle.getBounds();
+        console.log(bounds.toString());
+      });
+    });
+
+    mapApi.event.addListener(this.drawingManager, 'polygoncomplete', function(polygon) {
+      console.log("drawing polygon");
+      var path = polygon.getPath();
+      console.log(path.getArray().toString());
+      mapApi.event.addListener(path,'insert_at', function() {
+        console.log("editing");
+        path = polygon.getPath();
+        console.log(path.getArray().toString());
+      });
+      mapApi.event.addListener(path,'set_at', function() {
+        console.log("editing");
+        path = polygon.getPath();
+        console.log(path.getArray().toString());
       });
     });
 
