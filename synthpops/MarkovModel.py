@@ -2,30 +2,27 @@ import synthpops as sp
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import copy
 
-def transitionProb(currentState, population, i, toggle):
+def transitionProb(currentState, population, i):
     # currently hard coded but these should be those diff eq / agent specific age + demographics
     b = 0.2
     c = 0.2
     d = 0.3
     e = 0.5
 
-    # temporary correction for susceptible people in the first few runs of simulation
-    if toggle:
-        a=1
-    else:
-        a = 0
-        s = {keys: 0 for keys in ['H', 'S', 'W']}
-        beta = {'H': 0.1, 'S': 0.01, 'W': 0.02}
-        for k in ['H', 'S', 'W']:
-            contactLayer = population[i]['contacts'][k]
-            if len(contactLayer):
-                s[k] = sum(currentState[j] == 'Mild' or currentState[j] ==
-                           'Severe' or currentState[j] == 'Critical' for j in contactLayer)
+    a = 0
+    s = {keys: 0 for keys in ['H', 'S', 'W']}
+    beta = {'H': 0.1, 'S': 0.01, 'W': 0.02}
+    for k in ['H', 'S', 'W']:
+        contactLayer = population[i]['contacts'][k]
+        if len(contactLayer):
+            s[k] = sum(currentState[j] == 'Mild' or currentState[j] ==
+                       'Severe' or currentState[j] == 'Critical' for j in contactLayer)
 
-        # normalize probability with total #infected in all contact networks
-        if (sum(s.values())):
-            a = sum(s[k]*beta[k] for k in ['H', 'S', 'W'])/sum(s.values())
+    # normalize probability with total #infected in all contact networks
+    if (sum(s.values())):
+        a = sum(s[k]*beta[k] for k in ['H', 'S', 'W'])/sum(s.values())
 
     if (a > 1):
         raise Exception('probability>1')
@@ -38,6 +35,7 @@ def transitionProb(currentState, population, i, toggle):
         'Recovered': [1-b, 0, 0, 0, b, 0],
         'Dead': [0, 0, 0, 0, 0, 1]
     }
+    #print(switch[currentState[i]])
     return switch[currentState[i]]
 
 
@@ -149,14 +147,9 @@ def main():
     initial_list = get_user_input(npop)
 
     # initialize params
-    timestep = 10
+    timestep = 100
     states = ['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead']
     currentState = {key: states[0] for key in range(npop)}
-    currentState[0] = 'Mild'
-    currentState[1] = 'Severe'  # todo
-    print(population[0]['contacts'])
-    print(population[1]['contacts'])
-
 
     # set initial state params from initial_list
     populationKeys = list(population.keys()); 
@@ -184,7 +177,7 @@ def main():
         results[t] = currentState
         for i in range(len(population)):
             # create transition probabilities for current state of ith agent
-            p = transitionProb(currentState, population,i,(t<4))
+            p = transitionProb(currentState, population, i)
 
             # get next state with probability distribution p
             try:
@@ -195,10 +188,18 @@ def main():
             # add to results
             if (nextState[i] == 'Mild' or nextState[i] == 'Severe' or nextState[i] == 'Critical'):
                 infected[t+1] += 1
+
+                # record timestep and probability of Susceptible -> Infected
+                # these are all around [0.98, 0.2, 0, 0, 0, 0]
+                """
+                if (currentState[i] == 'Susceptible'):
+                    print(t)
+                    print(p)
+                """
             elif (nextState[i] == 'Dead'):
                 deaths[t+1] += 1
-
-            currentState = nextState
+        # maybe this fixes it? currentState and nextState don't share refs
+        currentState = copy.deepcopy(nextState)
     results[timestep-1] = currentState
 
     print("infected")
