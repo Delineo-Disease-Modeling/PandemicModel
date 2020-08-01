@@ -4,7 +4,11 @@ import axios from 'axios';
 
 class Polygon extends Component {
 
-  componentDidMount({map,mapApi} = this.props) {
+  componentDidMount() {
+    this.drawPolygon();
+  }
+
+  drawPolygon({map,mapApi} = this.props) {
     this.drawingManager = new mapApi.drawing.DrawingManager({
       drawingMode: mapApi.drawing.OverlayType.POLYGON,
       drawingControl: true,
@@ -21,17 +25,17 @@ class Polygon extends Component {
       circleOptions: {
         clickable: true,
         editable: true,
-        draggable: true
+        //draggable: true
       },
       polygonOptions: {
         clickable: true,
         editable: true,
-        draggable: true
+        //draggable: true
       },
       rectangleOptions : {
         clickable: true,
         editable: true,
-        draggable: true
+        //draggable: true
       }
     });
 
@@ -50,10 +54,12 @@ class Polygon extends Component {
       console.log("drawing rectangle");
       var bounds = rectangle.getBounds();
       console.log(bounds.toString());
+      //this.polygonInfo(bounds.toString());
       mapApi.event.addListener(rectangle,'bounds_changed', function() {
         console.log("editing");
         bounds = rectangle.getBounds();
         console.log(bounds.toString());
+        //this.polygonInfo(bounds.toString());
       });
     });
 
@@ -61,20 +67,49 @@ class Polygon extends Component {
       console.log("drawing polygon");
       var path = polygon.getPath();
       console.log(path.getArray().toString());
+      //this.polygonInfo(path.getArray().toString());
       mapApi.event.addListener(path,'insert_at', function() {
         console.log("editing");
         path = polygon.getPath();
         console.log(path.getArray().toString());
+        //this.polygonInfo(path.getArray().toString());
       });
       mapApi.event.addListener(path,'set_at', function() {
         console.log("editing");
         path = polygon.getPath();
         console.log(path.getArray().toString());
+        //this.polygonInfo(path.getArray().toString());
       });
     });
 
 
     this.props.editable ? this.drawingManager.setMap(this.props.map) : this.drawingManager.setMap(null);
+
+  }
+  
+  polygonInfo(result) {
+    //result parameter has string with bounding polygon coordinates
+    const overpass_url = 'http://overpass-api.de/api/interpreter?data=';
+    const overpass_query = '[out:json];(node["amenity"](poly:"' + result + '");way["amenity"](poly:"' + result + '");rel["amenity"](poly:"' + result + '"););out center;';
+    const real_url = overpass_url + overpass_query;
+    console.log('overpass url = ' + real_url);
+    console.log('fetching...');
+    fetch(real_url, {cache: 'no-cache'}).then(response => response.json()).then(data => {
+      console.log(data);
+      this.download(JSON.stringify(data), 'polygonInfo', '.txt');
+    }/*, networkError => {
+         console.log(networkError.message)
+     }).then(jsonResponse => {
+      this.renderResponse(jsonResponse);
+    }*/);
+  }
+
+  download(content, fileName, contentType) {
+    var a = document.createElement("a");
+    var file = new Blob([content], {type: contentType});
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
   }
 
   componentDidUpdate(prevProps) {
@@ -126,10 +161,14 @@ class Polygon extends Component {
     // Same deal with Marker: No rendering necessary
     return null;
   }
+
+
 }
 
 const mapStateToProps = (state) => ({
     place: state.place
 });
+
+
 
 export default connect(mapStateToProps, null)(Polygon);
