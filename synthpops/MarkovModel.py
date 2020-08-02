@@ -2,7 +2,7 @@ import synthpops as sp
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import copy
+import pandas as pd
 
 def transitionProb(currentState, population, i):
     # currently hard coded but these should be those diff eq / agent specific age + demographics
@@ -17,8 +17,8 @@ def transitionProb(currentState, population, i):
     for k in ['H', 'S', 'W']:
         contactLayer = population[i]['contacts'][k]
         if len(contactLayer):
-            s[k] = sum(currentState[j] == 'Mild' or currentState[j] ==
-                       'Severe' or currentState[j] == 'Critical' for j in contactLayer)
+            s[k] = sum(currentState[j] == 1 or currentState[j] ==
+                       2 or currentState[j] == 3 for j in contactLayer)
 
     # normalize probability with total #infected in all contact networks
     if (sum(s.values())):
@@ -28,14 +28,13 @@ def transitionProb(currentState, population, i):
         raise Exception('probability>1')
 
     switch = {
-        'Susceptible': [1-a, a, 0, 0, 0, 0],
-        'Mild': [0, (1-c)/2, c, 0, (1-c)/2, 0],
-        'Severe': [0, 0, (1-d)/2, d, (1-d)/2, 0],
-        'Critical': [0, 0, 0, (1-e)/2, (1-e)/2, e],
-        'Recovered': [1-b, 0, 0, 0, b, 0],
-        'Dead': [0, 0, 0, 0, 0, 1]
+        0: [1-a, a, 0, 0, 0, 0],
+        1: [0, (1-c)/2, c, 0, (1-c)/2, 0],
+        2: [0, 0, (1-d)/2, d, (1-d)/2, 0],
+        3: [0, 0, 0, (1-e)/2, (1-e)/2, e],
+        4: [1-b, 0, 0, 0, b, 0],
+        5: [0, 0, 0, 0, 0, 1]
     }
-    #print(switch[currentState[i]])
     return switch[currentState[i]]
 
 
@@ -141,15 +140,15 @@ def main():
 
     population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
                                                              state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
-    #print(population)
 
     # takes in custom param
     initial_list = get_user_input(npop)
 
     # initialize params
-    timestep = 100
-    states = ['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead']
-    currentState = {key: states[0] for key in range(npop)}
+    timestep = 30
+    #states = ['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead']
+    states = np.arange(6) # this is for the heatmap visualization
+    currentState = np.arange(npop)
 
     # set initial state params from initial_list
     populationKeys = list(population.keys()); 
@@ -164,20 +163,20 @@ def main():
         start = end
 
     # initialize results list
-    results = {}
-    nextState = {key: states[0] for key in range(npop)}
+    df = pd.DataFrame(columns=np.arange(timestep))
+    df[0] = currentState
+    nextState = np.empty((npop,), dtype=np.int32)
     infected = [0 for t in range(timestep)]
     deaths = [0 for t in range(timestep)]
-    infected[0] = sum(currentState[j] == 'Mild' or currentState[j] ==
-                    'Severe' or currentState[j] == 'Critical' for j in population)
-    deaths[0] = sum(currentState[j] == 'Dead' for j in population)
+    infected[0] = sum(currentState[j] == states[1] or currentState[j] ==
+                    states[2] or currentState[j] == states[3] for j in population)
+    deaths[0] = sum(currentState[j] == states[5] for j in population)
 
     # run simulation
     for t in range(timestep-1):
-        results[t] = currentState
         for i in range(len(population)):
             # create transition probabilities for current state of ith agent
-            p = transitionProb(currentState, population, i)
+            p = transitionProb(df[t], population, i)
 
             # get next state with probability distribution p
             try:
@@ -186,39 +185,33 @@ def main():
                 raise Exception('bad probability')
 
             # add to results
-            if (nextState[i] == 'Mild' or nextState[i] == 'Severe' or nextState[i] == 'Critical'):
+            if (nextState[i] == states[1] or nextState[i] == states[2] or nextState[i] == states[3]):
                 infected[t+1] += 1
-
-                # record timestep and probability of Susceptible -> Infected
-                # these are all around [0.98, 0.2, 0, 0, 0, 0]
-                """
-                if (currentState[i] == 'Susceptible'):
-                    print(t)
-                    print(p)
-                """
-            elif (nextState[i] == 'Dead'):
+            elif (nextState[i] == states[5]):
                 deaths[t+1] += 1
-        # maybe this fixes it? currentState and nextState don't share refs
-        currentState = copy.deepcopy(nextState)
-    results[timestep-1] = currentState
+        df[t+1] = nextState
 
     print("infected")
     print(infected)
     print("deaths")
     print(deaths)
 
-    plt.subplot(2, 1, 1)
-    plt.plot(list(range(timestep)), infected)
-    plt.title('infected')
+    plt.figure()
+    plt.plot(list(range(timestep)), infected, label='infected')
+    plt.plot(list(range(timestep)), deaths, c='green', label='deaths')
+    plt.title('infected and deaths')
+    plt.legend(loc=2)
 
-    plt.subplot(2, 1, 2)
-    plt.plot(list(range(timestep)), deaths)
-    plt.title('deaths')
+    plt.figure()
+    plt.pcolormesh(df, cmap='inferno_r')
+    cbar = plt.colorbar(ticks=np.arange(6))
+    cbar.ax.set_yticklabels(['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead'])
+    plt.title('heatmap')
 
     plt.show()
 
     # pass results to VisualOutput.py
-    return [results, infected, deaths]
+    return [df, infected, deaths]
 
 
 if __name__ == "__main__":
