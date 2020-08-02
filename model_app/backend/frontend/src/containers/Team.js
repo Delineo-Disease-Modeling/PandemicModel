@@ -37,13 +37,16 @@ function Team(props){
        <div  align="left" className='LeaderList'>
          <LeaderList list={list}/>
        </div>
-       <h3 align="left">Team Members</h3>
-       <br></br>
-       <div  align="left" className='MemberList'>
-       <MemberList list={memberlist}/>
-       </div>
-
      </div>
+
+     <div className = 'CardGreenBackground1' >
+        <h3 align="left">Team Members</h3>
+        <br></br>
+        <div  align="left" className='MemberList'>
+          <MemberList list={memberlist}/>
+        </div>
+      </div>
+
    </div>
  );
 }
