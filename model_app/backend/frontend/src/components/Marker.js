@@ -21,7 +21,8 @@ class Marker extends Component {
     // Only re-render if a new search occurs or if one of the checkboxes change.
     componentDidUpdate(prevProps) {
         if(this.props.place !== prevProps.place) {
-            this.nearbySearch(this.props);
+            var boundary = this.props.place.geometry.viewport;
+            this.nearbySearch(this.props, boundary);
         }
         else if (this.props.filter !== prevProps.filter) {
             options.forEach(option => {
@@ -35,7 +36,7 @@ class Marker extends Component {
 
     // Conduct a search of the area and initialize the map with all markers + markerIcons.
     // Show only the markers that correspond to selected checkboxes.
-    nearbySearch({ map, mapApi, place } = this.props) {
+    nearbySearch({ map, mapApi} = this.props, boundary) {
         this.clearMarkers();
 
         // TODO: fix commmunication with redux store + polygon shape. for osm search if we're doing this?
@@ -47,7 +48,7 @@ class Marker extends Component {
         options.forEach(option => {
             // initialize search param
             let search = {
-                bounds: place.geometry.viewport,
+                bounds: boundary,
                 types: [`${option}`]
             };
             this.service.nearbySearch(search, (places, status) => {
