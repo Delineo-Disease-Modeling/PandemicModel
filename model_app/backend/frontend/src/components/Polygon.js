@@ -86,31 +86,6 @@ class Polygon extends Component {
     this.props.editable ? this.drawingManager.setMap(this.props.map) : this.drawingManager.setMap(null);
 
   }
-  
-  polygonInfo(result) {
-    //result parameter has string with bounding polygon coordinates
-    const overpass_url = 'http://overpass-api.de/api/interpreter?data=';
-    const overpass_query = '[out:json];(node["amenity"](poly:"' + result + '");way["amenity"](poly:"' + result + '");rel["amenity"](poly:"' + result + '"););out center;';
-    const real_url = overpass_url + overpass_query;
-    console.log('overpass url = ' + real_url);
-    console.log('fetching...');
-    fetch(real_url, {cache: 'no-cache'}).then(response => response.json()).then(data => {
-      console.log(data);
-      this.download(JSON.stringify(data), 'polygonInfo', '.txt');
-    }/*, networkError => {
-         console.log(networkError.message)
-     }).then(jsonResponse => {
-      this.renderResponse(jsonResponse);
-    }*/);
-  }
-
-  download(content, fileName, contentType) {
-    var a = document.createElement("a");
-    var file = new Blob([content], {type: contentType});
-    a.href = URL.createObjectURL(file);
-    a.download = fileName;
-    a.click();
-  }
 
   componentDidUpdate(prevProps) {
     this.props.editable ? this.drawingManager.setMap(this.props.map) : this.drawingManager.setMap(null);
