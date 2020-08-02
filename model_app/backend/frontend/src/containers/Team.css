@@ -129,3 +129,11 @@ h3{
 .MainHeader{
   margin-top: -40px;
 }
+
+.MemberList{
+  display: block;
+  width:90%;
+  margin-left: 7.5%;
+  margin-top:-20px;
+  padding:0;
+}
