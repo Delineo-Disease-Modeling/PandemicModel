@@ -1,6 +1,7 @@
 import {Component} from 'react';
 import { connect } from 'react-redux';
-import {options, markerIcons} from '../const/placeTypes.js';
+import {options, markerIcons, queries} from '../const/placeTypes.js';
+import axios from 'axios';
 
 class Marker extends Component {
     constructor(props) {
@@ -20,7 +21,7 @@ class Marker extends Component {
 
     // Only re-render if a new search occurs or if one of the checkboxes change.
     componentDidUpdate(prevProps) {
-        if(this.props.place !== prevProps.place) {
+        if(this.props.place !== prevProps.place || this.props.polygons !== prevProps.polygons) {
             this.nearbySearch(this.props);
         }
         else if (this.props.filter !== prevProps.filter) {
@@ -38,40 +39,45 @@ class Marker extends Component {
     nearbySearch({ map, mapApi, place, polygons} = this.props) {
         this.clearMarkers();
 
+        // TODO: loading stuff? so client doesn't get confused when searching takes forever
         // for every polygon, user-drawn or searched, get boundaries and query from overpass
         polygons.forEach(polygon => {
-            // TODO: check areaId thing for custom polyline for user-drawn polygons
-            let areaId = (polygon['type'] === "relation") ? polygon['id']+3600000000 : polygon['id']+2400000000; 
-            console.log(areaId);
-        })
+            // TODO: check areaId for custom polyline for user-drawn polygons
+            let areaId = (polygon['type'] === "relation") ? polygon['id']+3600000000 : polygon['id']+2400000000;
+            //console.log(areaId);
 
-        options.forEach(option => {
-            // initialize search param
-            let search = {
-                bounds: place.geometry.viewport,
-                types: [`${option}`]
-            };
-            this.service.nearbySearch(search, (places, status) => {
-                if (status === mapApi.places.PlacesServiceStatus.OK) {
-                    // create marker and add to array
-                    places.forEach(place => {
-                    let marker = new mapApi.Marker({ map:
-                        this.props.filter[option] ? map : null,
-                                position: place.geometry.location,
-                                icon: markerIcons[option]
-                    });
-                    this.markers[option].push(marker);
-
-                    // open info window when clicked
-                    mapApi.event.addListener(marker, 'click', () => {
-                        this.infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
-                                    'Type: ' + place.types + '</div>');
-                        this.infowindow.open(map, marker);
+            // for every place type, make an osm overpass query
+            options.forEach(option => {
+                axios.get('http://overpass-api.de/api/interpreter?data='+
+                    queries[option](`area:${areaId}`))
+                    .then(results => {
+                        // get the results of the query
+                        const {elements} = results.data;
+                        //console.log(elements);
+                        
+                        // create marker and add to array
+                        elements.forEach(place => {
+                        // TODO: plot ways and relations, not just nodes
+                        if (place.type === 'node') {
+                        let marker = new mapApi.Marker({ map:
+                            this.props.filter[option] ? map : null,
+                                    position: {lat: place.lat, lng: place.lon},
+                                    icon: markerIcons[option]
                         });
-                    });
-                }
+                        this.markers[option].push(marker);
+
+                        // open info window when clicked
+                        mapApi.event.addListener(marker, 'click', () => {
+                            this.infowindow.setContent('<div><strong>' + place.tags.name + '</strong><br>' +
+                                        JSON.stringify(place.tags) + '</div>');
+                            this.infowindow.open(map, marker);
+                            });
+                        }
+                        });
+                    })
+                    .catch(err => console.log(err));
             });
-        })
+        });
     }
 
     // set all markers of type 'option' to visible
