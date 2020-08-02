@@ -35,14 +35,15 @@ class Marker extends Component {
 
     // Conduct a search of the area and initialize the map with all markers + markerIcons.
     // Show only the markers that correspond to selected checkboxes.
-    nearbySearch({ map, mapApi, place } = this.props) {
+    nearbySearch({ map, mapApi, place, polygons} = this.props) {
         this.clearMarkers();
 
-        // TODO: fix commmunication with redux store + polygon shape. for osm search if we're doing this?
-        // if it's smth with defined borders like a county then this is easy
-        // if it's some rando shape then this will kind of be a mess lol
-        //let areaId = (place['osmType'] === "relation") ? place['osmId']+3600000000 : place['osmId']+2400000000; 
-        //console.log(areaId);
+        // for every polygon, user-drawn or searched, get boundaries and query from overpass
+        polygons.forEach(polygon => {
+            // TODO: check areaId thing for custom polyline for user-drawn polygons
+            let areaId = (polygon['type'] === "relation") ? polygon['id']+3600000000 : polygon['id']+2400000000; 
+            console.log(areaId);
+        })
 
         options.forEach(option => {
             // initialize search param
@@ -101,7 +102,8 @@ class Marker extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    place: state.place
+    place: state.place,
+    polygons: state.polygons
 });
 
 export default connect(mapStateToProps, null)(Marker);
