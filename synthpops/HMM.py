@@ -10,8 +10,7 @@ def most_likely_states_for_person(timestamps=20, initial_prob={}, transition_mat
         the person's disease status progresses (a path)
     '''
     # 2 means not tested, 1 means tested negative, 0 means tested positive
-    observations = [2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2,
-                    2, 2, 2, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2]
+    # observations = [2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2]
 
     # the transition matrix from previous state qi to current state qj: currently also dummy values only
     a = 0
@@ -276,10 +275,13 @@ def generate_observations_for_population(npop=2000, records_by_day={}):
         tested_positive.clear()
         tested_negative.clear()
 
-    print(results)
+    return results
 
 
 if __name__ == "__main__":
     # hmm_propogation()
     # most_likely_states_for_person()
-    generate_observations_for_population()
+    status_for_each_person = generate_observations_for_population()
+    for person in status_for_each_person.keys():
+        observations = status_for_each_person[person]
+        most_likely_states_for_person(timestamps=10, observations=observations)
