@@ -1,3 +1,6 @@
+import random
+
+
 def most_likely_states_for_person(timestamps=20, initial_prob={}, transition_matrix={}, likelihood_matrix={}, observations=[]):
     '''
         This function takes in all relavant info of a person (transition matrix, likelihood matrix, observations, etc) 
@@ -158,6 +161,125 @@ def most_likely_states_for_person(timestamps=20, initial_prob={}, transition_mat
     print(disease_states)
 
 
+def generate_observations_for_population(npop=2000, records_by_day={}):
+    """
+        This function takes in total population and a dict of positive and negative tests results over the days, and
+        distribute the new diagnosis among people.
+
+        sample input: 
+        {
+            8/1/2020: {
+                positive: 20,
+                negative: 80,
+                untested: 900,
+            },
+            8/2/2020:{}
+        } // a total of 10 days
+
+        sample output: {
+            0: [2 2 2 2 1 2 2 2 2 2],   // array of length 10
+            1: [2 2 0 2 2 2 2 2 2 1],...
+        }
+
+        *** note on state ***
+        0 = tested positive
+        1 = tested negative
+        2 = untested
+
+        For any day between a person's two consecutive tests, their status is 2. 
+    """
+
+    # dummy for now
+    records_by_day = {
+        0: {
+            'positive': 0,
+            'negative': 0,
+        },
+        1: {
+            'positive': 1,
+            'negative': 2,
+        },
+        2: {
+            'positive': 3,
+            'negative': 2,
+        },
+        3: {
+            'positive': 10,
+            'negative': 9,
+        },
+        4: {
+            'positive': 19,
+            'negative': 21,
+        },
+        5: {
+            'positive': 29,
+            'negative': 25,
+        },
+        6: {
+            'positive': 45,
+            'negative': 26,
+        },
+        7: {
+            'positive': 50,
+            'negative': 30,
+        },
+        8: {
+            'positive': 48,
+            'negative': 46,
+        },
+        9: {
+            'positive': 53,
+            'negative': 70,
+        },
+        10: {
+            'positive': 61,
+            'negative': 82,
+        },
+    }
+
+    # use sets to track people's last diagnose and days since the diagnose
+    tested_positive = set()
+    tested_negative = set()
+    results = {}
+
+    for i in range(0, npop):
+        results[i] = []
+
+    # use a naive algorithm for now, cannot get rid of cases like 01010
+    total_days = len(records_by_day)
+    for i in range(0, total_days):
+        num_positive = records_by_day[i]['positive']
+        num_negative = records_by_day[i]['negative']
+
+        # assign to people's indices of who tested positive this day
+        for j in range(0, num_positive):
+            next_pos = random.randint(0, npop)
+            while next_pos in tested_positive:
+                next_pos = random.randint(0, npop)
+            tested_positive.add(next_pos)
+
+        # assign to people's indices of who tested negative this day
+        for k in range(0, num_negative):
+            next_pos = random.randint(0, npop)
+            while next_pos in tested_negative or next_pos in tested_positive:
+                next_pos = random.randint(0, npop)
+            tested_negative.add(next_pos)
+
+        for person in results.keys():
+            if person in tested_positive:
+                results[person].append(0)
+            elif person in tested_negative:
+                results[person].append(1)
+            else:
+                results[person].append(2)
+
+        tested_positive.clear()
+        tested_negative.clear()
+
+    print(results)
+
+
 if __name__ == "__main__":
     # hmm_propogation()
-    most_likely_states_for_person()
+    # most_likely_states_for_person()
+    generate_observations_for_population()
