@@ -1,3 +1,6 @@
 export const GET_PLACE = 'GET_PLACE';
 export const GET_DEMOGRAPHICS = 'GET_DEMOGRAPHICS';
 export const GET_TIMESERIES = 'GET_TIMESERIES';
+export const ADD_POLYGON = 'ADD_POLYGON';
+export const DELETE_POLYGON = 'DELETE_POLYGON';
+export const RESET_POLYGON = 'RESET_POLYGON';

@@ -1,6 +1,7 @@
 import {Component} from 'react';
 import { connect } from 'react-redux';
-import {options, markerIcons} from '../const/placeTypes.js';
+import {options, markerIcons, queries} from '../const/placeTypes.js';
+import axios from 'axios';
 
 class Marker extends Component {
     constructor(props) {
@@ -20,9 +21,14 @@ class Marker extends Component {
 
     // Only re-render if a new search occurs or if one of the checkboxes change.
     componentDidUpdate(prevProps) {
+<<<<<<< HEAD
         if(this.props.place !== prevProps.place) {
             var boundary = this.props.place.geometry.viewport;
             this.nearbySearch(this.props, boundary);
+=======
+        if(this.props.place !== prevProps.place || this.props.polygons !== prevProps.polygons) {
+            this.nearbySearch(this.props);
+>>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
         }
         else if (this.props.filter !== prevProps.filter) {
             options.forEach(option => {
@@ -36,15 +42,21 @@ class Marker extends Component {
 
     // Conduct a search of the area and initialize the map with all markers + markerIcons.
     // Show only the markers that correspond to selected checkboxes.
+<<<<<<< HEAD
     nearbySearch({ map, mapApi} = this.props, boundary) {
+=======
+    nearbySearch({ map, mapApi, place, polygons} = this.props) {
+>>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
         this.clearMarkers();
 
-        // TODO: fix commmunication with redux store + polygon shape. for osm search if we're doing this?
-        // if it's smth with defined borders like a county then this is easy
-        // if it's some rando shape then this will kind of be a mess lol
-        //let areaId = (place['osmType'] === "relation") ? place['osmId']+3600000000 : place['osmId']+2400000000; 
-        //console.log(areaId);
+        // TODO: loading stuff? so client doesn't get confused when searching takes forever
+        // for every polygon, user-drawn or searched, get boundaries and query from overpass
+        polygons.forEach(polygon => {
+            // TODO: check areaId for custom polyline for user-drawn polygons
+            let areaId = (polygon['type'] === "relation") ? polygon['id']+3600000000 : polygon['id']+2400000000;
+            //console.log(areaId);
 
+<<<<<<< HEAD
         options.forEach(option => {
             // initialize search param
             let search = {
@@ -61,17 +73,40 @@ class Marker extends Component {
                                 icon: markerIcons[option]
                     });
                     this.markers[option].push(marker);
-
-                    // open info window when clicked
-                    mapApi.event.addListener(marker, 'click', () => {
-                        this.infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
-                                    'Type: ' + place.types + '</div>');
-                        this.infowindow.open(map, marker);
+=======
+            // for every place type, make an osm overpass query
+            options.forEach(option => {
+                axios.get('http://overpass-api.de/api/interpreter?data='+
+                    queries[option](`area:${areaId}`))
+                    .then(results => {
+                        // get the results of the query
+                        const {elements} = results.data;
+                        //console.log(elements);
+                        
+                        // create marker and add to array
+                        elements.forEach(place => {
+                        // TODO: plot ways and relations, not just nodes
+                        if (place.type === 'node') {
+                        let marker = new mapApi.Marker({ map:
+                            this.props.filter[option] ? map : null,
+                                    position: {lat: place.lat, lng: place.lon},
+                                    icon: markerIcons[option]
                         });
-                    });
-                }
+                        this.markers[option].push(marker);
+>>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
+
+                        // open info window when clicked
+                        mapApi.event.addListener(marker, 'click', () => {
+                            this.infowindow.setContent('<div><strong>' + place.tags.name + '</strong><br>' +
+                                        JSON.stringify(place.tags) + '</div>');
+                            this.infowindow.open(map, marker);
+                            });
+                        }
+                        });
+                    })
+                    .catch(err => console.log(err));
             });
-        })
+        });
     }
 
     // set all markers of type 'option' to visible
@@ -102,7 +137,8 @@ class Marker extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    place: state.place
+    place: state.place,
+    polygons: state.polygons
 });
 
 export default connect(mapStateToProps, null)(Marker);

@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
+import { addPolygon, deletePolygon, resetPolygon } from '../actions/polygonActions';
 import axios from 'axios';
 
 class Polygon extends Component {
@@ -39,6 +40,7 @@ class Polygon extends Component {
       }
     });
 
+<<<<<<< HEAD
     mapApi.event.addListener(this.drawingManager, 'circlecomplete', function(circle) {
       console.log("drawing circle");
       var radius = circle.getRadius();
@@ -61,6 +63,18 @@ class Polygon extends Component {
         console.log(bounds.toString());
         //this.polygonInfo(bounds.toString());
       });
+=======
+    mapApi.event.addListener(this.drawingManager, 'overlaycomplete', function(event) {
+      console.log(event.overlay)
+      //var lon_lat_array = event.overlay.getPath().getArray();
+      //console.log(lon_lat_array.toString());
+
+      // TODO: for each user-drawn polygon, create osm polygon and save to redux store with
+      // this.props.addPolygon(whatever)
+
+      // TODO: delete polygon with id from store using
+      // this.props.deletePolygon(id)
+>>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
     });
 
     mapApi.event.addListener(this.drawingManager, 'polygoncomplete', function(polygon) {
@@ -92,9 +106,12 @@ class Polygon extends Component {
 
     if (this.props.place !== prevProps.place) {
       const {map, place} = this.props;
+
       // if we already searched for a place, clear that polygon overlay
+      // clear redux store completely
       if (this.feature) {
         map.data.remove(this.feature[0]);
+        this.props.resetPolygon();
       }
 
       // get polygon boundaries from nominatim api if they exist
@@ -115,10 +132,8 @@ class Polygon extends Component {
               });
           }
 
-          // TODO: add osm relation id to redux store so we have access to it for nearby search
-          // probably need new variable
-          place['osmId'] = data['osm_id'];
-          place['osmType'] = data['osm_type'];
+          // add osm relation id to redux store so we have access to it for nearby search
+          this.props.addPolygon(data['osm_id'], data['osm_type']);
         })
         .catch(err => console.log(err));
     }
@@ -141,9 +156,14 @@ class Polygon extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    place: state.place
+    place: state.place,
+    polygons: state.polygons // unsure if we need this, currently unused
 });
 
+<<<<<<< HEAD
 
 
 export default connect(mapStateToProps, null)(Polygon);
+=======
+export default connect(mapStateToProps, { addPolygon, deletePolygon, resetPolygon } )(Polygon);
+>>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
