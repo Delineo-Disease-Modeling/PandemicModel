@@ -209,12 +209,41 @@ def main():
     plt.title('infected and deaths')
     plt.legend(loc=2)
 
+    #plt.figure()
+    #plt.pcolormesh(df, cmap='inferno_r')
+    #cbar = plt.colorbar(ticks=np.arange(6))
+    #cbar.ax.set_yticklabels(['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead'])
+    #plt.title('heatmap')
+    state_list = df[timestep-1].tolist()
+    su = 0
+    m = 0
+    se = 0
+    c = 0
+    r = 0
+    d = 0
+    for i in state_list:
+        if (i == 0):
+            su += 1
+        if (i == 1):
+            m += 1
+        if (i == 2):
+            se += 1
+        if (i == 3):
+            c += 1
+        if (i == 4):
+            r += 1;
+        if (i == 5):
+            d +=1
     plt.figure()
-    plt.pcolormesh(df, cmap='inferno_r')
-    cbar = plt.colorbar(ticks=np.arange(6))
-    cbar.ax.set_yticklabels(['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead'])
-    plt.title('heatmap')
-
+    objects = ('Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead')
+    y_pos = np.arange(len(objects))
+    performance = [su,m,se,c,r,d]
+    plt.bar(y_pos, performance, align='center', alpha=0.5)
+    plt.xticks(y_pos, objects)
+    plt.ylabel('Number of people in state')
+    plt.title('Infection states at end of time period')
+    
+    
     plt.show()
 
     # pass results to VisualOutput.py
