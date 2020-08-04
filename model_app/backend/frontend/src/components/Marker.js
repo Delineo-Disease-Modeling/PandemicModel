@@ -21,14 +21,8 @@ class Marker extends Component {
 
     // Only re-render if a new search occurs or if one of the checkboxes change.
     componentDidUpdate(prevProps) {
-<<<<<<< HEAD
-        if(this.props.place !== prevProps.place) {
-            var boundary = this.props.place.geometry.viewport;
-            this.nearbySearch(this.props, boundary);
-=======
         if(this.props.place !== prevProps.place || this.props.polygons !== prevProps.polygons) {
             this.nearbySearch(this.props);
->>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
         }
         else if (this.props.filter !== prevProps.filter) {
             options.forEach(option => {
@@ -42,11 +36,7 @@ class Marker extends Component {
 
     // Conduct a search of the area and initialize the map with all markers + markerIcons.
     // Show only the markers that correspond to selected checkboxes.
-<<<<<<< HEAD
-    nearbySearch({ map, mapApi} = this.props, boundary) {
-=======
     nearbySearch({ map, mapApi, place, polygons} = this.props) {
->>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
         this.clearMarkers();
 
         // TODO: loading stuff? so client doesn't get confused when searching takes forever
@@ -56,24 +46,6 @@ class Marker extends Component {
             let areaId = (polygon['type'] === "relation") ? polygon['id']+3600000000 : polygon['id']+2400000000;
             //console.log(areaId);
 
-<<<<<<< HEAD
-        options.forEach(option => {
-            // initialize search param
-            let search = {
-                bounds: boundary,
-                types: [`${option}`]
-            };
-            this.service.nearbySearch(search, (places, status) => {
-                if (status === mapApi.places.PlacesServiceStatus.OK) {
-                    // create marker and add to array
-                    places.forEach(place => {
-                    let marker = new mapApi.Marker({ map:
-                        this.props.filter[option] ? map : null,
-                                position: place.geometry.location,
-                                icon: markerIcons[option]
-                    });
-                    this.markers[option].push(marker);
-=======
             // for every place type, make an osm overpass query
             options.forEach(option => {
                 axios.get('http://overpass-api.de/api/interpreter?data='+
@@ -93,7 +65,6 @@ class Marker extends Component {
                                     icon: markerIcons[option]
                         });
                         this.markers[option].push(marker);
->>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
 
                         // open info window when clicked
                         mapApi.event.addListener(marker, 'click', () => {

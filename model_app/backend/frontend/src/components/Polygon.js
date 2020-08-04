@@ -40,7 +40,6 @@ class Polygon extends Component {
       }
     });
 
-<<<<<<< HEAD
     mapApi.event.addListener(this.drawingManager, 'circlecomplete', function(circle) {
       console.log("drawing circle");
       var radius = circle.getRadius();
@@ -63,18 +62,6 @@ class Polygon extends Component {
         console.log(bounds.toString());
         //this.polygonInfo(bounds.toString());
       });
-=======
-    mapApi.event.addListener(this.drawingManager, 'overlaycomplete', function(event) {
-      console.log(event.overlay)
-      //var lon_lat_array = event.overlay.getPath().getArray();
-      //console.log(lon_lat_array.toString());
-
-      // TODO: for each user-drawn polygon, create osm polygon and save to redux store with
-      // this.props.addPolygon(whatever)
-
-      // TODO: delete polygon with id from store using
-      // this.props.deletePolygon(id)
->>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
     });
 
     mapApi.event.addListener(this.drawingManager, 'polygoncomplete', function(polygon) {
@@ -160,10 +147,4 @@ const mapStateToProps = (state) => ({
     polygons: state.polygons // unsure if we need this, currently unused
 });
 
-<<<<<<< HEAD
-
-
-export default connect(mapStateToProps, null)(Polygon);
-=======
 export default connect(mapStateToProps, { addPolygon, deletePolygon, resetPolygon } )(Polygon);
->>>>>>> c8b22659575b36d543b098ad7663c2ee012bdd0e
