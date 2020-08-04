@@ -20,7 +20,7 @@ class OptionMenu extends Component{
 
     handleAdd = ()=>{
         this.setState({hidden: !this.state.hidden})
-        console.log("Add Was clicked:"+ this.state.hidden)
+        //console.log("Add Was clicked:"+ this.state.hidden)
     }
 
     toggle = () => this.setState({dropdownOpen: !this.state.dropdownOpen});
@@ -56,7 +56,7 @@ class OptionMenu extends Component{
         return(
             <div>
                 {this.state.policyComponent.map((item)=>{
-                    return(<Intervention policy={item.policy} days={item.duration} remove={this.deleteItem.bind(this)}/>);
+                    return(<Intervention key={item.policy} policy={item.policy} days={item.duration} remove={this.deleteItem.bind(this)}/>);
                 })}
                 <div align='left' className={this.state.hidden? 'hidden':''}>
                     <div className='row'>
@@ -75,7 +75,7 @@ class OptionMenu extends Component{
                         </div>
 
                         <div align='left' className='col4'>
-                            <label for='usr' style={{color:'white'}}>Duration (in days): </label>
+                            <label htmlFor='usr' style={{color:'white'}}>Duration (in days): </label>
                             <input align='left' required size='15' type='text' style={{marginRight:'30px', marginLeft:'0px'}} onChange={event=> this.setState({duration:event.target.value})}></input>
                 
                         </div>

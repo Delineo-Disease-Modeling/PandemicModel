@@ -197,8 +197,7 @@ def main():
                 infected[t] += 1
             elif (nextState[i] == 'Dead'):
                 deaths[t] += 1
-
-            currentState = nextState
+        currentState = nextState
 
     #print("infected")
     print(infected)

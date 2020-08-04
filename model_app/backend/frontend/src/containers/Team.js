@@ -1,8 +1,7 @@
 import React from 'react';
-import {Header} from '../components'
-import leaders from '../const/leader.js'
-import members from '../const/member.js'
-import './Team.css'
+import leaders from '../const/leader.js';
+import members from '../const/member.js';
+import './Team.css';
 
 function Team(props){
   let supervisorList = [];
@@ -54,7 +53,6 @@ function Team(props){
 
 function LeaderList(props){
 
-  let counter = 0;
   const leaderCards = props.list.map(leader => {
     return(
       <TeamLeaderCardLeft key={leader.name} name={leader.name} description = {leader.major} />
@@ -65,8 +63,7 @@ function LeaderList(props){
 }
 
 function MemberList(props){
-
-  let counter = 0;
+  
   const memberCards = props.list.map(member => {
     return(
       <MemberCardLeft key={member.name} name={member.name} description = {member.major} />

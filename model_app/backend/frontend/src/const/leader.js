@@ -6,7 +6,7 @@ export const LEADERS = [
       name: 'Anton Dahbura',
       designation: 'Research Supervisor',
       abbr: 'CEO',
-      // featured: false,
+      image: AntonImg,
       profession: 'Executive Director of Johns Hopkins Infromation Security Insititute',
       university:'Johns Hopkins University'
     },
@@ -33,17 +33,16 @@ export const LEADERS = [
       designation: 'Team Leader',
       major:'Team Leader Major'
     },
-
     {
-      id: 3,
-      name: 'Team Leader 3',
+      id: 4,
+      name: 'Team Leader 4',
       image: ProfileImg,
       designation: 'Team Leader',
       major:'Team Leader Major'
     },
     {
-      id: 4,
-      name: 'Team Leader 4',
+      id: 5,
+      name: 'Team Leader 5',
       image: ProfileImg,
       designation: 'Team Leader',
       major:'Team Leader Major'

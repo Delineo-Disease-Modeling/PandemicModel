@@ -28,7 +28,7 @@ class Simulator extends Component{
             axios.delete(`./simulations/${this.state.jobId}`, {cancelToken: this.source.token})
             .catch(err => {
                     if (axios.isCancel(err)) {
-                        console.log('Request canceled', err.message);
+                        console.log('Request canceled:', err.message);
                     } else { console.log(err) }
                 });
         }
@@ -51,7 +51,7 @@ class Simulator extends Component{
                         })
                         .catch(err => {
                             if (axios.isCancel(err)) {
-                                console.log('Request canceled', err.message);
+                                console.log('Request canceled:', err.message);
                             } else { console.log(err) }
                         });
 
@@ -61,7 +61,7 @@ class Simulator extends Component{
             })
             .catch(err => {
                 if (axios.isCancel(err)) {
-                    console.log('Request canceled', err.message);
+                    console.log('Request canceled:', err.message);
                 } else { console.log(err) }
             });
     }
