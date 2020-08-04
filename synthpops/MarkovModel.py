@@ -167,6 +167,7 @@ def main():
     df[0] = currentState
     nextState = np.empty((npop,), dtype=np.int32)
     infected = [0 for t in range(timestep)]
+    newInfected = [0 for t in range(timestep)]
     deaths = [0 for t in range(timestep)]
     infected[0] = sum(currentState[j] == states[1] or currentState[j] ==
                     states[2] or currentState[j] == states[3] for j in population)
@@ -187,18 +188,24 @@ def main():
             # add to results
             if (nextState[i] == states[1] or nextState[i] == states[2] or nextState[i] == states[3]):
                 infected[t+1] += 1
+                # count Susceptible -> Mild
+                if (df.at[i,t] == states[0]):
+                    newInfected[t+1] += 1
             elif (nextState[i] == states[5]):
                 deaths[t+1] += 1
         df[t+1] = nextState
 
     print("infected")
     print(infected)
+    print("newly infected")
+    print(newInfected)
     print("deaths")
     print(deaths)
 
     plt.figure()
     plt.plot(list(range(timestep)), infected, label='infected')
     plt.plot(list(range(timestep)), deaths, c='green', label='deaths')
+    plt.plot(list(range(timestep)), newInfected, c='red', label='newly infected')
     plt.title('infected and deaths')
     plt.legend(loc=2)
 
