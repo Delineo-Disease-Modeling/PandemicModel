@@ -209,11 +209,11 @@ def main():
     plt.title('infected and deaths')
     plt.legend(loc=2)
 
-    #plt.figure()
-    #plt.pcolormesh(df, cmap='inferno_r')
-    #cbar = plt.colorbar(ticks=np.arange(6))
-    #cbar.ax.set_yticklabels(['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead'])
-    #plt.title('heatmap')
+    plt.figure()
+    plt.pcolormesh(df, cmap='inferno_r')
+    cbar = plt.colorbar(ticks=np.arange(6))
+    cbar.ax.set_yticklabels(['Susceptible', 'Mild', 'Severe', 'Critical', 'Recovered', 'Dead'])
+    plt.title('heatmap')
     state_list = df[timestep-1].tolist()
     su = 0
     m = 0
@@ -242,6 +242,10 @@ def main():
     plt.xticks(y_pos, objects)
     plt.ylabel('Number of people in state')
     plt.title('Infection states at end of time period')
+
+    plt.figure()
+    plt.pie(performance, labels=objects)
+    plt.title('Percentage of people in infection state at end of time period')
     
     
     plt.show()
