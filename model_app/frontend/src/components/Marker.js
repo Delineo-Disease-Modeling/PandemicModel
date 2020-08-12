@@ -21,8 +21,14 @@ class Marker extends Component {
 
     // Only re-render if a new search occurs or if one of the checkboxes change.
     componentDidUpdate(prevProps) {
-        if(this.props.place !== prevProps.place || this.props.polygons !== prevProps.polygons) {
-            this.nearbySearch(this.props);
+        if (this.props.polygons !== prevProps.polygons) {
+            this.clearMarkers();
+
+            // TODO: loading stuff? so client doesn't get confused when searching takes forever
+            // for every polygon, user-drawn or searched, get boundaries and query from overpass
+            this.props.polygons.forEach(polygon => {
+                this.nearbySearch(this.props, polygon);
+            })
         }
         else if (this.props.filter !== prevProps.filter) {
             options.forEach(option => {
@@ -36,29 +42,24 @@ class Marker extends Component {
 
     // Conduct a search of the area and initialize the map with all markers + markerIcons.
     // Show only the markers that correspond to selected checkboxes.
-    nearbySearch({ map, mapApi, place, polygons} = this.props) {
-        this.clearMarkers();
+    nearbySearch({ map, mapApi } = this.props, polygon) {
+        // TODO: check areaId for custom polyline for user-drawn polygons
+        let areaId = (polygon['type'] === "relation") ? polygon['id']+3600000000 : polygon['id']+2400000000;
 
-        // TODO: loading stuff? so client doesn't get confused when searching takes forever
-        // for every polygon, user-drawn or searched, get boundaries and query from overpass
-        polygons.forEach(polygon => {
-            // TODO: check areaId for custom polyline for user-drawn polygons
-            let areaId = (polygon['type'] === "relation") ? polygon['id']+3600000000 : polygon['id']+2400000000;
-            //console.log(areaId);
-
-            // for every place type, make an osm overpass query
-            options.forEach(option => {
-                axios.get('http://overpass-api.de/api/interpreter?data='+
-                    queries[option](`area:${areaId}`))
-                    .then(results => {
-                        // get the results of the query
-                        const {elements} = results.data;
-                        //console.log(elements);
-                        
-                        // create marker and add to array
-                        elements.forEach(place => {
-                        // TODO: plot ways and relations, not just nodes
-                        if (place.type === 'node') {
+        // for every place type, make an osm overpass query
+        options.forEach(option => {
+            axios.get('https://overpass.kumi.systems/api/interpreter?data='+
+                queries[option](`area:${areaId}`))
+                // Overpass Kumi says we should include contact info but I think Chrome blocks us from setting User-Agent
+                //{headers: {'User-Agent': 'Delineo Disease Modeling (email: delineodiseasemodeling-at-gmail.com)'}})
+                .then(results => {
+                    // get the results of the query
+                    const {elements} = results.data;
+                    
+                    // create marker and add to array
+                    elements.forEach(place => {
+                    // TODO: plot ways and relations, not just nodes
+                    if (place.type === 'node') {
                         let marker = new mapApi.Marker({ map:
                             this.props.filter[option] ? map : null,
                                     position: {lat: place.lat, lng: place.lon},
@@ -73,10 +74,9 @@ class Marker extends Component {
                             this.infowindow.open(map, marker);
                             });
                         }
-                        });
-                    })
-                    .catch(err => console.log(err));
-            });
+                    });
+                })
+                .catch(err => console.log(err));
         });
     }
 
@@ -108,7 +108,6 @@ class Marker extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    place: state.place,
     polygons: state.polygons
 });
 
