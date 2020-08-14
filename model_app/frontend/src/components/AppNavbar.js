@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Navbar, NavbarBrand, Nav, NavbarToggler, Collapse, NavItem } from 'reactstrap';
 import {NavLink} from 'react-router-dom';
 import './AppNavbar.css';
+import Logo from "./../images/delineo_vector_2.0.1.png"
 
 class AppNavbar extends Component{
 
@@ -46,7 +47,7 @@ class AppNavbar extends Component{
                 <div className="container">
                 <NavbarToggler onClick={this.toggleNav} />
                 <NavbarBrand className="mr-auto" href="/">
-                    <h2 style={styleSheet}> Delineo Modeling</h2>
+                    <img src={Logo} alt="Logo" width="200" height="65"></img>
                 </NavbarBrand>
                 <Collapse isOpen={this.state.isNavOpen} navbar>
                     <Nav navbar className="ml-auto">
