@@ -1416,7 +1416,7 @@ def show_layers(popdict, show_ages=False, show_n=20):
                 print(k, popdict[uid]['contacts'][k])
 
 
-def assign_socio_econ_status_from_contacts_dict(npop, lowest_percentage=1, middle_percentage=0, high_percentage=0, highest_percentage=0):
+def assign_socio_econ_status_from_contacts_dict(npop, contacts, lowest_percentage=1, middle_percentage=0, high_percentage=0, highest_percentage=0):
     # update according to Barnsdall data first
     lowest = .59
     middle = .32
@@ -1522,7 +1522,3 @@ def assign_socio_econ_status_from_contacts_dict(npop, lowest_percentage=1, middl
     for se_class in adjusting_dict.keys():
         for person in adjusting_dict[se_class]:
             contacts[person]['socio-econ'] = class_to_num[se_class]
-
-    print(se_list_full)
-    print(remaining_dict)
-    print(adjusting_dict)
