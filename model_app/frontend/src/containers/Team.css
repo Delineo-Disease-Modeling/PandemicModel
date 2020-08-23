@@ -1,0 +1,139 @@
+.SuperCard {
+    overflow: hidden;
+    padding-left: 20px;
+    border: 1px transparent;
+    width: 90%;
+    height: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 25px;
+    display: inline-block;
+    box-sizing: border-box; 
+    margin-bottom: 20px;
+  }
+
+  .LeaderCard {
+    overflow: hidden;
+    padding:0px;
+    border: 1px transparent;
+    width: 30%;
+    height: fit-content;
+    border-radius: 25px;
+    box-sizing: border-box; 
+    margin-top: 0px;
+    margin-bottom: 15px;
+    display: inline-block;
+  }
+
+  .CardBackground{
+    background-color: #222629;
+    height: 100%;
+    width: 100vh;
+    min-height: 100%;
+    min-width: 100%;
+    margin:0;
+    align-content: center;
+    padding-bottom: 5%;
+} 
+
+   .CardGreenBackground1{
+  margin-top: 0%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #1b4441c2;
+  width: 90%;
+  align-self: center; 
+  align-items: center;
+}
+
+  .CardLightGreenBackground{
+  margin-top: 0%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #1B4441;
+  width: 90%;
+  align-self: center; 
+  align-items: center;
+}
+  
+  .Inner {
+    padding:1px;
+    float: left;
+    margin-left: 2%;
+    width: 70%;
+    height: fit-content;
+  
+  }
+  
+  .LeaderName{
+    text-align: left;
+    font-size: 20px;
+    font-weight: normal;
+    color: #66FCF1;
+  }
+  
+  .Text {
+    float: left;
+    text-align: left;
+    width:100%;
+    max-width: 100%;
+    height: 5%;
+    color: white;
+  }
+  
+  .header {
+    margin-top: 1%;
+    margin-bottom: 0%;
+    color: white;
+  }
+  
+  .header2 {
+    float: left;
+    margin-left: 8%;
+    margin-right: auto;
+    margin-top: 1%;
+    font-size: 25px;
+    color: white;
+  } 
+
+h2{
+    color: white;
+    padding-bottom: 2%;
+}
+
+h3{
+  color: white;
+  padding-top: 2%;
+  padding-bottom: 3%;
+  margin-right: auto;
+  margin-left: 8%;
+  font-size: 10px;
+  
+}
+
+.ProfessionText{
+  text-align: left;
+  font-size: 15px;
+  font-weight: normal;
+  color: #ffffff;
+} 
+
+.LeaderList{
+  display: block;
+  width:90%;
+  margin-left: 7.5%;
+  margin-top:-20px;
+  padding:0;
+}
+
+.MainHeader{
+  margin-top: -40px;
+}
+
+.MemberList{
+  display: block;
+  width:90%;
+  margin-left: 7.5%;
+  margin-top:-20px;
+  padding:0;
+}
