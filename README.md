@@ -8,26 +8,34 @@ The architecture group is responsible for deploying the web application that wil
 ## `Installation`
 [Node.js](https://nodejs.org/en/download) and [Python >=3.6](https://www.python.org/downloads/) are required.
 
-1. Install all dependencies: Navigate to **model_app**. In Terminal or CMD, run
-	`npm run server-install
-	npm run client-install`
+1. Install all dependencies: Navigate to **model_app**. In Terminal or CMD, enter
+	```
+	npm run server-install
+	npm run client-install
+	```
 
 2. Set up environment variables: Create two .env files, one in **model_app/frontend** and one in **model_app/backend**.
 
 The frontend .env file looks like
-`MAP_API=<your-map-api>`
+```
+MAP_API=<your-map-api>
+```
 
 The backend .env file looks like
-`ATLAS_URI=<MongoDB-URI>
+```
+ATLAS_URI=<MongoDB-URI>
 PYTHON_PATH=<path-where-to-locate-the-"python"-executable>
-SCRIPT_PATH=<path-of-the-script-to-execute>`
+SCRIPT_PATH=<path-of-the-script-to-execute>
+```
 
 3. Activate the virtual environment for the synthpops simulation. Instructions for creating the virtual environment are found in **model_app/backend/synthpops**
 
 4. Begin website development: In **model_app**, enter `npm run dev` to start the client and server connections. When you make changes to any file, the servers will restart. You should see a message
 
-`MongoDB database connection established successfully.
-Development server is running on port: 5000`
+```
+MongoDB database connection established successfully.
+Development server is running on port: 5000
+```
 
 ## `Structure`
 **model_app/backend/models**: contains all database schemas   
