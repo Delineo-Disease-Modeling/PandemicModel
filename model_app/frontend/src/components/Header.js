@@ -4,7 +4,7 @@ import {NavLink} from 'react-router-dom';
 import './Header.css';
 import Logo from "./../images/delineo_vector_2.0.1.png"
 
-class AppNavbar extends Component{
+class Header extends Component{
 
     constructor(props){
         super(props);
@@ -76,4 +76,4 @@ class AppNavbar extends Component{
     }
 }
 
-export default AppNavbar;
+export default Header;
