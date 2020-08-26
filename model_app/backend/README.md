@@ -1,5 +1,5 @@
 ## `Important Files/Folders`
-**events**: contains all event emitters (for signaling simulation completion, etc.)
+**events**: contains event emitters (for signaling simulation completion, etc.)
 **models**: contains all database schemas
 **routes**: contains all routing information for server
 **synthpops**: contains all synthetic population Python scripts needed for simulations
