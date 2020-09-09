@@ -2,6 +2,8 @@ import synthpops as sp
 import json 
 from math import sin, cos, sqrt, atan2, radians
 import json
+from copy import deepcopy
+import numpy as np
 
 def dist(loc1, loc2):
   #print(loc1)
@@ -188,6 +190,31 @@ def assign_school_contacts(person, population, housedata):
       population[classmate]["status"] = "A"
       assign_household(classmate, population, house)
 
+def temp_cn(population, housedata):
+  temp_cn = {}
+  large = ['hospitals', 'supermarkets', 'community_centres']
+
+  temp_pop = deepcopy(population)
+
+  for submodule in housedata:
+    temp_contacts = {}
+    for i in housedata[submodule]:
+      if submodule in large:
+        temp_people = np.random.choice(list(temp_pop.keys()),15).tolist()
+        temp_contacts[i] = temp_people
+        for i in temp_people:
+          temp_pop.pop(i, None)
+      else:
+        temp_people = np.random.choice(list(temp_pop.keys()),5).tolist()
+        temp_contacts[i] = temp_people
+        #delete people from population
+        for i in temp_people:
+          temp_pop.pop(i, None)
+    temp_cn[submodule] = temp_contacts
+  #TODO: this # isn't constant
+  print(str(len(temp_pop.keys())) + " people at either HH or work")
+
+  return temp_cn
 
 def main():           
   # exercise the class methods
@@ -203,9 +230,11 @@ def main():
   sheet_name = 'United States of America'
   level = 'county'
 
-  num_households = 40
-  npop = 100
-  num_workplaces = 30
+  num_households = 459
+  npop = 1132
+  num_workplaces = 200
+
+  submodule_dict = eval(open("dict.txt").read())
   
   with open("houses.json") as housejsonfile:
     housejsondata = json.load(housejsonfile)
@@ -214,10 +243,8 @@ def main():
   for i in range(len(housejsondata)):
     housejsondata[i]["status"] = "U"
 
- 
   pop, homes_dic = sp.generate_synthetic_population(npop,datadir, num_households, num_workplaces, location=location, state_location=state_location,country_location=country_location,
   sheet_name=sheet_name, return_popdict=True)
-
 
   num_households = 0
   num_pop = 0
@@ -234,7 +261,28 @@ def main():
 
   distribute_house(population, housejsondata, 0)
 
-  print(population)
+  print("0:" + str(population[0]))
+  print("\n1:" + str(population[1]))
+
+  temp_cn_dict = deepcopy(submodule_dict)
+
+  del temp_cn_dict['households']
+  del temp_cn_dict['schools']
+  del temp_cn_dict['workplaces']
+
+  #probability of 0.5 if you are in contact with them
+  for i in range(24):
+    print("\n Hour " + str(i))
+    #at home
+    if i in range(9) or i in range(22,24):
+      #at school or work
+      print("Household CN")
+    elif i in range(9, 18):
+      #at submodules 
+      print("Proportion of School/Workplace CN")
+    else:
+      print(str(temp_cn(population, temp_cn_dict)) + "\n")
+  
 
 if __name__== "__main__":
   main()
