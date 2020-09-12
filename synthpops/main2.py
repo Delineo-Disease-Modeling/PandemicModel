@@ -6,9 +6,6 @@ from copy import deepcopy
 import numpy as np
 
 def dist(loc1, loc2):
-  #print(loc1)
-  #loc1 = [loc1["latitude"], loc1["longitude"]]
-  #print(loc1)
   """
   Computes the distance betweens two locations. 
   Locations are in latitude and longitude.
@@ -37,23 +34,15 @@ def dist(loc1, loc2):
 
 def find_next_closest_house(neighbour, houses, population):
   far_loc = [1000, -1000]
-  #print("HERE")
-  #print(neighbour)
-  #print(population[neighbour]['house'])
+
   reference_house = [population[neighbour]['house']["latitude"], population[neighbour]['house']["longitude"]]
   min_dist = dist(reference_house, far_loc)
   closest_house = 0
   count = 0
 
   # For each house dictionary in the houses list
-  #print(type(houses))
-  #print()
-  #print(houses[0])
-  #print()
   for i in range(len(houses)): 
     # If the house is unassigned
-    #print(houses)
-    #print(houses[i])
     if houses[i]["status"] == "U":
       
       house_dict = houses[i]
@@ -88,27 +77,14 @@ def distribute_house(population, housedata, num_assigned):
   
   if num_assigned >= npop:
     return
-  
-
-  # Assign the first person in the population to the first house
-  #population[0]['house'] = housedata[0]
-
-  # Mark the first house as assigned
-  #housedata[0]["status"] = "A"
-  #population[0]["status"] = "A"
-  #prev_person = 0
 
   for person in population:
     house_dict = population[person]['house']
-    
 
     # If the person in the population has NOT been assigned a house
-    #if house_dict["latitude"] == 0 and house_dict["longitude"] == 0:
+    # if house_dict["latitude"] == 0 and house_dict["longitude"] == 0:
 
     if population[person]['status'] == "U":
-      
-      #print(person)
-      #num_household_members = population[person]['contacts']['H']
 
       house_location = find_next_available_house(housedata)
 
@@ -118,24 +94,13 @@ def distribute_house(population, housedata, num_assigned):
       house = housedata[house_location]
 
       housedata[house_location]["status"] = "A"
-      #print(type(population[person]['house']))
-      #print(type(house))
+
       population[person]['house'] = house
       population[person]['status'] = "A"
-      
-      #prev = population[prev_person]['house']
-      #closest_house = find_next_closest_house(prev, housedata)
-      
-      #house = housedata[closest_house]
-
-      #housedata[closest_house]["status"] = "A"
-
-      #print(house)
 
       assign_household(person, population, house)
       assign_school_contacts(person, population, housedata)
       assign_workplace_contacts(person, population, housedata)
-      
 
       household = population[person]["contacts"]["H"]
 
@@ -143,10 +108,6 @@ def distribute_house(population, housedata, num_assigned):
         assign_school_contacts(member, population, housedata)
         assign_workplace_contacts(member, population, housedata)
         
-      
-    
-    #if person > 0:
-    #prev_person += 1
     num_assigned += 1
   distribute_house(population, housedata, num_assigned)
 
@@ -190,6 +151,7 @@ def assign_school_contacts(person, population, housedata):
       population[classmate]["status"] = "A"
       assign_household(classmate, population, house)
 
+"""
 def temp_cn(population, housedata):
   temp_cn = {}
   large = ['hospitals', 'supermarkets', 'community_centres']
@@ -215,54 +177,64 @@ def temp_cn(population, housedata):
   print(str(len(temp_pop.keys())) + " people at either HH or work")
 
   return temp_cn
+  """
 
 def main():           
-  # exercise the class methods
 
-  #mc.printData()
+  # Necessary for synthpops
   sp.validate()
 
   datadir = sp.datadir # this should be where your demographics data folder resides
 
+  # We are currently using distributions from the seattle dataset, since we don't have data for Barnsdall.
   location = 'seattle_metro'
   state_location = 'Washington'
   country_location = 'usa'
   sheet_name = 'United States of America'
   level = 'county'
 
+  # Reflective of Barnsdall census data
   num_households = 459
   npop = 1132
   num_workplaces = 200
 
-  submodule_dict = eval(open("dict.txt").read())
-  
-  with open("houses.json") as housejsonfile:
-    housejsondata = json.load(housejsonfile)
-
-# Mark each house as initially unassigned
-  for i in range(len(housejsondata)):
-    housejsondata[i]["status"] = "U"
-
+  # Create synthetic population
   pop, homes_dic = sp.generate_synthetic_population(npop,datadir, num_households, num_workplaces, location=location, state_location=state_location,country_location=country_location,
   sheet_name=sheet_name, return_popdict=True)
 
   num_households = 0
   num_pop = 0
+
+  # Print number of houses and people created (testing purposes)
   for i in range(1,len(homes_dic) + 1):
     num_households = num_households + len(homes_dic[i])
     num_pop = num_pop + len(homes_dic[i]) * i
-  #print("Population Created, total " + str(num_pop) + " people, " + str(num_households) + " households")
+  print("Population Created, total " + str(num_pop) + " people, " + str(num_households) + " households")
 
   population = pop
 
+  # add house and status parameters to population
   for person in population:
     population[person]['house'] = {"latitude": 0, "longitude": 0}
     population[person]['status'] = "U"
 
+  #open houses.json, which has latitude and longitude locations for each house
+  #TODO: replace with actual housing data
+  with open("houses.json") as housejsonfile:
+    housejsondata = json.load(housejsonfile)
+
+  # Mark each house as initially unassigned
+  for i in range(len(housejsondata)):
+    housejsondata[i]["status"] = "U"
+
+  #assign each person a house
   distribute_house(population, housejsondata, 0)
 
-  print("0:" + str(population[0]))
-  print("\n1:" + str(population[1]))
+  print("\nExample person in population:\n0:" + str(population[0]))
+
+  """Temporary 24h clock done over the summer: to be replaced.
+  # Open dict.txt, which holds fake facility information. 
+  submodule_dict = eval(open("dict.txt").read())
 
   temp_cn_dict = deepcopy(submodule_dict)
 
@@ -270,7 +242,7 @@ def main():
   del temp_cn_dict['schools']
   del temp_cn_dict['workplaces']
 
-  #probability of 0.5 if you are in contact with them
+  # Temporary 24 hour clock 
   for i in range(24):
     print("\n Hour " + str(i))
     #at home
@@ -282,6 +254,7 @@ def main():
       print("Proportion of School/Workplace CN")
     else:
       print(str(temp_cn(population, temp_cn_dict)) + "\n")
+  """
   
 
 if __name__== "__main__":
