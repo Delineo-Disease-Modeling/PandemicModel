@@ -2,8 +2,47 @@ import synthpops as sp
 import json 
 from math import sin, cos, sqrt, atan2, radians
 import json
+import copy
 from copy import deepcopy
 import numpy as np
+
+# Having trouble figuring out a valid way of modeling population movement, thats simple enough to
+# implement but is accurate.
+def updateLocation(agent):
+  # assuming we have global variables for time and day of week
+  global TOD
+  global DOW
+  Time = TOD
+  Day = DOW
+  #age: baby (0-4), child(4-18), Adult (18+)
+  #current location: school, work, home, other for facility type (breaks for lunch?)
+  #TOD: 9pm-8am, 8am-5pm, 5pm-9pm
+  #DOW: Mon-Fri , Sat-Sun
+  if 6 > DOW > 0: # Monday - Friday
+    # 2*4*3*2 = 48 distributions
+
+
+
+def movePopulation(population, facilities):
+  # We're assuming facilities has a list of people in it, at index j
+  C_facilities = copy.deepcopy(facilities)
+  for facility in facilities:
+      facility[j].clear()
+  for C_facility, facility in C_facilities, facilities:
+    for agent in C_facility[j]:
+      #if neccesary pass in Time of Day to current function and updateLocation()
+      newID = updateLocation(agent, facility)
+      facilities[newID][j].append(agent)
+
+
+
+  # copy facility
+  # iterate over Cfacilities
+    # iterate over each person in the Cfacility
+      # update = apply our movement algo on each person (seperate func) : add into facility
+
+
+
 
 def dist(loc1, loc2):
   """
