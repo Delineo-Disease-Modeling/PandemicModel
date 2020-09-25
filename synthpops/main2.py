@@ -3,23 +3,47 @@ import json
 from math import sin, cos, sqrt, atan2, radians
 import json
 import copy
+import random
 from copy import deepcopy
 import numpy as np
 
-# Having trouble figuring out a valid way of modeling population movement, thats simple enough to
-# implement but is accurate.
-def updateLocation(agent):
+def randomFacility():
+  # probability distribution of facilities
+  return facilityID
+
+def updateLocation(agent, facility):
   # assuming we have global variables for time and day of week
-  global TOD
+  global TOD # assume 0 - 23
   global DOW
   Time = TOD
   Day = DOW
-  #age: baby (0-4), child(4-18), Adult (18+)
+  #age: baby (0-4), child(4-18), Adult (18+), Senior?
   #current location: school, work, home, other for facility type (breaks for lunch?)
   #TOD: 9pm-8am, 8am-5pm, 5pm-9pm
   #DOW: Mon-Fri , Sat-Sun
-  if 6 > DOW > 0: # Monday - Friday
-    # 2*4*3*2 = 48 distributions
+  #example schedules for people
+  # baby = [home all day]
+  # child = mon - fri[12am-8am 100% @home, 8-3pm 100% @school, 3-8pm every hour 20% chance of being at a facility (function to find which)
+       # - other 80@ home, 8-11 5% chance of @ a facility]
+       # = sat - sun[12am-8am 100% @home, 8am-7pm: 40% at home, 8-12pm 10% chance @facility]
+  # Adult = mon - fri[12am-8am 98% @home, 8-5pm 60% @work/30%home/10%facility*, 5-8pm every hour 20% @facility
+  #          - other 80@ home, 8-12 5% chance of @ a facility]
+  #       = sat - sun[12am-8am 96% @home, 8am-7pm: 40% at home, 8-12pm 15% chance @facility]
+# * for work @8am decide wether they will stay at work for the day, or be in the home/facility group
+  if agent['age'] < 4:
+    return facilityID
+  elif agent['age'] < 19:
+   p = random.randint(1, 100)
+   if DOW < 6:   # mon-fri
+     if TOD < 8:
+       return agent['house']
+     elif TOD < 15:
+       return agent['school']
+     elif TOD < 20:
+       if p < 20:
+         return randomFacility()
+       else:
+         return agent['home']
 
 
 
@@ -30,7 +54,6 @@ def movePopulation(population, facilities):
       facility[j].clear()
   for C_facility, facility in C_facilities, facilities:
     for agent in C_facility[j]:
-      #if neccesary pass in Time of Day to current function and updateLocation()
       newID = updateLocation(agent, facility)
       facilities[newID][j].append(agent)
 
