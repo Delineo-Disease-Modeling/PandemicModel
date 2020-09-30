@@ -38,10 +38,10 @@ Development server is running on port: 5000
 ```
 
 ## `Structure`
-**model_app/backend/models**: contains all database schemas   
-**model_app/backend/routes**: contains all routing information for server  
-**model_app/backend/synthpops**: contains all Python scripts needed for simulations
-**model_app/backend/server.js**: connects to the MongoDB database and links all routes to corresponding URI's
+**model_app/backend/models**: Contains all database schemas   
+**model_app/backend/routes**: Contains all routing information for server  
+**model_app/backend/synthpops**: Contains all Python scripts needed for simulations
+**model_app/backend/server.js**: Connects to the MongoDB database and links all routes to corresponding URI's
 
 **model_app/backend/frontend/src**: All the folders for implementing the Redux architecture are here.
 
