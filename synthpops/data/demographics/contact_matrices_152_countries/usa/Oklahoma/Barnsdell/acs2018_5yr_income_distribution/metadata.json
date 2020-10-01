@@ -1,0 +1,84 @@
+{
+    "release": {
+        "id": "acs2018_5yr",
+        "name": "ACS 2018 5-year",
+        "years": "2014-2018"
+    },
+    "tables": {
+        "B19001": {
+            "columns": {
+                "B19001001": {
+                    "indent": 0,
+                    "name": "Total:"
+                },
+                "B19001002": {
+                    "indent": 1,
+                    "name": "Less than $10,000"
+                },
+                "B19001003": {
+                    "indent": 1,
+                    "name": "$10,000 to $14,999"
+                },
+                "B19001004": {
+                    "indent": 1,
+                    "name": "$15,000 to $19,999"
+                },
+                "B19001005": {
+                    "indent": 1,
+                    "name": "$20,000 to $24,999"
+                },
+                "B19001006": {
+                    "indent": 1,
+                    "name": "$25,000 to $29,999"
+                },
+                "B19001007": {
+                    "indent": 1,
+                    "name": "$30,000 to $34,999"
+                },
+                "B19001008": {
+                    "indent": 1,
+                    "name": "$35,000 to $39,999"
+                },
+                "B19001009": {
+                    "indent": 1,
+                    "name": "$40,000 to $44,999"
+                },
+                "B19001010": {
+                    "indent": 1,
+                    "name": "$45,000 to $49,999"
+                },
+                "B19001011": {
+                    "indent": 1,
+                    "name": "$50,000 to $59,999"
+                },
+                "B19001012": {
+                    "indent": 1,
+                    "name": "$60,000 to $74,999"
+                },
+                "B19001013": {
+                    "indent": 1,
+                    "name": "$75,000 to $99,999"
+                },
+                "B19001014": {
+                    "indent": 1,
+                    "name": "$100,000 to $124,999"
+                },
+                "B19001015": {
+                    "indent": 1,
+                    "name": "$125,000 to $149,999"
+                },
+                "B19001016": {
+                    "indent": 1,
+                    "name": "$150,000 to $199,999"
+                },
+                "B19001017": {
+                    "indent": 1,
+                    "name": "$200,000 or more"
+                }
+            },
+            "denominator_column_id": "B19001001",
+            "title": "Household Income in the Past 12 Months (In 2018 Inflation-adjusted Dollars)",
+            "universe": "Households"
+        }
+    }
+}
