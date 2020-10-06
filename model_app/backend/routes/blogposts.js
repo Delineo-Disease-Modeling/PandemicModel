@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
 
 // Read single blog post by id
 router.get('/:id', (req, res) => {
-	blogPost => res.json(blogPost);
+	blogPosts => res.json(blogPosts);
 	res.send(req.id);
 })
 

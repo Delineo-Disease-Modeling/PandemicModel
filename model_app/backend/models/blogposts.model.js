@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
-  const { Schema } = mongoose;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-  const exampleSchema = new Schema({
+  const blogpostsSchema = new Schema({
+    id: Number,
     title:  String,
     author: String,
     body:   String,
@@ -9,7 +10,7 @@ import mongoose from 'mongoose';
     date: { type: Date, default: Date.now },
   });
 
-  const Post = mongoose.model('Post', exampleSchema);
+  const Post = mongoose.model('Post', blogpostsSchema);
 
 /*
 String category_tag
