@@ -18,7 +18,7 @@ router.param('id', (req, res, next, id) => {
  * been posted to the database.
  */
 router.get('/', (req, res) => {
-	BlogPosts.find({}, BlogPosts.blogPostObj)
+	BlogPosts.find({}, BlogPosts.blogpostObj)
 		.then(posts => res.json(posts))
         .catch(err => res.status(400).json('Error: ' + err));
 })
