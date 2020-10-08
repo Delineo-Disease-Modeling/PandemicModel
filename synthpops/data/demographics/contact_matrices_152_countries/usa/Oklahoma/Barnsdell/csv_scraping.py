@@ -6,15 +6,9 @@
 
 import pandas as pd
 
-<<<<<<< HEAD
-fage_identifiers = open("female_age_identifiers.txt", "r")
-mage_identifiers = open("male_age_identifiers.txt", "r")
-age_sex_distr = pd.read_csv("age_sex_distr.csv", index_col = 0)
-=======
 fage_identifiers = open("female_age_identifiers.txt", mode = 'r')
-fage_identifiers.readline()
 mage_identifiers = open("male_age_identifiers.txt", mode = 'r')
->>>>>>> 4416291f5e8ff686da75b353ed1bd9139f936e98
+age_sex_distr = pd.read_csv("age_sex_distr.csv", index_col = 0)
 
 age_distr = [0] * 9
 fage_distr = [0] * 9
