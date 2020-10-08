@@ -18,5 +18,4 @@ elif type == "income":
     csv = "income_distr.csv"
     json = "income_metadata.json"
 
-# Open json file and populate a dictionary of table IDs
 # Read csv file based on dictionary
