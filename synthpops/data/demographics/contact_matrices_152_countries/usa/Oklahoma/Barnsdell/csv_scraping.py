@@ -8,5 +8,7 @@ import pandas as pd
 
 fage_identifiers = open("female_age_identifiers.txt", mode = 'r')
 mage_identifiers = open("male_age_identifiers.txt", mode = 'r')
+age_sex_distr = pd.read_csv("age_sex_distr.csv", index_col = 0)
 
 age_distribution = []
+for identifier in fage_identifiers:
