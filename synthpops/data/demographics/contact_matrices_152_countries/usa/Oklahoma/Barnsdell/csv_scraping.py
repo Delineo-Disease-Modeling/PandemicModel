@@ -5,3 +5,8 @@
 # Format data as [bracket], [percentage] and output to a .dat file
 
 import pandas as pd
+
+fage_identifiers = open("female_age_identifiers.txt", mode = 'r')
+mage_identifiers = open("male_age_identifiers.txt", mode = 'r')
+
+age_distribution = []
