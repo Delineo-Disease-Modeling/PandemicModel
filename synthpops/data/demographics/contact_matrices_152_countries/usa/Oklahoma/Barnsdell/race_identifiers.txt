@@ -1,0 +1,11 @@
+race_metabase.json:
+Not Hispanic or Latino:B03002002
+Hispanic or Latino:B03002012
+White alone:B03002003, B03002013
+Black or African American alone:B03002004, B03002014
+American Indian and Alaska Native alone:B03002005, B03002015
+Asian alone:B03002006, B03002016
+Native Hawaiian and Other Pacific Islander alone:B03002007, B03002017
+Other:B03002008, B03002018
+Multiracial:B03002009, B03002019, B03002010, B03002020, B03002011, B03002021
+
