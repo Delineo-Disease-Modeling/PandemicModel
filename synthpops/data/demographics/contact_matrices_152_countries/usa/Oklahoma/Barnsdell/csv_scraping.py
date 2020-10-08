@@ -7,7 +7,12 @@
 import pandas as pd
 
 fage_identifiers = open("female_age_identifiers.txt", mode = 'r')
+fage_identifiers.readline()
 mage_identifiers = open("male_age_identifiers.txt", mode = 'r')
 
 age_distribution = []
+female_pop = 0
+male_pop = 0
+
 for identifier in fage_identifiers:
+    table_id = identifier
