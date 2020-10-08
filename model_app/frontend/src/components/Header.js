@@ -51,6 +51,9 @@ class Header extends Component{
                 </NavbarBrand>
                 <Collapse isOpen={this.state.isNavOpen} navbar>
                     <Nav navbar className="ml-auto">
+			<NavItem>                                                                               
+                            <NavLink className="Nav-link"  to='/MapVisualization' activeClassName='active' activeStyle={active} style={styleSheet}>Map Visualization</NavLink>                                    
+                        </NavItem>
 
                         <NavItem>
                             <NavLink className="Nav-link" to='/simulator' activeClassName='active' activeStyle={active} style={styleSheet}> Simulator</NavLink>

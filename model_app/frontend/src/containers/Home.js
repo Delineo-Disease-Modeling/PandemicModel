@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Media } from 'reactstrap';
-import { AboutImg, DevelopmentBlogImg, SimulatorImg, TeamImg } from '../images'
+import { AboutImg, DevelopmentBlogImg, SimulatorImg, TeamImg, MapImg} from '../images'
 
 class Home extends Component{
 
@@ -20,14 +20,20 @@ class Home extends Component{
                 image: TeamImg,
                 description:'Our team composition and leadership'
             },
-            {
+	    {
                 id: 2,
+                name:'Map Visualization',
+                image: MapImg,
+                description:'U.S. Map Visualization of COVID-19'
+            },
+            {
+                id: 3,
                 name:'Simulator',
                 image: SimulatorImg,
                 description:'Use this page to run the simulator we create for Covid-19 Modeling'
             },
             {
-                id: 3,
+                id: 4,
                 name:'Development Blog',
                 image: DevelopmentBlogImg,
                 description:'The page displaying our process of simulator development and expectation on future update'
