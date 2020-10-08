@@ -9,7 +9,6 @@ import pandas as pd
 fage_identifiers = open("female_age_identifiers.txt", mode = 'r')
 fage_identifiers.readline()
 mage_identifiers = open("male_age_identifiers.txt", mode = 'r')
-age_sex_distr = pd.read_csv("age_sex_distr.csv", index_col = 0)
 
 age_distribution = []
 female_pop = 0
