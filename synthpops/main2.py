@@ -8,26 +8,7 @@ from copy import deepcopy
 import numpy as np
 
 
-facilities = {1: ['retail', 'grocery store', 'DollarGeneral1', 36.567709, -96.166342, []], 
-2: ['retail', 'grocery store', 'DollarGeneral2', 36.567709, -96.166342, []], 
-3: ['retail', 'lumberstore', 'BLumber', 36.561313, -96.162036, []], 
-4: ['retail', 'store', 'JimsResale', 36.561705, -96.160739, []], 
-5: ['retail', 'saddlery', 'JeffWadeSaddlery', 36.561646, -96.165412, []], 
-6: ['retail', 'beautysalon', 36.561672, -96.162653, []], 
-7: ['retail', 'florist', 'BarnsdallsFlowerShop', 36.559659, -96.162027],
-8: ['food services', 'restaurant', 'HatfieldsGrill', 36.557376, -96.160812, []], 
-9: ['retail', 'restaurant', 'JKsTakeout', 36.561002, -96.161577, []], 
-10: ['retail', 'restaurant', 36.561616, -96.161645, []], 
-11: ['retail', 'restaurant', 'UptownPizza', 36.561646, -96.165412, []], 
-12: ['public transit station', 'bus station', 'Sinclair Gas station', 36.557620, -96.161300, []], 
-13: ['public transit station', 'gas station', 'FASTTRACK', 36.557620, -96.161300, []], 
-14: ['outdoors', 'gas station', 'Robinowitz Oil Co', 36.561610, -96.160850, []], 
-15: ['long term facilities', 'jails', 'Barnsdall Police Department', 36.561610, -96.161070, []], 
-16: ['long term facilities', 'nursing home', 'Barnsdall Nursing Home', 36.662613, -96.200233, []], 
-17: ['long term facilities', 'hospital/icu', 'Ascension St. John Jane Phillps', 37.904385, -96.283437, []]
-18: ['home', 'home', 'home', 0,0,[]]
-19: ['work', 'work', 'work', 0,0,[]]
-20: ['school', 'school', 'school', 0,0,[]]}
+
 
 def initializeFacility(facilities, pop):
   # place everyone in the population at home to start the simulation
@@ -73,7 +54,7 @@ def updateLocation(agent, facility, DOW, TOD):
          return randomFacility()
        else:
          return home
-    if DOW >=6: # Weekend
+   elif DOW >=6:
       if TOD < 8:
         return home
       elif TOD < 19:
@@ -106,8 +87,8 @@ def updateLocation(agent, facility, DOW, TOD):
           return home
         else:
           return randomFacility()
-    if DOW >= 6 # Weekend
-      if TOD < 8
+    elif DOW >= 6:
+      if TOD < 8:
         if p < 96:
           return home
         else:
@@ -117,7 +98,7 @@ def updateLocation(agent, facility, DOW, TOD):
           return home
         else:
           return randomFacility()
-      else
+      else:
         if p < 85:
           return home
         else: 
@@ -369,6 +350,7 @@ def main():
 
   #assign each person a house
   distribute_house(population, housejsondata, 0)
+  print(str(population))
 
   print("\nExample person in population:\n0:" + str(population[0]))
 
@@ -388,9 +370,9 @@ def main():
   14: ['outdoors', 'gas station', 'Robinowitz Oil Co', 36.561610, -96.160850, []], 
   15: ['long term facilities', 'jails', 'Barnsdall Police Department', 36.561610, -96.161070, []], 
   16: ['long term facilities', 'nursing home', 'Barnsdall Nursing Home', 36.662613, -96.200233, []], 
-  17: ['long term facilities', 'hospital/icu', 'Ascension St. John Jane Phillps', 37.904385, -96.283437, []]
-  18: ['home', 'home', 'home', 0,0,[]]
-  19: ['work', 'work', 'work', 0,0,[]]
+  17: ['long term facilities', 'hospital/icu', 'Ascension St. John Jane Phillps', 37.904385, -96.283437, []],
+  18: ['home', 'home', 'home', 0,0,[]],
+  19: ['work', 'work', 'work', 0,0,[]],
   20: ['school', 'school', 'school', 0,0,[]]}
 
   initializeFacility(facilities, population)
