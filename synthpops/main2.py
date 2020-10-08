@@ -291,6 +291,7 @@ def main():
 
   #assign each person a house
   distribute_house(population, housejsondata, 0)
+  print(str(population))
 
   print("\nExample person in population:\n0:" + str(population[0]))
 
