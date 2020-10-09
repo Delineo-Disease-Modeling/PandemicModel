@@ -1,6 +1,7 @@
 import React from 'react';
 import leaders from '../const/leader.js';
 import members from '../const/member.js';
+import TeamGridList from '../components/TeamGridList.js'
 import './Team.css';
 
 function Team(props){
@@ -46,7 +47,12 @@ function Team(props){
         </div>
       </div>
 
+      <div className = 'CardGreenBackground1'>
+        <TeamGridList></TeamGridList>
+      </div>
    </div>
+
+   
  );
 }
 
@@ -116,5 +122,7 @@ function SupervisorCard(props){
     </div>
   );
 }
+
+
 
 export default Team;
