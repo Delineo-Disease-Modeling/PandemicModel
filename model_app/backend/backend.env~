@@ -1,3 +1,0 @@
-ATLAS_URI = mongo "mongodb+srv://delineo.3untq.mongodb.net/admin" --username KaihuaHou
-PYTHON_PATH = ~/Documents/JHU/Summer\ 1/COVID-19\ Modeling\ Project/Delineo/PandemicModel/model_app/backend/synthpops
-SCRIPT_PATH = ~/Documents/JHU/Summer\ 1/COVID-19\ Modeling\ Project/Delineo/PandemicModel/model_app/backend/synthpops
