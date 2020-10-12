@@ -42,6 +42,7 @@ const router = require('./routes');
 app.use('/demographics', router.dem);
 app.use('/timeseries', router.time);
 app.use('/simulations', router.sim);
+app.use('/blogposts', router.blog);
 app.use((req, res, next) => {
 	res.status(404).json('Error: Page not found');
 })
