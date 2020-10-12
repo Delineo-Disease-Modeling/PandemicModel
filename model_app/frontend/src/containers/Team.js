@@ -1,6 +1,10 @@
 import React from 'react';
 import leaders from '../const/leader.js';
 import members from '../const/member.js';
+import TeamGridList from '../components/TeamGridList.js'
+import SupGridList from '../components/SupGridList.js'
+import LeadGridList from '../components/LeaderGridList.js'
+
 import './Team.css';
 
 function Team(props){
@@ -28,25 +32,25 @@ function Team(props){
       </div>
      <div className = 'CardGreenBackground1'>
        <h3 align='left'>Research Supervisor</h3>
-       <SupervisorList list={supervisorList} />
+       <SupGridList></SupGridList>
      </div>
-     <div className = 'CardLightGreenBackground'>
+     <div className = 'CardGreenBackground1'>
        <h3 align="left">Team Leaders</h3>
-       <br></br>
-       <div  align="left" className='LeaderList'>
-         <LeaderList list={list}/>
-       </div>
+       <LeadGridList></LeadGridList>
      </div>
 
      <div className = 'CardGreenBackground1' >
         <h3 align="left">Team Members</h3>
-        <br></br>
-        <div  align="left" className='MemberList'>
-          <MemberList list={memberlist}/>
-        </div>
+        <TeamGridList></TeamGridList>
+
       </div>
 
+      <div className = 'CardGreenBackground1'>
+
+      </div>
    </div>
+
+
  );
 }
 
@@ -63,7 +67,7 @@ function LeaderList(props){
 }
 
 function MemberList(props){
-  
+
   const memberCards = props.list.map(member => {
     return(
       <MemberCardLeft key={member.name} name={member.name} description = {member.major} />
@@ -116,5 +120,7 @@ function SupervisorCard(props){
     </div>
   );
 }
+
+
 
 export default Team;
