@@ -8,7 +8,7 @@
     margin-right: auto;
     border-radius: 25px;
     display: inline-block;
-    box-sizing: border-box; 
+    box-sizing: border-box;
     margin-bottom: 20px;
   }
 
@@ -19,7 +19,7 @@
     width: 30%;
     height: fit-content;
     border-radius: 25px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
     margin-top: 0px;
     margin-bottom: 15px;
     display: inline-block;
@@ -34,7 +34,7 @@
     margin:0;
     align-content: center;
     padding-bottom: 5%;
-} 
+}
 
    .CardGreenBackground1{
   margin-top: 0%;
@@ -42,7 +42,7 @@
   margin-right: auto;
   background-color: #1b4441c2;
   width: 90%;
-  align-self: center; 
+  align-self: center;
   align-items: center;
 }
 
@@ -52,26 +52,26 @@
   margin-right: auto;
   background-color: #1B4441;
   width: 90%;
-  align-self: center; 
+  align-self: center;
   align-items: center;
 }
-  
+
   .Inner {
     padding:1px;
     float: left;
     margin-left: 2%;
     width: 70%;
     height: fit-content;
-  
+
   }
-  
+
   .LeaderName{
     text-align: left;
     font-size: 20px;
     font-weight: normal;
     color: #66FCF1;
   }
-  
+
   .Text {
     float: left;
     text-align: left;
@@ -80,13 +80,13 @@
     height: 5%;
     color: white;
   }
-  
+
   .header {
     margin-top: 1%;
     margin-bottom: 0%;
     color: white;
   }
-  
+
   .header2 {
     float: left;
     margin-left: 8%;
@@ -94,7 +94,7 @@
     margin-top: 1%;
     font-size: 25px;
     color: white;
-  } 
+  }
 
 h2{
     color: white;
@@ -108,7 +108,7 @@ h3{
   margin-right: auto;
   margin-left: 8%;
   font-size: 10px;
-  
+
 }
 
 .ProfessionText{
@@ -116,7 +116,7 @@ h3{
   font-size: 15px;
   font-weight: normal;
   color: #ffffff;
-} 
+}
 
 .LeaderList{
   display: block;
