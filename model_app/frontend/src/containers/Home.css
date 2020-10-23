@@ -1,0 +1,17 @@
+.image-box {
+
+    /* Here's the trick */
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://9to5mac.com/wp-content/uploads/sites/6/2020/01/Coronavirus.jpg?quality=82&strip=all);
+    background-size: cover;
+
+    /* Here's the same styles we applied to our content-div earlier */
+    color: white;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-box:hover {
+    box-shadow: inset 0 0 0 100vw rgba(0,0,0,0.5);
+}

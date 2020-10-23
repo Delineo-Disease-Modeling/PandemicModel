@@ -14,7 +14,7 @@ function Example (props) {
                 <Grid item xs>Another thing in grid</Grid>
                 <Grid item xs>Last thing in grid</Grid>
             </Grid>
-            <Container>
+            <Container className="image-background">
                 <Typography variant="h6" style={{ backgroundColor: '#cfe8fc', height: '50vh' }}>This is a nested container.</Typography>
             </Container>
         <ButtonGroup color="primary" aria-label="outlined primary button group">
