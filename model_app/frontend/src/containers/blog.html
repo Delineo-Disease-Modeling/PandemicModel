@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{{ page.title }}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8"/>
+
+		<meta itemprop="description" name="description" content="{% if page.description %}{{ page.description | truncate: 160 }}{% else %}{{ site.description | truncate: 160  }}{% endif %}" />
+
+		<!--- OPEN GRAPH TAGS ---->
+		<meta property="og:locale" content="en_US">
+		<meta property="og:type" content="article">
+		<meta property="og:title" content="{%if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+		<meta property="og:url" content="{{ site.url }}{{ page.url }}">
+		<meta property="og:image" content="{% if page.banner %}{{ page.banner }}{% else %}/assets/images/icon.png{% endif %}" />
+		<meta property="og:site_name" content="Marcelo Morales">
+		<meta property="article:author" content="Marcelo Morales" />
+		<meta property="article:published_time" content="{{ page.date }}" />
+		<meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+
+</html>
