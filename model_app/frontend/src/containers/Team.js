@@ -27,27 +27,26 @@ function Team(props){
 
   return(
     <div className = 'CardBackground'>
+
       <div className="MainHeader">
         <h2>Meet The Team</h2>
       </div>
-     <div className = 'CardGreenBackground1'>
-       <h3 align='left'>Research Supervisor</h3>
-       <SupGridList></SupGridList>
-     </div>
-     <div className = 'CardGreenBackground1'>
-       <h3 align="left">Team Leaders</h3>
-       <LeadGridList></LeadGridList>
-     </div>
 
-     <div className = 'CardGreenBackground1' >
-        <h3 align="left">Team Members</h3>
-        <TeamGridList></TeamGridList>
-
+      <div className = 'CardGreenBackground1'>
+        <h3 align="left">Research Supervisor</h3>
+        <SupGridList></SupGridList>
       </div>
 
       <div className = 'CardGreenBackground1'>
-
+        <h3 align="left">Team Leaders</h3>
+        <LeadGridList></LeadGridList>
       </div>
+
+      <div className = 'CardGreenBackground1' >
+        <h3 align="left">Team Members</h3>
+        <TeamGridList></TeamGridList>
+      </div>
+
    </div>
 
 

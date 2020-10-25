@@ -6,15 +6,21 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
+import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
+
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     overflow: 'hidden',
     backgroundColor: '#1b4441c2',
-    fontSize: '12px'
+    paddingTop: theme.spacing(0),
+    paddingBottom: theme.spacing(4),
+
   },
   icon: {
     color: 'rgba(255, 255, 255, 0.54)',
@@ -49,10 +55,13 @@ const useStyles = makeStyles((theme) => ({
   },
   hoverP: {
     transform: "translate3d(0,50px,0)",
-    transition: "transform 350ms ease", 
+    transition: "transform 350ms ease",
   },
   gridList: {
-    width: 800,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+
   },
   GridListTile: {
     '&:hover p, &:hover h3, &:hover h4': {
@@ -60,30 +69,39 @@ const useStyles = makeStyles((theme) => ({
     },
     '&:hover div': {
       opacity: 1,
-    }
+    },
+    width: '200px',
+    height:'200px',
+
+
+
   },
 }));
 
 export default function TitlebarGridList(tileData) {
   const classes = useStyles();
 
+
   return (
-    <div className={classes.root}>
-      <GridList cellWidth={200} className={classes.gridList} cols={4}>
+    <Container className={classes.root} maxWidth="md">
+      <Grid container spacing={4}>
         {tileData.map((tile) => (
-          <GridListTile className={classes.GridListTile} key={tile.img}>
-            <img src={tile.img} alt={tile.name} />
-            
-            <div className={classes.displayOver}>
-              <div className={classes.hover}>
-                <h3 className={classes.hoverTitle}>{tile.name}</h3>
-                <h4 className={classes.hoverSubtitle}>{tile.role}</h4>
-                <p className={classes.hoverP}>{tile.description}</p>
+          <Grid item key={classes.GridListTile}  xs={12} sm={6} md={3}>
+            <GridListTile className={classes.GridListTile} key={tile.img}>
+              <img src={tile.img} alt={tile.name} />
+
+              <div className={classes.displayOver}>
+                <div className={classes.hover}>
+                  <h3 className={classes.hoverTitle}>{tile.name}</h3>
+                  <h4 className={classes.hoverSubtitle}>{tile.role}</h4>
+                  <p className={classes.hoverP}>{tile.description}</p>
+                </div>
               </div>
-            </div>
-          </GridListTile>
+            </GridListTile>
+          </Grid>
         ))}
-      </GridList>
-    </div>
+
+      </Grid>
+    </Container>
   );
 }

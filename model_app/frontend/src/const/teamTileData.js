@@ -37,6 +37,24 @@ const tileData = [
     role: 'Leader',
     description: 'Major',
   },
+  {
+    img: image,
+    name: 'Team Member 6',
+    role: 'Leader',
+    description: 'Major',
+  },
+  {
+    img: image,
+    name: 'Team Member 6',
+    role: 'Leader',
+    description: 'Major',
+  },
+  {
+    img: image,
+    name: 'Team Member 6',
+    role: 'Leader',
+    description: 'Major',
+  }, 
 ];
 
 export default tileData;

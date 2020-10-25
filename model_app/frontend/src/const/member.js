@@ -22,6 +22,27 @@ export const MEMBERS = [
       major:'Team Member Major',
       headshot: ''
     },
+    {
+      id: 2,
+      name: 'Team Member 3',
+      designation: 'Team Member',
+      major:'Team Member Major',
+      headshot: ''
+    },
+    {
+      id: 2,
+      name: 'Team Member 3',
+      designation: 'Team Member',
+      major:'Team Member Major',
+      headshot: ''
+    },
+    {
+      id: 2,
+      name: 'Team Member 3',
+      designation: 'Team Member',
+      major:'Team Member Major',
+      headshot: ''
+    },
 ];
 
 export default MEMBERS;
