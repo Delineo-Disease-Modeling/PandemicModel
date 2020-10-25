@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Header, Footer } from './components';
-import { Home, About, Simulator, DevelopmentBlog, Team, Example } from './containers';
+import { Home, About, Simulator, DevelopmentBlog, Team, Example} from './containers';
 import { Provider } from 'react-redux';
 import store from './store';
 
