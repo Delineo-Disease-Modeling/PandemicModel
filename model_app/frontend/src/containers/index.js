@@ -4,6 +4,5 @@ import Home from './Home';
 import Simulator from './Simulator';
 import Team from './Team';
 import Example from './Example';
-import MapVisualization from './MapVisualization';
 
-export { About, DevelopmentBlog, Home, Simulator, Team, Example, MapVisualization }
+export { About, DevelopmentBlog, Home, Simulator, Team, Example}
