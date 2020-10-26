@@ -4,7 +4,7 @@ const router = require('express').Router()
 
 // Middleware (example)
 router.param('id', (req, res, next, id) => {
-	BlogPosts.findById(id, (error, obj) => {
+	BlogPosts.find({id: id}, (error, obj) => {
 		if (error) {
 			return res.status(400).json(`Error: No blog post request with id ${id}`);
 		}
@@ -26,12 +26,12 @@ router.get('/', (req, res) => {
 // Read single blog post by id
 router.get('/:id', (req, res) => {
 	blogPosts => res.json(blogPosts);
-	res.send(req.id);
+	res.send(req.obj);
 })
 
 // Delete a blog post by id, returns deleted object
 router.delete('/:id', (req, res) => {
-	req.obj.remove((error, results) => {
+	req.obj[0].remove((error, results) => {
 		if (error)
 			return next(error)
 		res.send(results)
