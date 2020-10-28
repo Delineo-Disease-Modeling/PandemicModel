@@ -13,7 +13,7 @@ import numpy as np
 def initializeFacility(facilities, pop):
   # place everyone in the population at home to start the simulation
   for agent in pop:
-    facilties[18][5].append(agent)
+    facilities[18][5].append(agent)
   return facilities
 
 
