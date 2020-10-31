@@ -15,6 +15,8 @@ import Avatar from '@material-ui/core/Avatar';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import { withWidth } from '@material-ui/core';
 
+import BlogPost from './BlogPost.js'
+
 //import Pagination from '@material-ui/lab/Pagination';
 //mport { DevelopmentBlog } from '.';
 
@@ -89,7 +91,7 @@ function DevelopmentBlog(props) {
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={4}>
             <Card className={classes.card}>
-              <CardActionArea a href="/developmentblog"> 
+              <CardActionArea a href="/example"> 
                 <CardMedia
                   className={classes.media}
                   image="https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
@@ -126,7 +128,7 @@ function DevelopmentBlog(props) {
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <Card className={classes.card}>
-              <CardActionArea href="/developmentblog">
+              <CardActionArea href="/example">
                 <CardMedia
                   className={classes.media}
                   image="https://images.pexels.com/photos/34600/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
@@ -161,7 +163,7 @@ function DevelopmentBlog(props) {
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <Card className={classes.card}>
-              <CardActionArea href="/developmentblog">
+              <CardActionArea href="/example">
                 <CardMedia
                   className={classes.media}
                   image="https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
@@ -194,7 +196,7 @@ function DevelopmentBlog(props) {
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <Card className={classes.card}>
-              <CardActionArea href="/developmentblog">
+              <CardActionArea href="/example">
                 <CardMedia
                   className={classes.media}
                   image="https://images.pexels.com/photos/325111/pexels-photo-325111.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
