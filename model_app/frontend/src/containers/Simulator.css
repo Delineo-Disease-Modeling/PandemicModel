@@ -15,12 +15,13 @@
     margin-left: auto;
     margin-right: auto;
     background-color: #143230;
-    width: 82%;
+    width: 100%;
+    min-height: 100%;
     align-self: center; 
     align-items: center;
     border-bottom:10px solid #1b4441c2;
     padding-bottom:5%;
-    padding-right: 20px;
+    padding-right: 20px; 
     padding-left: 20px;
 }
 

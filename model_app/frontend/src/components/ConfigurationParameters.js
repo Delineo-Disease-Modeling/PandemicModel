@@ -22,25 +22,6 @@ function Parameters(){
 
                         <tr>
                             <td>
-                                <label className='label'>Other Parameters:</label>
-                            </td>
-                            <td>
-                                <input required minLength='6' type='text' size='15'></input>
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-                
-            </div>
-
-            <div className='col'> 
-
-                <table>
-                    <tbody>
-
-                        <tr>
-                            <td>
                                 <label className='label'>Infection duration (days):</label>
                             </td>
                             <td>
@@ -57,9 +38,18 @@ function Parameters(){
                             </td>
                         </tr>
 
+                        <tr>
+                            <td>
+                                <label className='label'>Other Parameters:</label>
+                            </td>
+                            <td>
+                                <input required minLength='6' type='text' size='15'></input>
+                            </td>
+                        </tr>
+
                     </tbody>
                 </table>
-
+                
             </div>
         </div>
 
