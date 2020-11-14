@@ -39,19 +39,19 @@ const tileData = [
   },
   {
     img: image,
-    name: 'Team Member 6',
+    name: 'Team Member 7',
     role: 'Leader',
     description: 'Major',
   },
   {
     img: image,
-    name: 'Team Member 6',
+    name: 'Team Member 8',
     role: 'Leader',
     description: 'Major',
   },
   {
     img: image,
-    name: 'Team Member 6',
+    name: 'Team Member 9',
     role: 'Leader',
     description: 'Major',
   }, 

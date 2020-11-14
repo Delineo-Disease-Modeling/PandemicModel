@@ -11,11 +11,8 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
-import Avatar from '@material-ui/core/Avatar';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
-import { withWidth } from '@material-ui/core';
 
-import BlogPost from './BlogPost.js'
 
 //import Pagination from '@material-ui/lab/Pagination';
 //mport { DevelopmentBlog } from '.';

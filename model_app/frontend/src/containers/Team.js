@@ -54,71 +54,71 @@ function Team(props){
 }
 
 
-function LeaderList(props){
+// function LeaderList(props){
 
-  const leaderCards = props.list.map(leader => {
-    return(
-      <TeamLeaderCardLeft key={leader.name} name={leader.name} description = {leader.major} />
-    );
-    }
-  );
-  return(<div>{leaderCards}</div>);
-}
+//   const leaderCards = props.list.map(leader => {
+//     return(
+//       <TeamLeaderCardLeft key={leader.name} name={leader.name} description = {leader.major} />
+//     );
+//     }
+//   );
+//   return(<div>{leaderCards}</div>);
+// }
 
-function MemberList(props){
+// function MemberList(props){
 
-  const memberCards = props.list.map(member => {
-    return(
-      <MemberCardLeft key={member.name} name={member.name} description = {member.major} />
-    );
-    }
-  );
-  return(<div>{memberCards}</div>);
-}
+//   const memberCards = props.list.map(member => {
+//     return(
+//       <MemberCardLeft key={member.name} name={member.name} description = {member.major} />
+//     );
+//     }
+//   );
+//   return(<div>{memberCards}</div>);
+// }
 
-function SupervisorList(props) {
-  const supervisorCards = props.list.map(supervisor =>
-    <SupervisorCard key={supervisor.name} name={supervisor.name} description={supervisor.profession} image={supervisor.image}/>
-  );
-  return <div>{supervisorCards}</div>;
-}
+// function SupervisorList(props) {
+//   const supervisorCards = props.list.map(supervisor =>
+//     <SupervisorCard key={supervisor.name} name={supervisor.name} description={supervisor.profession} image={supervisor.image}/>
+//   );
+//   return <div>{supervisorCards}</div>;
+// }
 
-function TeamLeaderCardLeft(props){
-  return(
-    <div align= "left" className="LeaderCard">
-        <div className="Inner">
-          <h4 className="LeaderName">{props.name}</h4>
-          <h5 className="ProfessionText"> {props.description} </h5>
-        </div>
-    </div>
+// function TeamLeaderCardLeft(props){
+//   return(
+//     <div align= "left" className="LeaderCard">
+//         <div className="Inner">
+//           <h4 className="LeaderName">{props.name}</h4>
+//           <h5 className="ProfessionText"> {props.description} </h5>
+//         </div>
+//     </div>
 
-  );
+//   );
 
-}
+// }
 
-function MemberCardLeft(props){
-  return(
-    <div align= "left" className="LeaderCard">
-        <div className="Inner">
-          <h4 className="LeaderName">{props.name}</h4>
-          <h5 className="ProfessionText"> {props.description} </h5>
-        </div>
-    </div>
+// function MemberCardLeft(props){
+//   return(
+//     <div align= "left" className="LeaderCard">
+//         <div className="Inner">
+//           <h4 className="LeaderName">{props.name}</h4>
+//           <h5 className="ProfessionText"> {props.description} </h5>
+//         </div>
+//     </div>
 
-  );
+//   );
 
-}
+// }
 
-function SupervisorCard(props){
-  return(
-    <div align= "left" className="SuperCard">
-        <div className="Inner">
-          <h4 className="LeaderName">{props.name}</h4>
-          <h5 className="ProfessionText">{props.description}</h5>
-        </div>
-    </div>
-  );
-}
+// function SupervisorCard(props){
+//   return(
+//     <div align= "left" className="SuperCard">
+//         <div className="Inner">
+//           <h4 className="LeaderName">{props.name}</h4>
+//           <h5 className="ProfessionText">{props.description}</h5>
+//         </div>
+//     </div>
+//   );
+// }
 
 
 

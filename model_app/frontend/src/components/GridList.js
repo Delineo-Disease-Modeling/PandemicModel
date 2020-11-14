@@ -1,15 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
-
-import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,11 +26,10 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     zIndex: 2,
     transition: "background-color 350ms ease",
-    backgroundColor: "transparent",
+    backgroundColor: "rgba(0,0,0,.5)",
     padding: "20px 20px 0 20px",
     boxSizing: "border-box",
     opacity: 0,
-    backgroundColor: "rgba(0,0,0,.5)"
   },
   hover: {
     opacity: 1,
@@ -86,7 +78,7 @@ export default function TitlebarGridList(tileData) {
     <Container className={classes.root} maxWidth="md">
       <Grid container spacing={4}>
         {tileData.map((tile) => (
-          <Grid item key={classes.GridListTile}  xs={12} sm={6} md={3}>
+          <Grid item key={tile.name}  xs={12} sm={6} md={3}>
             <GridListTile className={classes.GridListTile} key={tile.img}>
               <img src={tile.img} alt={tile.name} />
 

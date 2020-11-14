@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { Fab } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ConfigDrawer(props) {
   const classes = useStyles();
-  const theme = useTheme();
 
   const [state, setState] = React.useState({
     top: false,
