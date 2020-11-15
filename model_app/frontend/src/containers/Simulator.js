@@ -2,6 +2,24 @@ import React, { Component } from 'react';
 import { Place, GoogleMap, Parameters, OptionMenu, SimulationTimeseries, PersistentDrawerLeft } from '../components';
 import './Simulator.css'
 import axios from 'axios';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {withStyles, makeStyles} from '@material-ui/core/styles';
+
+
+const ColoredAccordion = withStyles({
+    root: {
+        backgroundColor: '#1b4441c2',
+        fontSize: '20px',
+        color: '#66FCF1'
+
+
+
+    },
+})(Accordion);
+
 
 class Simulator extends Component {
 
@@ -23,7 +41,7 @@ class Simulator extends Component {
     }
 
     handleOnClick = () => {
-        // if user had an existing job request, delete that 
+        // if user had an existing job request, delete that
         if (this.state.jobId) {
             axios.delete(`./simulations/${this.state.jobId}`, { cancelToken: this.source.token })
                 .catch(err => {
@@ -39,7 +57,7 @@ class Simulator extends Component {
         // send post request
         axios.post('./simulations', body, { cancelToken: this.source.token })
             .then(res => {
-                // only upon successful post request, update state with in progress state and 
+                // only upon successful post request, update state with in progress state and
                 if (res.status === 200) {
                     this._isMounted && this.setState({ jobId: `${res.data}`, loading: true });
                     console.log('post sent with job id ' + res.data);
@@ -76,6 +94,7 @@ class Simulator extends Component {
                 .catch(err => console.log(err));
         }
     }
+    //<p style={{ textAlign: 'left', fontSize: '20px', color: '#66FCF1' }}>Model Parameters</p>
 
     render() {
         const { data, jobId, loading } = this.state;
@@ -93,12 +112,29 @@ class Simulator extends Component {
                     <div>
                         <div className='GreenBackground'>
                             <h3>Configurations</h3>
-                            <p style={{ textAlign: 'left', fontSize: '20px', color: '#66FCF1' }}>Model Parameters</p>
-                            <Parameters />
-                            <p style={{ textAlign: 'left', fontSize: '20px', color: '#66FCF1', marginTop: '20px' }}>Intervention Policy</p>
 
-                            <OptionMenu />
 
+                            <ColoredAccordion>
+                              <AccordionSummary
+                                  expandIcon={<ExpandMoreIcon />}
+                                  aria-controls="Model Param-content"
+                                  id="Model Param-header"
+                              >
+                                Model Parameters
+                              </AccordionSummary>
+                                <Parameters />
+                            </ColoredAccordion>
+                            <br></br>
+                            <ColoredAccordion>
+                              <AccordionSummary
+                                  expandIcon={<ExpandMoreIcon />}
+                                  aria-controls="Intervention Policy-content"
+                                  id="Intervention Policy-header"
+                              >
+                                Intervention Policy
+                              </AccordionSummary>
+                                <OptionMenu />
+                            </ColoredAccordion>
 
                             <br></br>
                             <button className='button' onClick={this.handleOnClick}>Run Simulation</button>
