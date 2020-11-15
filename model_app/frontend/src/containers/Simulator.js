@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import { Place, GoogleMap, Parameters, OptionMenu, SimulationTimeseries, PersistentDrawerLeft } from '../components';
 import './Simulator.css'
 import axios from 'axios';
+import Button from '@material-ui/core/Button';
 import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {withStyles, makeStyles} from '@material-ui/core/styles';
-
+import {withStyles} from '@material-ui/core/styles';
 
 const ColoredAccordion = withStyles({
     root: {
@@ -19,7 +18,6 @@ const ColoredAccordion = withStyles({
 
     },
 })(Accordion);
-
 
 class Simulator extends Component {
 
@@ -102,7 +100,7 @@ class Simulator extends Component {
         // no timeseries: replace with simulation timeseries
         return (
             <div className='GreenBackground'>
-                <PersistentDrawerLeft>
+                <PersistentDrawerLeft runOnClick={this.handleOnClick}>
                     <div className='GreenBackground'>
                         <h3>Map</h3>
                         <Place />
@@ -137,7 +135,10 @@ class Simulator extends Component {
                             </ColoredAccordion>
 
                             <br></br>
-                            <button className='button' onClick={this.handleOnClick}>Run Simulation</button>
+
+                            <Button variant="contained" color="primary" className='button' onClick={this.handleOnClick}>
+                                Run Simulation                            
+                            </Button>
                         </div>
                     </div>
 

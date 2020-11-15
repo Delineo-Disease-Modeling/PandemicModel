@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { Fab } from '@material-ui/core';
 import TuneIcon from '@material-ui/icons/Tune';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,8 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
   fab: {
     position: 'fixed',
-    bottom: theme.spacing(5),
-    right: theme.spacing(20),
+    right: theme.spacing(4),
     zIndex: 99,
     color: theme.palette.common.black,
     backgroundColor: 'cyan',
@@ -36,6 +36,8 @@ export default function ConfigDrawer(props) {
     left: false,
     bottom: false,
     right: false,
+    runFABExtended: false,
+    configFABExtended: false,
   });
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -49,8 +51,11 @@ export default function ConfigDrawer(props) {
   return (
     <div>
       <React.Fragment key='left'>
-          <Fab variant="extended" className={classes.fab} onClick={toggleDrawer('left', true)}>
-            Configurations <TuneIcon />
+          <Fab variant="extended" className={classes.fab} style={{'bottom': '40px'}} onClick={props.runOnClick}>
+            <PlayArrowIcon /> Run Simulation 
+          </Fab>
+          <Fab variant="extended" className={classes.fab} onClick={toggleDrawer('left', true)} style={{'bottom': '100px'}}>
+            <TuneIcon /> Configurations 
           </Fab>
           <SwipeableDrawer
             anchor='left'
