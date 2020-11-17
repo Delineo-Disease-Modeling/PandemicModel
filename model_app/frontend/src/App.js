@@ -25,9 +25,7 @@ function App() {
                       <Route exact path="/simulator" component={Simulator} />
                       <Route exact path="/team" component={Team} />
                       <Route exact path="/developmentblog" component={DevelopmentBlog} />
-                      <Route exact path="/developmentblog/blog1" component={DevelopmentBlog} />
-                      <Route exact path="/example" component={Example} />
-                      <Redirect to="/" />
+                      <Route exact path="/developmentblog/:example" component={Example} />
                   </Switch>
                   <Footer />
               </Router>

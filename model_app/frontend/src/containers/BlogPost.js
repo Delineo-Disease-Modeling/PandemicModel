@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
- 
+import { Link } from 'react-router-dom';
  
 function BlogPost (props) {
    return (
@@ -18,12 +18,28 @@ function BlogPost (props) {
            </Container>
            
        <ButtonGroup color="primary" aria-label="outlined primary button group">
-         <Button>Previous Post</Button>
-         <Button>Next Post</Button>
+         <Button > <a href="/developmentblog">Back to Blog Page</a></Button>
+         
        </ButtonGroup>
+
+       
+
        </Container>
+
+       
        
    );
 }
+
+class BackButton {
+    handleClick = () => {
+        this.props.goBack();
+    };
+
+    render() {
+        return <Button variant="contained" color="primary" onClick={this.handleClick}>Go Back</Button>;
+    }
+}
+
  
 export default BlogPost;
