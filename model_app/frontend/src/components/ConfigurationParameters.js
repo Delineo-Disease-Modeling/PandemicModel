@@ -2,7 +2,7 @@ import React from 'react';
 import '../containers/Simulator.css'
 import Slider from '@material-ui/core/Slider'
 import {withStyles, makeStyles} from '@material-ui/core/styles';
-import Select from "react-dropdown-select";
+//import Select from "react-dropdown-select";
 
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
