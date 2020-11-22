@@ -110,8 +110,6 @@ class Simulator extends Component {
                     <div>
                         <div className='GreenBackground'>
                             <h3>Configurations</h3>
-
-
                             <ColoredAccordion>
                               <AccordionSummary
                                   expandIcon={<ExpandMoreIcon />}
@@ -137,7 +135,7 @@ class Simulator extends Component {
                             <br></br>
 
                             <Button variant="contained" color="primary" className='button' onClick={this.handleOnClick}>
-                                Run Simulation                            
+                                Run Simulation
                             </Button>
                         </div>
                     </div>

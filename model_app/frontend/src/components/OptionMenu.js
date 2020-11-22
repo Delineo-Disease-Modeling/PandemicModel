@@ -13,7 +13,7 @@ class OptionMenu extends Component {
             selectedPolicy: 'Policy',
             duration: '0',
             policyComponent: [],
-            policyList: ["Schools", "Travel Ban", ">500 Gatherings", "Restuarants", ">50 Gatherings"]
+            policyList: ["Schools", "Travel Ban", ">500 Gatherings", "Restuarants", ">50 Gatherings", "Stay At Home Order", "Social Distancing Order", "Sanitation Order", "Mandatory Mask Order" ]
         };
         this.deleteItem = this.deleteItem.bind(this);
     }
@@ -83,7 +83,7 @@ class OptionMenu extends Component {
                         {/* <div align='left' className='col4'>
                             <label htmlFor='usr' style={{color:'white'}}>Duration (in days): </label>
                             <input align='left' required size='15' type='text' style={{marginRight:'30px', marginLeft:'0px'}} onChange={event=> this.setState({duration:event.target.value})}></input>
-                
+
                             </div> */}
 
 
