@@ -38,16 +38,18 @@ for key, value in female_age.items():
 for key, value in male_age.items():
     total_age[key] += value
 
-data = open("barnsdell_age_bracket_distr.dat", "w")
+data = open("barnsdell_age_bracket_distr_16.dat", "w")
+data.write("age_bracket,percent\n")
 for key, value in total_age.items():
     val = value / total_pop
     data.write(str(key) + "," + str(val) + "\n")
 data.close()
 
-data = open("barnsdell_gender_fraction_by_age_bracket.dat", "w")
+data = open("barnsdell_gender_fraction_by_age_bracket_16.dat", "w")
+data.write("age_bracket,fraction_male,fraction_female\n")
 for key, value in female_age.items():
-    data.write(str(key) + "," + str(male_age[key] / total_pop) + "," + 
-    str(female_age[key] / total_pop) + "\n")
+    data.write(str(key) + "," + str(male_age[key] / male_pop) + "," + 
+    str(female_age[key] / female_pop) + "\n")
 data.close()
 
 
