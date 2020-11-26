@@ -48,8 +48,8 @@ data.close()
 data = open("barnsdell_gender_fraction_by_age_bracket_16.dat", "w")
 data.write("age_bracket,fraction_male,fraction_female\n")
 for key, value in female_age.items():
-    data.write(str(key) + "," + str(male_age[key] / male_pop) + "," + 
-    str(female_age[key] / female_pop) + "\n")
+    data.write(str(key) + "," + str(male_age[key] / total_age[key]) + "," + 
+    str(female_age[key] / total_age[key]) + "\n")
 data.close()
 
 
