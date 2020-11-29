@@ -13,7 +13,7 @@ class OptionMenu extends Component {
             selectedPolicy: 'Policy',
             duration: '0',
             policyComponent: [],
-            policyList: ["Schools", "Travel Ban", ">500 Gatherings", "Restuarants", ">50 Gatherings", "Stay At Home Order", "Social Distancing Order", "Sanitation Order", "Mandatory Mask Order" ]
+            policyList: ["Stay At Home Order", "Social Distancing Order", "Sanitation Order", "Mandatory Mask Order" ]
         };
         this.deleteItem = this.deleteItem.bind(this);
     }
