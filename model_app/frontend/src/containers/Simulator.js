@@ -6,7 +6,10 @@ import Button from '@material-ui/core/Button';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles, makeStyles} from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Fab from '@material-ui/core/Fab';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
 const ColoredAccordion = withStyles({
     root: {
@@ -19,7 +22,31 @@ const ColoredAccordion = withStyles({
     },
 })(Accordion);
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+      backgroundColor: theme.palette.background.paper,
+      width: 400,
+      position: 'relative',
+      minHeight: 200,
+    },
+    fab: {
+      position: 'fixed',
+      right: theme.spacing(4),
+      zIndex: 99,
+      color: theme.palette.common.black,
+      backgroundColor: 'cyan',
+      '&:hover': {
+        backgroundColor: '#0fe0e0',
+      },
+    },
+    drawer: {
+      top: 90,
+      height: "90%"
+    }
+  }));
+
 class Simulator extends Component {
+    // classes = useStyles();
 
     constructor() {
         super();
@@ -100,14 +127,9 @@ class Simulator extends Component {
         // no timeseries: replace with simulation timeseries
         return (
             <div className='GreenBackground'>
-                <PersistentDrawerLeft runOnClick={this.handleOnClick}>
-                    <div className='GreenBackground'>
-                        <h3>Map</h3>
-                        <Place />
-                        <GoogleMap />
-                    </div>
-
-                    <div>
+                 <Grid container spacing={3}>
+                 <Grid item xs={6}>
+<div>
                         <div className='GreenBackground'>
                             <h3>Configurations</h3>
                             <ColoredAccordion>
@@ -148,7 +170,23 @@ class Simulator extends Component {
                             </div>)
                             : null}
                     </div>
-                </PersistentDrawerLeft>
+                     </Grid>
+                 <Grid item xs={6}>
+                    <div className='GreenBackground'>
+                        <h3>Map</h3>
+                        <Place />
+                        <GoogleMap />
+                    </div>
+
+                    
+                </Grid>
+                </Grid>
+
+<div className='fab'>
+          <Fab variant="extended"  style={{'bottom': '40px'}} onClick={this.handleOnClick}>
+            <PlayArrowIcon  /> Run Simulation 
+          </Fab>
+            </div>
             </div>
         );
     }
