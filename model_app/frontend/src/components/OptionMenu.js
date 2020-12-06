@@ -61,7 +61,7 @@ class OptionMenu extends Component {
                 <div align='left' className={this.state.hidden ? 'hidden' : ''}>
                     <div className='row'>
 
-                        <div className='col4'>
+                        <div className='col'>
                             <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} style={{ marginLeft: '10px' }}>
                                 <DropdownToggle caret> {this.state.selectedPolicy} </DropdownToggle>
                                 <DropdownMenu>
@@ -72,13 +72,17 @@ class OptionMenu extends Component {
                                     })}
                                 </DropdownMenu>
                             </Dropdown>
-                            <label htmlFor='usr' style={{ color: 'white' }}>Duration (in days): </label>
-                            <input align='left' required size='15' type='text' style={{ marginRight: '30px', marginLeft: '0px' }} onChange={event => this.setState({ duration: event.target.value })}></input>
 
-                            <div align='left' className='col4'>
+                          </div>
+                          <div className ='col'>
+                              <label htmlFor='usr' style={{color: 'white' }}>Duration (in days): </label>
+                              &nbsp; &nbsp;
+                              <input align='left' required size='15' type='text' style={{ marginRight: '30px', marginLeft: '0px' }} onChange={event => this.setState({ duration: event.target.value })}></input>
+                          </div>
+                          <div align='bottom' className='col4'>
                                 <button className='buttonSave' onClick={this.save}>Save</button>
-                            </div>
-                        </div>
+                          </div>
+
 
                         {/* <div align='left' className='col4'>
                             <label htmlFor='usr' style={{color:'white'}}>Duration (in days): </label>
@@ -88,13 +92,17 @@ class OptionMenu extends Component {
 
 
                     </div>
-                    <hr align='left' className='dotted2'></hr>
+                    <br></br>
+                    <hr align='left' className='dotted'></hr>
 
                 </div>
 
                 <div style={{ textAlign: 'left', marginLeft: '55px' }}>
                     <button className='button' onClick={this.handleAdd}>Add+</button>
+
                 </div>
+                <br></br>
+
 
             </div>
 

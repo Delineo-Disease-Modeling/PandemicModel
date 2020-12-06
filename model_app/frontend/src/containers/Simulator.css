@@ -11,6 +11,8 @@
 }
 
 .GreenBackground{
+    display: block;
+    overflow: auto;
     margin-top: 0%;
     margin-left: auto;
     margin-right: auto;
@@ -23,6 +25,7 @@
     padding-bottom:5%;
     padding-right: 20px;
     padding-left: 20px;
+
 }
 
 h3{
@@ -34,8 +37,15 @@ h3{
 
 .col{
     float: left;
+    width: 40%;
+    vertical-align: middle;
+}
+
+.col2{
+    float: right;
     width: 50%;
     padding: 10px;
+    align-content: left;
 }
 
 .col3{
@@ -44,11 +54,17 @@ h3{
     padding: 10px;
 }
 
-.col2{
+.col4{
+    float: left;
+    width: 20%;
+    padding-right:10px;
+    text-align: center;
+}
+
+.col5{
     float: right;
-    width: 50%;
-    padding: 10px;
-    align-content: left;
+    padding-left: 15%;
+    width: 45%;
 }
 
 .label{
@@ -59,8 +75,17 @@ h3{
 
 .row{
     padding-top: 10px;
-    padding-left: 50px;
+    padding-left: 20px;
+    padding-right: 10px;
 }
+
+.row2{
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    float:right;
+}
+
 
 td{
     padding-bottom: 15px;
@@ -92,7 +117,7 @@ td{
     background-color:#1b4441c2;
     height:1px;
     width:92%;
-    margin-left:15px;
+    margin-left:5%;
     margin-top: 0;
   }
 
@@ -112,8 +137,9 @@ td{
 }
 
 .durationText{
-
-    color:white;
+    font-size: 15px;
+    width: fit-content;
+    color: white;
 
 }
 
@@ -121,12 +147,8 @@ td{
     display:none;
 }
 
-.col4{
-    float: left;
-    width: 30%;
-    padding: 5px;
-}
 
 i:hover{
-    color:#66fcf275
+    color:#66fcf275;
+
 }
