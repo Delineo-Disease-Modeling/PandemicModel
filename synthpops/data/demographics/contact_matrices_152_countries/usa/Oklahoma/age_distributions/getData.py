@@ -1,7 +1,7 @@
 import pandas as pd 
 import numpy as np 
 
-df = pd.read_csv("dat.csv")
+df = pd.read_csv("data.csv")
 male_file = open("male_gender_age.txt")
 female_file = open("female_gender_age.txt")
 female_age = {}
