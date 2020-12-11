@@ -1,11 +1,14 @@
+from simulation.person import Person
+
+
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
 
     state = 'Indiana'
     county = 'Barnsdall'
-    interventions = [True, False, True] # Uncertain exactly what/how many interventions to expect
-    dayOfWeek = 1 # Takes values 1-7 representing Mon-Sun
-    timeOfDay = 0 # Takes values 0-23 representing the hour (rounded down)
+    interventions = [True, False, True]  # Uncertain exactly what/how many interventions to expect
+    dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
+    timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
 
     # getUserInput: This function will assign the state, county, and interventions as the user specifies
     # params:
@@ -22,7 +25,7 @@ class MasterController:
     #   state - the state passed by the user
     #   county - the county passed by the user
     #   interventions - an array oof booleans corresponding to certain interventions (size TBD)
-    def createModules(self):
+    def createModule(self):
         return Module(self.state, self.county, self.interventions)
 
     # updateTime: This function will advance the time forward one hour
@@ -39,20 +42,25 @@ class MasterController:
     #   interval - the number of hours to run the simulation for
     #   population - the population as instantiated by a Module object
     #   facilities - the facility list as instantiated by a Module object
-    def runSim(self, interval, population, facilities):
+    def runSim(self, interval, population, facilities, module):
         # for each time step, move population, create subgroups, infect the new people
         # uncertain exactly how time works
         for i in range(interval):
+            module.movePop(self.dayOfWeek, self.timeOfDay)
             for facility in facilities:
-                population.move(self.dayOfWeek, self.timeOfDay) # Not in UML but I think it is necesssary
-                groups = facility.createGroups()
-                for group in groups:
-                    group.calcInfection()
-                    #TODO use these new infections to update the population
+                G = facility.createGraph()
+                facility.calcInfection(G)
             self.updateTime()
-
 
     def displayResult(self):
         print('Nothing to show yet')
-        #TODO
-        
+        # TODO
+
+    def main(self):
+        # TODO Get user input
+
+        M = self.createModule()
+        Pop = M.createPopulation()
+        Facilities = M.createSubmodules()
+        interval = 100
+        self.runSim(interval, Pop, Facilities, M)
