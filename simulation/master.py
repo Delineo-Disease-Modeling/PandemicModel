@@ -1,11 +1,13 @@
-from simulation.person import Person
-
+from person import Person
+from module import Module
+from submodule import Submodule
 
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
 
     state = 'Indiana'
     county = 'Barnsdall'
+    population = 1243
     interventions = [True, False, True]  # Uncertain exactly what/how many interventions to expect
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
@@ -46,8 +48,9 @@ class MasterController:
         # for each time step, move population, create subgroups, infect the new people
         # uncertain exactly how time works
         for i in range(interval):
-            module.movePop(self.dayOfWeek, self.timeOfDay)
+            module.movePop(self.dayOfWeek, self.timeOfDay, population, facilities)
             for facility in facilities:
+                facility.createGroups()
                 G = facility.createGraph()
                 facility.calcInfection(G)
             self.updateTime()
@@ -58,9 +61,13 @@ class MasterController:
 
     def main(self):
         # TODO Get user input
-
+        print("hey")
         M = self.createModule()
         Pop = M.createPopulation()
         Facilities = M.createSubmodules()
         interval = 100
         self.runSim(interval, Pop, Facilities, M)
+
+
+if __name__ == '__main__':
+    MasterController().main()

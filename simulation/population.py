@@ -1,16 +1,20 @@
 import synthpops as sp
-import person as person
+from person import Person
+import random
 
 class Population():
     #constructor
-    def __init__(self, state, country, population, peopleArray, populationSize):
+    def __init__(self, state, country, population=[], peopleArray=[], populationSize=0):
+        print("Pop constructor")
         self.state = state
         self.country = country
         self.population = population #array of different person classes
         self.peopleArray = peopleArray
         self.populationSize = populationSize
-        
-    def get_dist(self):
+
+
+    def get_dict(self):
+        print("get_dict")
         sp.validate()
         datadir = sp.datadir
         location = 'seattle_metro'
@@ -23,8 +27,9 @@ class Population():
         npop = 1132
         num_workplaces = 200
         
-        pop, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location = location, state_location = state_location, country_location, sheet_name = sheet_name, level = level)
-        return pop_dict == True
+        pop, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location, state_location, country_location, sheet_name, level)
+        print(pop)
+        return pop, homes_dic
     
     #calls synthpops and generates population (dictionary)
     def generatePopulation(populationSize):

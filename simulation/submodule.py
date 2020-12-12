@@ -4,8 +4,10 @@ import random as rnd
 
 class Submodule:
 
-    def __init__(self, Area, Contact, Mobility, Density, Cleanliness, numGroups, Groups, People):
+    def __init__(self, id, facilitytype, numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected = []):
         # Either initialize parameterized or empty and fill in with methods.
+        self.__id = id
+        self.__facilitytype = facilitytype
         self.__Area = Area
         self.__Contact = Contact
         self.__Mobility = Mobility
@@ -14,6 +16,15 @@ class Submodule:
         self.__numGroups = numGroups
         self.__Groups = Groups
         self.__People = People
+        self.__Infected = Infected
+
+    def clearPeople(self):
+        self.__People = []
+
+    def addPerson(self, person):
+        self.__People.append(person)
+        if person.getInfectedState():
+            self.__Infected.append(person)
 
     def calcContact(self):
         contact = 0  # placeholder
@@ -32,8 +43,18 @@ class Submodule:
         return numGroups
 
     def createGroups(self):
-        groups = {}  # placeholder
-        return groups
+        count = 0
+        groups = []
+        while count < len(self.__People):
+            ran = max(rnd.randint(1, 5), len(self.__People) - count)
+            group = []
+            for i in range(ran):
+                group.append(self.__People[count])
+                count += 1
+            groups.append(group)
+        self.__numGroups = len(groups)
+        self.__Groups = groups
+
 
     def calcCleanliness(self):
         cleanliness = 0  # placeholder
@@ -41,8 +62,8 @@ class Submodule:
 
     def getInfected(self):
         infected = []
-        for person in self.__People
-            if person.isInfected()
+        for person in self.__People:
+            if person.isInfected():
                 infected.append(person)
         return infected
 
@@ -51,7 +72,7 @@ class Submodule:
         sizes = [0] * self.__numGroups
         idList = []
         p = []
-        for i in self.__numGroups:
+        for i in range(self.__numGroups):
             sizes[i] = len(self.__Groups[i])
 
             for person in self.__Groups[i]:
@@ -64,19 +85,18 @@ class Submodule:
                         j] = 1  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
                     tmp_p[
-                        j] = self.__Mobility * self.__Density  # Likelihood of connections between groups, arbitrary formula
+                        j] = .3  # Likelihood of connections between groups, arbitrary formula
             p.append(tmp_p)
         return nx.stochastic_block_model(sizes, p, idList)
 
     # It seems for simplicity, it would make the most sense to calcInfection here
     def calcInfection(self, stochGraph):
-        infected = getInfected()
-        for person in infected:
+        for person in self.__Infected:
             for i in nx.list(stochGraph.adj[person.getID()]):
                 # TODO Make this more accurate
                 randNum = rnd.randint(1, 101)
                 if (randNum < 30):
-                    Population.find(i).setInfected(True)  # Set's person to be infected
+                    self.__People[self.__People.index(i)].setInfected(True)  # Set's person to be infected
 
 
 
