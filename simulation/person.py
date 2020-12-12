@@ -3,11 +3,12 @@ class Person:
     #Initialization function, sets all parameters at once.
     #TODO: have some default parameters if we can't set all of them at once, like
     #for initializing them with synthpops.
-    def __init__(self, age, sex, householdLocation, householdMembers, comorbidities, demographicInfo, severityRisk, currentLocation, infectionState, incubation):
-        self.setParameters(age, sex, householdLocation, householdMembers, comorbidities, demographicInfo, severityRisk, currentLocation, infectionState, incubation)
+    def __init__(self ,ID, age = 0, sex = 0, householdLocation = 0, householdMembers=[], comorbidities=0, demographicInfo=0, severityRisk=0, currentLocation=0, infectionState=False, incubation=0):
+        self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities, demographicInfo, severityRisk, currentLocation, infectionState, incubation)
         
     #Sets all parameters.
-    def setAllParameters(self, age, sex, householdLocation, householdMembers, comorbidities, demographicInfo, severityRisk, currentLocation, infectionState, incubation):
+    def setAllParameters(self, ID, age = 0, sex = 0, householdLocation = 0, householdMembers=[], comorbidities=0, demographicInfo=0, severityRisk=0, currentLocation=0, infectionState=False, incubation=0):
+        self.ID = ID
         self.age = age
         self.sex = sex
         self.householdLocation = householdLocation
@@ -18,7 +19,11 @@ class Person:
         self.currentLocation = currentLocation
         self.infectionState = infectionState
         self.incubation = incubation
-    
+
+
+    def getID(self):
+        return self.ID
+
     #sets specific parameters from the info available in the synthpops generated population.
     #householdLocation = location, householdMembers = contacts
     def setSynthPopParameters(self, age, sex, householdLocation, householdMembers):

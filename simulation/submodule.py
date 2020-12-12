@@ -1,5 +1,6 @@
 import networkx as nx
 import random as rnd
+import matplotlib.pyplot as plt
 
 
 class Submodule:
@@ -20,10 +21,11 @@ class Submodule:
 
     def clearPeople(self):
         self.__People = []
+        self.__Infected = []
 
     def addPerson(self, person):
         self.__People.append(person)
-        if person.getInfectedState():
+        if person.getInfectionState():
             self.__Infected.append(person)
 
     def calcContact(self):
@@ -43,15 +45,23 @@ class Submodule:
         return numGroups
 
     def createGroups(self):
+
         count = 0
         groups = []
         while count < len(self.__People):
-            ran = max(rnd.randint(1, 5), len(self.__People) - count)
+            ran = min(rnd.randint(1, 2), len(self.__People) - count)
             group = []
             for i in range(ran):
                 group.append(self.__People[count])
                 count += 1
             groups.append(group)
+        """
+        groups = []
+        group = []
+        for each in self.__People:
+            group.append(each)
+        groups.append(group)
+        """
         self.__numGroups = len(groups)
         self.__Groups = groups
 
@@ -79,24 +89,30 @@ class Submodule:
                 idList.append(person.getID())
 
             tmp_p = [0] * self.__numGroups
-            for j in self.__numGroups:
+            for j in range(self.__numGroups):
                 if j == i:
                     tmp_p[
                         j] = 1  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
                     tmp_p[
-                        j] = .3  # Likelihood of connections between groups, arbitrary formula
+                        j] = .05  # Likelihood of connections between groups, arbitrary formula
             p.append(tmp_p)
+        #nx.draw(nx.stochastic_block_model(sizes, p, idList))
+        #plt.show()
+        #print(idList)
         return nx.stochastic_block_model(sizes, p, idList)
 
     # It seems for simplicity, it would make the most sense to calcInfection here
     def calcInfection(self, stochGraph):
         for person in self.__Infected:
-            for i in nx.list(stochGraph.adj[person.getID()]):
+            for i in list(stochGraph.neighbors(person.getID())):
                 # TODO Make this more accurate
                 randNum = rnd.randint(1, 101)
                 if (randNum < 30):
-                    self.__People[self.__People.index(i)].setInfected(True)  # Set's person to be infected
+                    for j in range(len(self.__People)):
+                        if self.__People[j].getID() == i:
+                            self.__People[j].setInfectionState(True)
+                   # self.__People[self.__People.index(i)].setInfected(True)  # Set's person to be infected
 
 
 

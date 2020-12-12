@@ -1,6 +1,7 @@
 from person import Person
 from module import Module
 from submodule import Submodule
+import random
 
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
@@ -64,9 +65,18 @@ class MasterController:
         print("hey")
         M = self.createModule()
         Pop = M.createPopulation()
+        for i in range(5):
+            ran = random.randint(0, len(Pop) - 1)
+            Pop[ran].setInfectionState(True)
         Facilities = M.createSubmodules()
-        interval = 100
+        interval = 1
         self.runSim(interval, Pop, Facilities, M)
+        count = 0
+        for each in Pop:
+            if Pop[each].getInfectionState():
+                count += 1
+        print(count)
+
 
 
 if __name__ == '__main__':

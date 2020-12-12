@@ -1,4 +1,4 @@
-import synthpops as sp
+import synthpops.synthpops as sp
 from person import Person
 import random
 
@@ -27,15 +27,20 @@ class Population():
         npop = 1132
         num_workplaces = 200
         
-        pop, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location, state_location, country_location, sheet_name, level)
-        print(pop)
-        return pop, homes_dic
+        population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location = location, state_location = state_location, country_location = country_location, sheet_name = sheet_name, return_popdict = True)
+        peopleArray = {}
+        for i in range(npop):
+            person = Person(i)
+            person.setSynthPopParameters(population[i]['age'], population[i]['sex'],
+                                         population[i]['loc'], population[i]['contacts'])
+            peopleArray[i] = person
+        return peopleArray
     
     #calls synthpops and generates population (dictionary)
     def generatePopulation(populationSize):
         #call function from person class
         peopleArray = {}
-        population = sp(populationSize)
+        population = sp.generate_synthetic_population(populationSize)
         for i in range(populationSize):
             person = Person()
             person.setSynthPopParameters(population[i]['age'], population[i]['sex'], 

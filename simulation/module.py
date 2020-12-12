@@ -10,11 +10,13 @@ class Module:
 
     def createPopulation(self):
         print("createPop function")
-        return Population().get_dict()
+        return Population(self.__State, self.__County).get_dict()
 
 
     def createSubmodules(self):
-        subdict = json.load("submodules.json")
+        with open("submodules.json") as file:
+            subdict = json.load(file)
+
         subList = []
         for each in subdict:
             subList.append(Submodule(each, each[0]))
@@ -25,5 +27,5 @@ class Module:
         for each in facilities:
             each.clearPeople()
         for each in population:
-            fac = random.randint(1, 20)
-            facilities[fac].addPerson(each)
+            fac = (random.randint(0, 19))
+            facilities[fac].addPerson(population[each])
