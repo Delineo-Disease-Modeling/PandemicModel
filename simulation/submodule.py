@@ -49,7 +49,7 @@ class Submodule:
         count = 0
         groups = []
         while count < len(self.__People):
-            ran = min(rnd.randint(1, 2), len(self.__People) - count)
+            ran = min(rnd.randint(4, 5), len(self.__People) - count)
             group = []
             for i in range(ran):
                 group.append(self.__People[count])
@@ -83,27 +83,46 @@ class Submodule:
         idList = []
         p = []
         for i in range(self.__numGroups):
-            sizes[i] = len(self.__Groups[i])
+            sizes[i] = len(self.__Groups[i]) # sizes stores the size of each group
 
             for person in self.__Groups[i]:
-                idList.append(person.getID())
+                idList.append(person.getID()) # stores each person's id in the group
 
             tmp_p = [0] * self.__numGroups
             for j in range(self.__numGroups):
                 if j == i:
-                    tmp_p[
-                        j] = 1  # If you're in the same group as an infected person, this is the likelihood you are in contact
+                    tmp_p[j] = 1  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
-                    tmp_p[
-                        j] = .05  # Likelihood of connections between groups, arbitrary formula
+                    tmp_p[j] = 0  # Likelihood of connections between groups, arbitrary formula
             p.append(tmp_p)
-        #nx.draw(nx.stochastic_block_model(sizes, p, idList))
-        #plt.show()
-        #print(idList)
-        return nx.stochastic_block_model(sizes, p, idList)
+
+        nx.draw(nx.stochastic_block_model(sizes, p, idList))
+        plt.show()
+        print(idList)
+        G = nx.stochastic_block_model(sizes, p, idList)
+        pos = nx.spring_layout(G)  # positions for all nodes
+
+
+        infected_ids = [person.getID() for person in self.__Infected]
+
+        options = {"node_size": 500, "alpha": 0.8}
+        #labe
+
+        labels = {}
+        labels[self.__People[0].getID()] = r"$a$"
+        #for i in range(len(self.__People)):
+        #    labels[self.__People[i].getID()] = "r$" + str(self.__People[i].getID()) + "$"
+        #nx.draw_networkx_labels(G, pos, labels, font_size=16)
+        nx.draw_networkx_nodes(G, pos, nodelist=infected_ids, node_color="r", label=labels, **options)
+
+        return G
 
     # It seems for simplicity, it would make the most sense to calcInfection here
     def calcInfection(self, stochGraph):
+
+        self.__People[0].setInfectionState(True)
+        self.__Infected.append(self.__People[0])
+
         for person in self.__Infected:
             for i in list(stochGraph.neighbors(person.getID())):
                 # TODO Make this more accurate
@@ -112,7 +131,9 @@ class Submodule:
                     for j in range(len(self.__People)):
                         if self.__People[j].getID() == i:
                             self.__People[j].setInfectionState(True)
+                            self.__Infected.append(self.__People[j])
                    # self.__People[self.__People.index(i)].setInfected(True)  # Set's person to be infected
+
 
 
 
