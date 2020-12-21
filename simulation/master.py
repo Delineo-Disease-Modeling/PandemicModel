@@ -53,7 +53,7 @@ class MasterController:
             for facility in facilities:
                 facility.createGroups()
                 G = facility.createGraph()
-                #facility.calcInfection(G)
+                facility.calcInfection(G)
             self.updateTime()
 
     def displayResult(self):
@@ -62,14 +62,13 @@ class MasterController:
 
     def main(self):
         # TODO Get user input
-        #print("hey")
         M = self.createModule()
         Pop = M.createPopulation()
         for i in range(5):
             ran = random.randint(0, len(Pop) - 1)
             Pop[ran].setInfectionState(True)
         Facilities = M.createSubmodules()
-        interval = 1 
+        interval = 2
         self.runSim(interval, Pop, Facilities, M)
         count = 0
         for each in Pop:
