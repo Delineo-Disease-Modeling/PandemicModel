@@ -1,8 +1,7 @@
 class Person:
 
     #Initialization function, sets all parameters at once.
-    #TODO: have some default parameters if we can't set all of them at once, like
-    #for initializing them with synthpops.
+    #TODO: have some default parameters if we can't set all of them at once, for initializing them with synthpops.
     def __init__(self ,ID, age = 0, sex = 0, householdLocation = 0, householdMembers=[], comorbidities=0, demographicInfo=0, severityRisk=0, currentLocation=0, infectionState=False, incubation=0):
         self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities, demographicInfo, severityRisk, currentLocation, infectionState, incubation)
         
@@ -19,6 +18,7 @@ class Person:
         self.currentLocation = currentLocation
         self.infectionState = infectionState
         self.incubation = incubation
+        self.disease = [] 
 
 
     def getID(self):
