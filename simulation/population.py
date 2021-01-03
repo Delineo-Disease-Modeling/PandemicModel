@@ -15,8 +15,8 @@ class Population():
     def get_dict(self):
         sp.validate()
         datadir = sp.datadir
-        location = 'seattle_metro'
-        state_location = 'Washington'
+        location = 'barnsdall'
+        state_location = 'Oklahoma'
         country_location = 'usa'
         sheet_name = 'United States of America'
         level = 'county'
@@ -25,7 +25,8 @@ class Population():
         npop = 1132
         num_workplaces = 200
         
-        population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location = location, state_location = state_location, country_location = country_location, sheet_name = sheet_name, return_popdict = True)
+        #TODO: default school sizes are still being used
+        population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location = location, state_location = state_location, country_location = country_location, sheet_name = sheet_name, use_default = True, return_popdict = True)
         peopleArray = {}
         for i in range(npop):
             person = Person(i)
