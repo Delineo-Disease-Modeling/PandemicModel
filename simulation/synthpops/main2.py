@@ -308,8 +308,8 @@ def main():
   datadir = sp.datadir # this should be where your demographics data folder resides
 
   # We are currently using distributions from the seattle dataset, since we don't have data for Barnsdall.
-  location = 'seattle_metro'
-  state_location = 'Washington'
+  location = 'barnsdell'
+  state_location = 'Oklahoma'
   country_location = 'usa'
   sheet_name = 'United States of America'
   level = 'county'
