@@ -18,7 +18,6 @@ function BlogPost (props) {
         <meta property="og:site_name" content="MongoDB" />
         <meta property="og:title" content="Built with MongoDB: Interseller | MongoDB Blog" />
         <meta name="og:description" content="Interseller is a recruiting tech startup that uses MongoDB to help 4,000 recruiters quickly hire the right candidates. " />
-        <meta property="og:url" content="https://www.mongodb.com/blog/post/built-with-mongodb-interseller" />
         <meta property="og:type" content="article" />
         <meta property="og:image" content="https://webassets.mongodb.com/_com_assets/cms/0 (2)-19amvr4s7p.jpeg" />
         <meta property="og:image:secure_url" content="https://webassets.mongodb.com/_com_assets/cms/0 (2)-19amvr4s7p.jpeg" />
@@ -27,9 +26,8 @@ function BlogPost (props) {
         <meta name="twitter:title" content="Built with MongoDB: Interseller | MongoDB Blog" />
         <meta name="twitter:description" content="Interseller is a recruiting tech startup that uses MongoDB to help 4,000 recruiters quickly hire the right candidates. " />
         <meta name="twitter:image" content="https://webassets.mongodb.com/_com_assets/cms/0 (2)-19amvr4s7p.jpeg" />
-        <link rel="alternate" type="application/rss+xml" title="RSS" href="https://www.mongodb.com/blog/rss" />
-        <link rel="icon" href="/blog/assets/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="/blog/assets/favicon.ico" />
+
+        
         <link rel="stylesheet" type="text/css" href="https://static.mongodb.com/blog/index.7065fd35cc8803bd38d6ae9ddeb9748e.css" />
         <noscript>
           &lt;style&gt;
@@ -74,17 +72,14 @@ function BlogPost (props) {
                 </div>
                 <div className="cms-content h2-30">
                   <p class="text">
-                    We all think our jobs are hard. But if you’re a recruiter, you know just how tough it is to place people into those jobs: the average response rate to recruiters is an abysmal 7%. Enter <a href="https://www.interseller.io/" target="_blank">Interseller</a>
-                    , a fast-growing NYC-based SaaS company in the recruiting tech space.
+                    Text
                   </p>
                   <figure>
                     <div className="fl-center">
-                      <img src="https://webassets.mongodb.com/_com_assets/cms/Screen Shot 2020-11-30 at 4.03.44 PM-j2fsp8tj33.png" alt=" " title=" " />
                     </div>
                   </figure>
                   <p class="text">
-                    For this episode of #BuiltWithMongoDB, we go behind the scenes in recruiting technology with <a href="https://www.linkedin.com/in/stevenlu/" target="_blank">Steven Lu</a>
-                    , co-founder and CEO of Interseller.
+                    Text
                   </p>
                   <h4>How did you pick this problem to work on?</h4>
                   <p class="text">While working as an engineer, I helped teach and recruit many other tech professionals. That’s when I realized that good engineers don’t find jobs. They get poached. Sourcing is essential for assembling great teams, but with the low industry response rate, I knew we needed a new solution.</p>
@@ -111,7 +106,7 @@ function BlogPost (props) {
                       <img src="https://webassets.mongodb.com/_com_assets/cms/Screen Shot 2020-12-02 at 4.08.21 PM-xy41b57f1w.png" alt=" " title=" " />
                     </div>
                   </figure>
-                  <p class="text">Like any engineer, I hate database migrations. I hate having to build around the database rather than the database building around my product. I remember using MongoDB at Compass in 2012—we were a MongoDB shop.</p>
+                  <p class="text">Like an engineer, I hate database migrations. I hate having to build around the database rather than the database building around my product. I remember using MongoDB at Compass in 2012—we were a MongoDB shop.</p>
                   <p class="text">After that, I went to another company that was using SQL and a relational database and I felt we were constantly being blocked by database migrations. I had to depend on our CTO to run the database migration before I could merge anything. I have such bad memories from that experience. I would rather have my engineering team push things faster than have to wait on the database side.</p>
                   <p class="text">MongoDB helped solve this. It worked well because it was so adaptable. I don’t know about scaling database solutions since we don’t have millions of users yet, but MongoDB has been a crucial part of getting core functionality, features, and bug fixes out much faster. Outside of MongoDB, we primarily use Node, Javascript, React, and AWS.</p>
                   <p class="text">Our release schedule is really short: as a startup, you have to keep pumping things out, and if half your time is spent on database migration, you won’t be able to serve customers. That’s why MongoDB Atlas is so core to our business. It’s reliable, and I don’t have to deal with database versions.</p>
@@ -124,20 +119,9 @@ function BlogPost (props) {
                   </div>
                 </div>
                 <div className="w-full fl fl-center m-v-20">
-                  <div className="w-full w-max-300" style={{height: '1px', background: '#D9E0E0'}} />
+                  <div className="w-full w-max-300" style={{height: '1px', background: '#C9E0E0'}} />
                   <div className="fl fl-center p-20">
-                    <a target="_tab" href="https://www.facebook.com/sharer.php?u=https://www.mongodb.com/blog/post/built-with-mongodb-interseller">
-                      <button aria-label="Share on facebook" className="fl fl-center white clickable h-35 w-35 m-h-5 b-r-full reset bg-green hover-fadein-half hover-lift icon-facebook" />
-                    </a>
-                    <a target="_tab" href="https://www.linkedin.com/shareArticle?mini=true&url=https://www.mongodb.com/blog/post/built-with-mongodb-interseller&title=Built with MongoDB: Interseller&summary=Interseller is a recruiting tech startup that uses MongoDB to help 4,000 recruiters quickly hire the right candidates. &source=MongoDB">
-                      <button aria-label="Share on linkedin" className="fl fl-center white clickable h-35 w-35 m-h-5 b-r-full reset bg-green hover-fadein-half hover-lift icon-linkedin" />
-                    </a>
-                    <a target="_tab" href="https://reddit.com/submit?url=https://www.mongodb.com/blog/post/built-with-mongodb-interseller&title=Built with MongoDB: Interseller">
-                      <button aria-label="Share on reddit" className="fl fl-center white clickable h-35 w-35 m-h-5 b-r-full reset bg-green hover-fadein-half hover-lift icon-reddit" />
-                    </a>
-                    <a target="_tab" href="https://twitter.com/intent/tweet?url=https://www.mongodb.com/blog/post/built-with-mongodb-interseller&text=Built with MongoDB: Interseller">
-                      <button aria-label="Share on twitter" className="fl fl-center white clickable h-35 w-35 m-h-5 b-r-full reset bg-green hover-fadein-half hover-lift icon-twitter" />
-                    </a>
+                    
                   </div>
                   <div className="w-full w-max-300" style={{height: '1px', background: '#D9E0E0'}} />
                 </div>
