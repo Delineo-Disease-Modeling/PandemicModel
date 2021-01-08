@@ -1,4 +1,4 @@
-import image from '../images/person-icon.png';
+import image from '../images/anton.jpg';
 
 const tileData = [
   {

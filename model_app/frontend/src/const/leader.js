@@ -1,5 +1,6 @@
 import { AntonImg, ProfileImg } from '../images'
 
+
 export const LEADERS = [
     {
       id: 0,
@@ -7,14 +8,14 @@ export const LEADERS = [
       designation: 'Research Supervisor',
       abbr: 'CEO',
       image: AntonImg,
-      profession: 'Executive Director of Johns Hopkins Infromation Security Insititute',
+      profession: 'Executive eeeeDirector of Johns Hopkins Infromation Security Insititute',
       university:'Johns Hopkins University',
       headshot: ''
     },
 
     {
       id: 1,
-      name: 'Team Leader 1',
+      name: 'Mathias Insley',
       image: ProfileImg,
       designation: 'Team Leader',
       major:'Team Leader Major',

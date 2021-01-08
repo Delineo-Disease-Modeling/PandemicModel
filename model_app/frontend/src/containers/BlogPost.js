@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { Link } from 'react-router-dom';
 import './BlogPost.css'
+import { makeStyles } from '@material-ui/core/styles';
  
 function BlogPost (props) {
    return (
@@ -81,6 +82,9 @@ function BlogPost (props) {
                   <p class="text">
                     Text
                   </p>
+                  <Typography variant="h1" component="h2">
+                      h1. Heading
+                  </Typography>
                   <h4>How did you pick this problem to work on?</h4>
                   <p class="text">While working as an engineer, I helped teach and recruit many other tech professionals. That’s when I realized that good engineers don’t find jobs. They get poached. Sourcing is essential for assembling great teams, but with the low industry response rate, I knew we needed a new solution.</p>
                   <p class="text">I started looking into recruiting technology and was frankly surprised by how outdated the solutions were. We began by addressing three parts of sourcing:</p>

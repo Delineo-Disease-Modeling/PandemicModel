@@ -3,14 +3,14 @@ import image from '../images/person-icon.png';
 const tileData = [
   {
     img: image,
-    name: 'Team Leader 1',
-    role: 'Leader',
-    description: 'Major',
+    name: 'Mathias Insley',
+    role: 'Software Development Manager',
+    description: '',
   },
   {
     img: image,
-    name: 'Team Leader 2',
-    role: 'Leader',
+    name: 'Simone Bliss',
+    role: 'Fullstack Lead',
     description: 'Major',
   },
   {
