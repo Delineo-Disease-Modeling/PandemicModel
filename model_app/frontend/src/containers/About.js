@@ -1,6 +1,20 @@
 import React from "react";
 import './About.css'
 import { Dimensions } from "react";
+import { makeStyles } from '@material-ui/core/styles';
+
+//const useStyles = makeStyles({
+//	thumbnail_img: {
+//		width: 250,
+//		height: 150,
+		
+		//width: 250px, /* ie8 */
+		//max-width: 50vw,
+		//max-height: 50vw,
+//	},
+  //});
+
+  
 
 class About extends React.Component {
 	constructor () {
@@ -8,9 +22,11 @@ class About extends React.Component {
   		this.MapDescription = "The Johns Hopkins Coronavirus Resource Center (CRC) is a continuously updated source of COVID-19 data and expert guidance. We aggregate and analyze the best data available on COVID-19—including cases, as well as testing, contact tracing and vaccine efforts—to help the public, policymakers and healthcare professionals worldwide respond to the pandemic.";
   		this.SimulationDescription = "Viruses, such as the one that causes COVID-19, spread quickly through large cities because of a complex web of interactions between people taking place in a densely populated area. But how viruses move from person to person in smaller, rural communities is less well understood, resulting in public health and economic decisions that are made on the basis of scant information and overgeneralized modeling. The Delineo project is developing a distributed programming environment to run the model over large numbers of computers to scale up the areas that can be accurately modeled.";
 	 }
-
+	 //classes = useStyles();
+	 
 	render() {
 		return (
+			
 				<div className='CardBackground'>
 				    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
 			            <div className='CardGreenBackground'>
@@ -20,7 +36,7 @@ class About extends React.Component {
 					<div className="w3-display-middle w3-margin-top w3-center">
 					    <h1 className="w3-xxlarge w3-text-white"><span className="w3-padding w3-black w3-opacity-min"><b>De</b></span> <span className="w3-hide-small w3-text-light-grey">lineo</span></h1>
 					</div>
-					
+				
 					<div className="w3-container w3-padding-32" id="projects">
 					    <h3 className="w3-border-bottom w3-border-light-grey w3-padding-16">Map Visualization</h3>
 					    <p>{this.MapDescription}</p>
