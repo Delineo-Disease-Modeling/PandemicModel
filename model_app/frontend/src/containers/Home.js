@@ -56,7 +56,99 @@ class Home extends Component {
                 </div>
 
                 <div className='blog-section'>
+                    <Typography variant="h4" component="h2" gutterBottom>
+                        Recent Blog Posts
+                    </Typography>
 
+                    <Grid container spacing={2}>
+                        <Grid item xs={4}>
+                            <div className='blog-container'>
+                                <div className='blog-content'>
+                                    <div className='img-container'>
+                                        <img src='https://icon-library.com/images/009_070_checkpoint_geo_location_geolocation_target_here-512.png'/>
+                                    </div>
+                                    <Grid container spacing={4}>
+                                        <Grid item xs={6}>
+                                            <Typography variant="h5" component="h3" gutterBottom>
+                                               Title
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="h5" component="h3" gutterBottom>
+                                                Date
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. In arcu ligula, auctor ut dictum ac, malesuada et arcu. Vestibulum ut commodo enim, in pulvinar magna. Mauris est enim, pretium id porta ut, maximus at felis. Donec aliquam, velit a tempus accumsan, lorem metus viverra augue, ac convallis quam enim quis lacus. Aliquam ipsum orci, ullamcorper vel erat in, semper posuere tortor. Vestibulum consequat ante nec mauris iaculis ultrices. Vivamus non sagittis sem. Duis a laoreet ante, in facilisis nisl. Quisque tempor non orci id accumsan. Ut nulla augue, ultricies vel odio sed, porta finibus massa. Nunc auctor ante sit amet mi fermentum accumsan. Phasellus fermentum sed lacus id ornare.
+                                    </p>
+                                    <div className='button-container'>
+                                        <Button className="Button" variant="contained" color="inherit" href="#top">
+                                            Read More
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>                         
+                        </Grid>
+                        <Grid item xs={4}>
+                            <div className='blog-container'>
+                                <div className='blog-content'>
+                                    <div className='img-container'>
+                                        <img src='https://icon-library.com/images/1276.svg.svg'/>
+                                    </div>
+                                    <Grid container spacing={4}>
+                                        <Grid item xs={6}>
+                                            <Typography variant="h5" component="h3" gutterBottom>
+                                               Title
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="h5" component="h3" gutterBottom>
+                                                Date
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. In arcu ligula, auctor ut dictum ac, malesuada et arcu. Vestibulum ut commodo enim, in pulvinar magna. Mauris est enim, pretium id porta ut, maximus at felis. Donec aliquam, velit a tempus accumsan, lorem metus viverra augue, ac convallis quam enim quis lacus. Aliquam ipsum orci, ullamcorper vel erat in, semper posuere tortor. Vestibulum consequat ante nec mauris iaculis ultrices. Vivamus non sagittis sem. Duis a laoreet ante, in facilisis nisl. Quisque tempor non orci id accumsan. Ut nulla augue, ultricies vel odio sed, porta finibus massa. Nunc auctor ante sit amet mi fermentum accumsan. Phasellus fermentum sed lacus id ornare.
+                                    </p>
+                                    <div className='button-container'>
+                                        <Button className="Button" variant="contained" color="inherit" href="#top">
+                                            Read More
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>                         
+                        </Grid>
+                        <Grid item xs={4}>
+                            <div className='blog-container'>
+                                <div className='blog-content'>
+                                    <div className='img-container'>
+                                        <img src='https://icon-library.com/images/072_chocolatebar-512_4905.png'/>
+                                    </div>
+                                    <Grid container spacing={4}>
+                                        <Grid item xs={6}>
+                                            <Typography variant="h5" component="h3" gutterBottom>
+                                               Title
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Typography variant="h5" component="h3" gutterBottom>
+                                                Date
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. In arcu ligula, auctor ut dictum ac, malesuada et arcu. Vestibulum ut commodo enim, in pulvinar magna. Mauris est enim, pretium id porta ut, maximus at felis. Donec aliquam, velit a tempus accumsan, lorem metus viverra augue, ac convallis quam enim quis lacus. Aliquam ipsum orci, ullamcorper vel erat in, semper posuere tortor. Vestibulum consequat ante nec mauris iaculis ultrices. Vivamus non sagittis sem. Duis a laoreet ante, in facilisis nisl. Quisque tempor non orci id accumsan. Ut nulla augue, ultricies vel odio sed, porta finibus massa. Nunc auctor ante sit amet mi fermentum accumsan. Phasellus fermentum sed lacus id ornare.
+                                    </p>
+                                    <div className='button-container'>
+                                        <Button className="Button" variant="contained" color="inherit" href="#top">
+                                            Read More
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>                         
+                        </Grid>
+                    </Grid>
                 </div>
             </React.Fragment>
         );

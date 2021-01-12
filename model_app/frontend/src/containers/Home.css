@@ -51,5 +51,49 @@
 }
 
 .blog-section {
-    padding-top: 500px;
+    padding: 0px 30px 100px 30px;
+    background-color: #222629;
+    overflow: hidden;
+}
+
+.blog-section p{
+    font-size: 18px;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.blog-section .Button {
+    border-color:  #66FCF1;
+    background-color: #66FCF1;
+}
+
+.blog-section .Button:hover {
+    background-color:  #61d4cd;
+    color: black;
+}
+
+.blog-section img {
+    background-color: white;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 30px 30px 30px 30px;
+    overflow: hidden;
+}
+
+.blog-container {
+    padding-top: 30px;
+    text-align: center;
+    background-color: #444f56;
+    border-radius: 30px 30px 30px 30px;
+    min-height: 600px;
+    overflow: hidden;
+    margin: 25px;
+}
+
+.blog-content {
+    padding: 20px;
+}
+
+.img-container {
+    padding: 40px;
 }
