@@ -13,6 +13,19 @@ export const theme = createMuiTheme({
       main: '#11cb5f',
     },
   },
+
+  button: {
+    primary: {
+      main: ''
+    },
+  
+  },
+
+  typography: {
+    primary: {
+      main: 'Calibri',
+    }
+  }
 });
 
 

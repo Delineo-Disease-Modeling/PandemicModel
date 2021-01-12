@@ -4,7 +4,7 @@ import { Header, Footer } from './components';
 import { Home, About, Simulator, DevelopmentBlog, Team, Example} from './containers';
 import { Provider } from 'react-redux';
 import store from './store';
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './const/theme';
 // routers
 import {
@@ -16,7 +16,7 @@ import {
 
 function App() {
   return (
-     <MuiThemeProvider theme={theme}>
+     <ThemeProvider theme={theme}>
       <Provider store={store}>
           <div className={"App"}>
               <Router>
@@ -33,7 +33,7 @@ function App() {
               </Router>
           </div>
       </Provider>
-     </MuiThemeProvider>
+     </ThemeProvider>
   );
 }
 
