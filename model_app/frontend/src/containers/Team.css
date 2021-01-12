@@ -1,5 +1,8 @@
 .SuperCard {
+    margin: 0 auto;
+    text-align: center;
     overflow: hidden;
+    
     padding-left: 20px;
     border: 1px transparent;
     width: 90%;
@@ -10,6 +13,7 @@
     display: inline-block;
     box-sizing: border-box;
     margin-bottom: 20px;
+
   }
 
   .LeaderCard {
@@ -119,6 +123,8 @@ h3{
   color: #ffffff;
 }
 
+
+
 .LeaderList{
   display: block;
   width:90%;
@@ -138,4 +144,10 @@ h3{
   margin-left: 7.5%;
   margin-top:-20px;
   padding:0;
+}
+
+button {
+  margin-top:10px;
+  margin-bottom:10px;
+  margin-right: 10px;
 }

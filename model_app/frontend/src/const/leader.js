@@ -4,11 +4,11 @@ import { AntonImg, ProfileImg } from '../images'
 export const LEADERS = [
     {
       id: 0,
-      name: 'Anton Dahbura',
+      name: 'Antonnn Dahbura',
       designation: 'Research Supervisor',
       abbr: 'CEO',
       image: AntonImg,
-      profession: 'Executive eeeeDirector of Johns Hopkins Infromation Security Insititute',
+      profession: 'Executiveee Director of Johns Hopkins Infromation Security Insititute',
       university:'Johns Hopkins University',
       headshot: ''
     },

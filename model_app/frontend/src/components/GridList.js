@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import GridListTile from '@material-ui/core/GridListTile';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -11,13 +12,39 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     overflow: 'hidden',
     backgroundColor: '#1b4441c2',
-    paddingTop: theme.spacing(0),
-    paddingBottom: theme.spacing(4),
+    padding: theme.spacing(6),
+    textAlign: 'center',
 
   },
   icon: {
     color: 'rgba(255, 255, 255, 0.54)',
   },
+
+  displayUnder: {
+    font: "Brush Script MT",
+    fontSize: 14,
+    border: 0,
+    borderRadius: 3,
+    color: 'white',
+    height: 10,
+    padding: '0 30px',
+    padding: theme.spacing(1),
+
+  },
+
+  displayUnderTitle: {
+    font: "Lucida Console",
+    fontSize: 20,
+    border: 0,
+    borderRadius: 3,
+    color: 'white',
+    height: 10,
+    padding: '0 30px',
+    padding: theme.spacing(1),
+
+  },
+
+
   displayOver: {
     height: "100%",
     left: "0",
@@ -78,18 +105,39 @@ export default function TitlebarGridList(tileData) {
     <Container className={classes.root} maxWidth="md">
       <Grid container spacing={4}>
         {tileData.map((tile) => (
+          
           <Grid item key={tile.name}  xs={12} sm={6} md={3}>
             <GridListTile className={classes.GridListTile} key={tile.img}>
-              <img src={tile.img} alt={tile.name} />
+              
 
-              <div className={classes.displayOver}>
-                <div className={classes.hover}>
-                  <h3 className={classes.hoverTitle}>{tile.name}</h3>
-                  <h4 className={classes.hoverSubtitle}>{tile.role}</h4>
-                  <p className={classes.hoverP}>{tile.description}</p>
+              <img src={tile.img} alt={tile.name} class="center" />
+              <h3 className={classes.displayUnder}>{tile.name}</h3>
+            
+
+              <div className={classes.displayUnder}>
+                <div className={classes.displayUnder}>
+                  <h8 className={classes.displayUnder}>{tile.name}</h8>
+                  <h4 className={classes.displayUnder}>{tile.role}</h4>
+                  <p className={classes.displayUnder}>{tile.description}</p>
                 </div>
               </div>
+
+              <div className={classes.displayUnder}>
+              <div className={classes.root}>
+              
+
+
+              </div>
+              </div>
+
+ 
             </GridListTile>
+
+            <br></br>
+            <Typography variant="h4" component="h4" color="red" >
+                  <h4 className={classes.displayUnderTitle} >{tile.name}</h4>
+                  <h4 className={classes.displayUnder}>{tile.role}</h4>
+            </Typography>
           </Grid>
         ))}
 
