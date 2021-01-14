@@ -22,7 +22,7 @@
 
 .about-section {
     padding: 100px 30px 100px 30px;
-    background-color: #222629;
+    background-color: #222D3C; /* Or #1C2531 ? */
     overflow: hidden;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .blog-section {
-    padding: 0px 30px 100px 30px;
+    padding: 0px 30px 30px 30px;
     background-color: #222629;
     overflow: hidden;
 }
@@ -95,5 +95,5 @@
 }
 
 .img-container {
-    padding: 40px;
+    padding: 0px 20px 20px 20px;
 }
