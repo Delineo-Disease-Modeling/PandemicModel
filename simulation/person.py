@@ -52,7 +52,7 @@ class Person:
         self.incubation = incubation
     
     #calculate severity risk based on demographic factors, as of now calculation is undefined.
-    def calcSeverityRisk(age, sex, comorbidities, demographicInfo):
+    def calcSeverityRisk(self, age, sex, comorbidities):
         return -1
     
     #getters for all variables
