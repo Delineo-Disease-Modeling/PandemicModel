@@ -9,6 +9,9 @@ import MuiAccordion from '@material-ui/core/Accordion';
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+
+
 
 const ColoredAccordion = withStyles({
     root: {
@@ -89,7 +92,7 @@ class About extends React.Component {
 					    <p>{this.MapDescription}</p>
 					</div>
 					<div className="w3-row-padding w3-grey">
-					    <div className="w3-col l3 m6 w3-margin-bottom">
+					    <div className="w3-col l3 m6">
 						<div className="w3-display-container">
 						    <div className="w3-display-topleft w3-black w3-padding">County Level</div>
 							<div class="thumbnail">
@@ -97,7 +100,7 @@ class About extends React.Component {
 							</div>
 						</div>
 					    </div>
-					    <div className="w3-col l3 m6 w3-margin-bottom">
+					    <div className="w3-col l3 m6">
 						<div className="w3-display-container">
 						    <div className="w3-display-topleft w3-black w3-padding">State Level</div>
 							<div class="thumbnail">
@@ -105,7 +108,7 @@ class About extends React.Component {
 							</div>
 						</div>
 					    </div>
-					    <div className="w3-col l3 m6 w3-margin-bottom">
+					    <div className="w3-col l3 m6">
 						<div className="w3-display-container">
 						    <div className="w3-display-topleft w3-black w3-padding">Motion Chart</div>
 							<div class="thumbnail">
@@ -113,14 +116,22 @@ class About extends React.Component {
 							</div>
 						</div>
 					    </div>
-					    <div className="w3-col l3 m6 w3-margin-bottom">
+					    <div className="w3-col l3 m6 ">
 						<div className="w3-display-container">
 						    <div className="w3-display-topleft w3-black w3-padding">Daily Summary</div>
 							<div class="thumbnail">
 							<img className="w3-image" src="https://i.ytimg.com/vi/PeoKrURIVY4/maxresdefault.jpg" alt="Architecture" width="325" height="182" style={{'alignSelf':'stretch'}}/>
 							</div>
 						</div>
+
 					    </div>
+              <div className="button-container">
+              <Button className="Button" variant="contained" color="inherit" href="#top">
+                      View Map
+              </Button>
+              </div>
+
+
 					</div>
 
 
@@ -165,6 +176,11 @@ class About extends React.Component {
 							</div>
 						</div>
 					    </div>
+              <div className="button-container">
+              <Button className="Button" variant="contained" color="inherit" href="#top">
+                      View Simulation
+              </Button>
+              </div>
 					</div>
 					<div className="w3-container w3-padding-32 w3-grey" id="contact">
 				<h3 className="w3-border-bottom w3-border-light-grey w3-padding-16">Frequently Asked Questions</h3>
