@@ -1,3 +1,15 @@
+.Button {
+    border-color:  #66FCF1;
+    background-color: #66FCF1;
+    border: 1px solid;
+}
+
+.Button:hover {
+    background-color: #222629;
+    color: #66FCF1;
+    border-color:  #66FCF1;
+}
+
 .image-box {
 
     /* Here's the trick */
@@ -16,6 +28,64 @@
     box-shadow: inset 0 0 0 100vw rgba(0,0,0,0.5);
 }
 
-.Button:hover {
+/* .image-box .Button:hover {
     color: white;
+} */
+
+.about-section {
+padding: 100px 10px 100px 10px;
+background-color: #222D3C; /* Or #1C2531 ? */
+    overflow: hidden;
+}
+
+.about-section p{
+    font-size: 18px;
+}
+
+
+.about-section img {
+    background-color: white;
+    margin-bottom: 50px;
+}
+
+.button-container {
+    width: 100%;
+}
+
+.blog-section {
+    padding: 0px 30px 30px 30px;
+    background-color: white;
+    overflow: hidden;
+}
+
+.blog-section p{
+    font-size: 18px;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.blog-section img {
+    background-color: white;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 30px 30px 30px 30px;
+    overflow: hidden;
+}
+
+.blog-container {
+    padding-top: 30px;
+    text-align: center;
+    background-color: #444f56;
+    border-radius: 30px 30px 30px 30px;
+    min-height: 600px;
+    overflow: hidden;
+    margin: 25px;
+}
+
+.blog-content {
+    padding: 20px;
+}
+
+.img-container {
+    padding: 0px 20px 20px 20px;
 }
