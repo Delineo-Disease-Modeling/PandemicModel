@@ -58,7 +58,7 @@ const styles = {
 
     blogSection: {
         padding: '0px 30px 30px 30px',
-        backgroundColor: 'white',
+        backgroundColor: '#badcf4',
         overflow: 'hidden',
 
         "> p": {
