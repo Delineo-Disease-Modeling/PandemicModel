@@ -3,13 +3,15 @@ from module import Module
 from submodule import Submodule
 import random
 
+
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
 
     state = 'Indiana'
     county = 'Barnsdall'
     population = 1243
-    interventions = [True, False, True]  # Uncertain exactly what/how many interventions to expect
+    # Uncertain exactly what/how many interventions to expect
+    interventions = [True, False, True]
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
 
@@ -49,7 +51,8 @@ class MasterController:
         # for each time step, move population, create subgroups, infect the new people
         # uncertain exactly how time works
         for i in range(interval):
-            module.movePop(self.dayOfWeek, self.timeOfDay, population, facilities)
+            module.movePop(self.dayOfWeek, self.timeOfDay,
+                           population, facilities)
             for facility in facilities:
                 facility.createGroups()
                 G = facility.createGraph()
@@ -76,7 +79,23 @@ class MasterController:
                 count += 1
         print(count)
 
+    # Wells-Riley
+    def main2(self):
+        M = self.createModule()
+        Pop = M.createPopulation()
+        for i in range(5):
+            ran = random.randint(0, len(Pop) - 1)
+            Pop[ran].setInfectionState(True)
+        S = Submodule("rand id", 'Restaurant')
+        print(S.probability())
+        count = 0
+        for each in Pop:
+            if Pop[each].getInfectionState():
+                count += 1
+        print(S)
+        # testing with one submodule
 
 
 if __name__ == '__main__':
-    MasterController().main()
+    mc = MasterController()
+    mc.main2()
