@@ -80,7 +80,7 @@ class MasterController:
         print(count)
 
     # Wells-Riley
-    def main2(self, num_days=7):
+    def WellsRiley(self, num_days=7):
         '''
         This function calculates the disease progression by each person in the
         '''
@@ -142,9 +142,11 @@ class MasterController:
                 # h % 24, h / 24
                 day = (int(h / 24)) % 7
                 if daysDict[day] not in facilities[i].getDays():
+                    infectionInFacilities[i].append("Not open")
                     continue
                 hour = h % 24
                 if facilities[i] not in openHours[hour]:
+                    infectionInFacilities[i].append("Not open")
                     continue
                 initialInfectionNumber = len(facilities[i].getInfected())
                 finalInfectionNumber = initialInfectionNumber
@@ -160,17 +162,21 @@ class MasterController:
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
         # print progression for each facility
-        with open('output.txt', 'w') as f:
-            print(
-                f"Results for {self.county}, {self.state} over {num_days} days", file=f)
-            for id in infectionInFacilities:
-                facility = facilities[id]
-                print(facility.getID(), facility.getFacilityType(),
-                      infectionInFacilities[id], file=f)
-            print()
-            print("Change in total infection number in the population is ", total, file=f)
+        print("Hi")
+
+        #f = open('output.txt', 'w')
+        print(
+            f"Results for {self.county}, {self.state} over {num_days} days")  # , file=f)
+        for id in infectionInFacilities:
+            facility = facilities[id]
+            print(facility.getID(), facility.getFacilityType(),
+                  infectionInFacilities[id])  # , file=f)
+        print()
+        # , file=f)
+        print("Change in total infection number in the population is ", total)
+        # f.close()
 
 
 if __name__ == '__main__':
     mc = MasterController()
-    mc.main2(7)
+    mc.WellsRiley(7)
