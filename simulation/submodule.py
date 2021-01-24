@@ -9,10 +9,16 @@ import math
 
 class Submodule:
 
-    def __init__(self, id, facilitytype, numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected=[]):
+    def __init__(self, id, facilitytype, capacity=None, numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected=[]):
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
-        self.__facilitytype = facilitytype
+        self.__Facilitytype = facilitytype
+        capacities = {                          # TODO: add to the default/medium number of capacity
+            'Supermarket': 100,
+            'Restaurant': 20,
+        }
+        self.__Capacity = capacities[facilitytype] if facilitytype in capacities else 20
+        self.__Visitors = 0  # the current number of customers in the facility
         self.__Area = Area
         self.__Contact = Contact
         self.__Mobility = Mobility
@@ -22,6 +28,28 @@ class Submodule:
         self.__Groups = Groups
         self.__People = People
         self.__Infected = Infected
+        self.__MedianRetentionHour = 1  # TODO: research and add
+
+    def getID(self):
+        return self.__id
+
+    def getFacilityType(self):
+        return self.__Facilitytype
+
+    def getCapacity(self):
+        return self.__Capacity
+
+    def getVisitors(self):
+        return self.__Visitors
+
+    def setVisitors(self, num):
+        self.__Visitors = num
+
+    def getPeople(self):
+        return self.__People
+
+    def addPerson(self, person):
+        self.__People.append(person)
 
     def clearPeople(self):
         self.__People = []
@@ -29,8 +57,6 @@ class Submodule:
 
     def addPerson(self, person):
         self.__People.append(person)
-        if person.getInfectionState():
-            self.__Infected.append(person)
 
     def calcContact(self):
         contact = 0  # placeholder
@@ -75,7 +101,13 @@ class Submodule:
     def getInfected(self):
         infected = []
         for person in self.__People:
-            if person.isInfected():
+            if type(person) == type(1):
+                print(person)
+                print(self.__People)
+            else:
+                print('obj', person.ID)
+
+            if person.infectionState != 0:  # infected TODO in the future incorporate recovered state
                 infected.append(person)
         return infected
 
@@ -118,7 +150,7 @@ class Submodule:
         nx.draw_networkx_nodes(G, pos, nodelist=infected_ids,
                                node_color="r", label=labels, **options)
         nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5)
-        plt.title("Facility " + str(self.__facilitytype))
+        plt.title("Facility " + str(self.__Facilitytype))
 
         neighbours_ids = []
 
@@ -152,8 +184,7 @@ class Submodule:
 
     # Wells Riley
     def pulmonaryVentilation(self):
-        return 1
-        """infected = []
+        infected = []
         for person in self.__Infected:
             if (person.infectionState == "critical"):
                 infected.append(3.4)
@@ -163,7 +194,7 @@ class Submodule:
                 infected.append(0.55)
             elif (person.infectionState == "asymptomatic"):
                 infected.append(0.55)
-        return sum(infected)/len(infected)"""
+        return sum(infected)/len(infected) if infected else 0
 
     def facVentRate(self, facility):
         facilities = [set(['Church', 'Prison']),
@@ -192,10 +223,9 @@ class Submodule:
 
     def probability(self):
         p = self.pulmonaryVentilation()
-        Q = self.facVentRate(self.__facilitytype)
-        q = self.quantaGen(self.__facilitytype)
+        Q = self.facVentRate(self.__Facilitytype)
+        q = self.quantaGen(self.__Facilitytype)
         I = len(self.getInfected())
         t = 1
-        print(type(p), type(q), type(Q), type(I), type(t))
 
         return 1 - math.exp(-(I*q*p*t)/Q)
