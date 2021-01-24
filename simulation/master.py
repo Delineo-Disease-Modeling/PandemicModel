@@ -100,67 +100,33 @@ class MasterController:
         # initialize submodules
         # TODO: to pull from actual data of Oklohoma/frontend map.
         # currently assuming a fixed number of each, and using a range of 6 types of facilities representing different essential level and attributes eg ventilation rate
-        facilities = []
-        totalFacilityCapacities = 0
-        # add restaurants
-        facilityID = 0
-        for i in range(10):
-            nextFacility = Submodule(facilityID, 'Restaurant')
-            facilityID += 1
-            facilities.append(nextFacility)
-            totalFacilityCapacities += nextFacility.getCapacity()
-        # add church
-        for i in range(4):
-            nextFacility = Submodule(facilityID, 'Church')
-            facilityID += 1
-            facilities.append(nextFacility)
-            totalFacilityCapacities += nextFacility.getCapacity()
-        # add supermarket
-        for i in range(5):
-            nextFacility = Submodule(facilityID, 'Supermarket')
-            facilityID += 1
-            facilities.append(nextFacility)
-            totalFacilityCapacities += nextFacility.getCapacity()
-        # add supermarket
-        for i in range(5):
-            nextFacility = Submodule(facilityID, 'Retail')
-            facilityID += 1
-            facilities.append(nextFacility)
-            totalFacilityCapacities += nextFacility.getCapacity()
-        # add hospital
-        for i in range(4):
-            nextFacility = Submodule(facilityID, 'Hospital')
-            facilityID += 1
-            facilities.append(nextFacility)
-            totalFacilityCapacities += nextFacility.getCapacity()
-        # add hospital
-        for i in range(4):
-            nextFacility = Submodule(facilityID, 'Gas station')
-            facilityID += 1
-            facilities.append(nextFacility)
-            totalFacilityCapacities += nextFacility.getCapacity()
-        infectionInFacilities = {id: [] for id in range(facilityID)}
-        total = []  # for infected number across the city
+        facilities, totalFacilityCapacities = M.createFacilities(
+            "submodules.json")
+        infectionInFacilities = {id: []
+                                 for id in range(len(facilities.keys()))}
+        total = [0]  # for infected number across the city
         # iterate through the hours in the days input by user. Assume movements to facilities in the day only (10:00 - 18:00)
+        numFacilities = len(facilities)
         for h in range(num_days * 24):
-            total.append(0)
+            total.append(total[-1])
             if 10 < h % 24 < 18:
                 assigned = set()
                 # number of people who are not at home/school/work
                 numberOut = random.randint(
                     0, min(len(Pop)-1, totalFacilityCapacities))
                 # TODO: retention rate within the same facility. currently no one is retained
-                for facility in facilities:
+                for id in facilities:
+                    facility = facilities[id]
                     facility.setVisitors(0)
                     facility.clearPeople()
                 for i in range(numberOut):
                     nextID = random.randint(0, len(Pop)-1)
                     while nextID in assigned:
                         nextID = random.randint(0, len(Pop)-1)
-                    facility = random.randint(0, facilityID-1)
+                    facility = random.randint(0, numFacilities-1)
                     # if facility is full, put the person out to the another facility
                     while facilities[facility].getCapacity() == facilities[facility].getVisitors():
-                        facility = random.randint(0, facilityID)
+                        facility = random.randint(0, numFacilities-1)
                     facilities[facility].addPerson(Pop[nextID])
                 for i in range(len(facilities)):
                     initialInfectionNumber = len(facilities[i].getInfected())
@@ -177,11 +143,14 @@ class MasterController:
                     infectionInFacilities[i].append(
                         [initialInfectionNumber, finalInfectionNumber])
                 # print progression for each facility
-        for id in infectionInFacilities:
-            facility = facilities[id]
-            print(facility.getID(), facility.getFacilityType(),
-                  infectionInFacilities[id])
-        print(total)
+        with open('output.txt', 'w') as f:
+            print(
+                f"Results for {self.county}, {self.state} over {num_days} days", file=f)
+            for id in infectionInFacilities:
+                facility = facilities[id]
+                print(facility.getID(), facility.getFacilityType(),
+                      infectionInFacilities[id], file=f)
+            print("Change in total infection number in the population is ", total, file=f)
 
 
 if __name__ == '__main__':

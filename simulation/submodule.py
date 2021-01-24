@@ -9,7 +9,7 @@ import math
 
 class Submodule:
 
-    def __init__(self, id, facilitytype, capacity=None, numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected=[]):
+    def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected=[]):
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
@@ -19,6 +19,8 @@ class Submodule:
         }
         self.__Capacity = capacities[facilitytype] if facilitytype in capacities else 20
         self.__Visitors = 0  # the current number of customers in the facility
+        self.__Hours = hours
+        self.__Days = days
         self.__Area = Area
         self.__Contact = Contact
         self.__Mobility = Mobility
