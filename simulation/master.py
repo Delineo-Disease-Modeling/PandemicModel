@@ -7,7 +7,7 @@ import random
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
 
-    state = 'Indiana'
+    state = 'Oklahoma'
     county = 'Barnsdall'
     population = 1243
     # Uncertain exactly what/how many interventions to expect
@@ -100,49 +100,66 @@ class MasterController:
         # initialize submodules
         # TODO: to pull from actual data of Oklohoma/frontend map.
         # currently assuming a fixed number of each, and using a range of 6 types of facilities representing different essential level and attributes eg ventilation rate
-        facilities, totalFacilityCapacities = M.createFacilities(
+        facilities, totalFacilityCapacities, openHours = M.createFacilities(
             "submodules.json")
         infectionInFacilities = {id: []
                                  for id in range(len(facilities.keys()))}
         total = [0]  # for infected number across the city
         # iterate through the hours in the days input by user. Assume movements to facilities in the day only (10:00 - 18:00)
+        daysDict = {
+            0: "Sun",
+            1: "M",
+            2: "T",
+            3: "W",
+            4: "Th",
+            5: "F",
+            6: "Sat"
+        }
         numFacilities = len(facilities)
         for h in range(num_days * 24):
             total.append(total[-1])
-            if 10 < h % 24 < 18:
-                assigned = set()
-                # number of people who are not at home/school/work
-                numberOut = random.randint(
-                    0, min(len(Pop)-1, totalFacilityCapacities))
-                # TODO: retention rate within the same facility. currently no one is retained
-                for id in facilities:
-                    facility = facilities[id]
-                    facility.setVisitors(0)
-                    facility.clearPeople()
-                for i in range(numberOut):
+            assigned = set()
+            # number of people who are not at home/school/work
+            numberOut = random.randint(
+                0, min(len(Pop)-1, totalFacilityCapacities))
+            # TODO: retention rate within the same facility. currently no one is retained
+            for id in facilities:
+                facility = facilities[id]
+                facility.setVisitors(0)
+                facility.clearPeople()
+            for i in range(numberOut):
+                nextID = random.randint(0, len(Pop)-1)
+                while nextID in assigned:
                     nextID = random.randint(0, len(Pop)-1)
-                    while nextID in assigned:
-                        nextID = random.randint(0, len(Pop)-1)
+                facility = random.randint(0, numFacilities-1)
+                # if facility is full, put the person out to the another facility
+                while facilities[facility].getCapacity() == facilities[facility].getVisitors():
                     facility = random.randint(0, numFacilities-1)
-                    # if facility is full, put the person out to the another facility
-                    while facilities[facility].getCapacity() == facilities[facility].getVisitors():
-                        facility = random.randint(0, numFacilities-1)
-                    facilities[facility].addPerson(Pop[nextID])
-                for i in range(len(facilities)):
-                    initialInfectionNumber = len(facilities[i].getInfected())
-                    finalInfectionNumber = initialInfectionNumber
-                    prob = facilities[i].probability()
-                    for person in facilities[i].getPeople():
-                        if person.infectionState == 0:
-                            continue
-                        temp = random.uniform(0, 1)
-                        if temp > prob:
-                            person.infectionState = 1
-                            finalInfectionNumber += 1
-                            total[-1] += 1
-                    infectionInFacilities[i].append(
-                        [initialInfectionNumber, finalInfectionNumber])
-                # print progression for each facility
+                facilities[facility].addPerson(Pop[nextID])
+            for i in range(len(facilities)):  # iterate through facilities
+                open = False
+                # check if open in this hour on this day
+                # h % 24, h / 24
+                day = (int(h / 24)) % 7
+                if daysDict[day] not in facilities[i].getDays():
+                    continue
+                hour = h % 24
+                if facilities[i] not in openHours[hour]:
+                    continue
+                initialInfectionNumber = len(facilities[i].getInfected())
+                finalInfectionNumber = initialInfectionNumber
+                prob = facilities[i].probability()
+                for person in facilities[i].getPeople():
+                    if person.infectionState == 0:
+                        continue
+                    temp = random.uniform(0, 1)
+                    if temp > prob:
+                        person.infectionState = 1
+                        finalInfectionNumber += 1
+                        total[-1] += 1
+                infectionInFacilities[i].append(
+                    [initialInfectionNumber, finalInfectionNumber])
+        # print progression for each facility
         with open('output.txt', 'w') as f:
             print(
                 f"Results for {self.county}, {self.state} over {num_days} days", file=f)
@@ -150,6 +167,7 @@ class MasterController:
                 facility = facilities[id]
                 print(facility.getID(), facility.getFacilityType(),
                       infectionInFacilities[id], file=f)
+            print()
             print("Change in total infection number in the population is ", total, file=f)
 
 

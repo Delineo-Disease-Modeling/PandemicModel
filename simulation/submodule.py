@@ -41,6 +41,9 @@ class Submodule:
     def getCapacity(self):
         return self.__Capacity
 
+    def getDays(self):
+        return set(self.__Days)
+
     def getVisitors(self):
         return self.__Visitors
 
