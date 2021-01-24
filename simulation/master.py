@@ -94,7 +94,7 @@ class MasterController:
             nextInfected = random.randint(0, len(Pop) - 1)
             while nextInfected in assigned:
                 nextInfected = random.randint(0, len(Pop) - 1)
-            Pop[nextInfected] = 1  # mild
+            Pop[nextInfected].infectionState = 1  # mild
             assigned.add(nextInfected)
 
         # initialize submodules
@@ -142,9 +142,7 @@ class MasterController:
         infectionInFacilities = {id: [] for id in range(facilityID)}
         total = []  # for infected number across the city
         # iterate through the hours in the days input by user. Assume movements to facilities in the day only (10:00 - 18:00)
-        print([i for i in Pop if type(Pop[i]) == type(1)])
-        print("DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        for h in range(num_days+7):
+        for h in range(num_days * 24):
             total.append(0)
             if 10 < h % 24 < 18:
                 assigned = set()
@@ -179,10 +177,11 @@ class MasterController:
                     infectionInFacilities[i].append(
                         [initialInfectionNumber, finalInfectionNumber])
                 # print progression for each facility
-                for facility in infectionInFacilities:
-                    print(facility.getID(), facility.getFacilityType(),
-                          infectionInFacilities[facility])
-                print(total)
+        for id in infectionInFacilities:
+            facility = facilities[id]
+            print(facility.getID(), facility.getFacilityType(),
+                  infectionInFacilities[id])
+        print(total)
 
 
 if __name__ == '__main__':

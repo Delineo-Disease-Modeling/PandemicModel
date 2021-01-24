@@ -101,12 +101,6 @@ class Submodule:
     def getInfected(self):
         infected = []
         for person in self.__People:
-            if type(person) == type(1):
-                print(person)
-                print(self.__People)
-            else:
-                print('obj', person.ID)
-
             if person.infectionState != 0:  # infected TODO in the future incorporate recovered state
                 infected.append(person)
         return infected

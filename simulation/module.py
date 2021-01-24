@@ -2,6 +2,8 @@ from population import Population
 from submodule import Submodule
 import json
 import random
+
+
 class Module:
 
     def __init__(self, State, County, Interventions):
@@ -10,8 +12,8 @@ class Module:
 
     def createPopulation(self):
         print("createPop function")
-        return Population(self.__State, self.__County).get_dict()
-
+        Pop = Population(self.__State, self.__County).get_dict()
+        return Pop
 
     def createSubmodules(self):
         with open("submodules.json") as file:
