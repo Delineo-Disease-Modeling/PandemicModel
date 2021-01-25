@@ -162,8 +162,6 @@ class MasterController:
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
         # print progression for each facility
-        print("Hi")
-
         #f = open('output.txt', 'w')
         print(
             f"Results for {self.county}, {self.state} over {num_days} days")  # , file=f)
