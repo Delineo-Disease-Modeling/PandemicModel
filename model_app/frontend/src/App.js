@@ -4,7 +4,8 @@ import { Header, Footer } from './components';
 import { Home, About, Simulator, DevelopmentBlog, Team, Example} from './containers';
 import { Provider } from 'react-redux';
 import store from './store';
-
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './const/theme';
 // routers
 import {
     BrowserRouter as Router,
@@ -15,6 +16,7 @@ import {
 
 function App() {
   return (
+     <ThemeProvider theme={theme}>
       <Provider store={store}>
           <div className={"App"}>
               <Router>
@@ -31,6 +33,7 @@ function App() {
               </Router>
           </div>
       </Provider>
+     </ThemeProvider>
   );
 }
 
