@@ -78,6 +78,7 @@ const styles = {
     recent: {
         color: '#212628',
         //fontStyle: 'strong',
+        
     },
 
     blogImg: {
