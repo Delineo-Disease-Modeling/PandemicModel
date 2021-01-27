@@ -10,6 +10,7 @@ const styles = {
         borderColor: '#66FCF1',
         backgroundColor: '#66FCF1',
         border: '1px solid',
+        color: '#444f56',
         "&:hover": {
             backgroundColor: '#222629',
             color: '#66FCF1',
@@ -35,9 +36,15 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
 
+        boxShadow: "inset 0 0 0 100vw rgba(0,0,0,0.5)",
+        //transition: "background 0.5s ease-in-out",
+
+        /*
         "&:hover": {
             boxShadow: "inset 0 0 0 100vw rgba(0,0,0,0.5)",
+            transition: background 0.5s ease-in-out;
         },
+        */
     },
 
     aboutSection: {
@@ -58,7 +65,7 @@ const styles = {
 
     blogSection: {
         padding: '0px 30px 30px 30px',
-        backgroundColor: 'white',
+        backgroundColor: '#93BDC1',
         overflow: 'hidden',
 
         "> p": {
@@ -66,6 +73,11 @@ const styles = {
             marginTop: '1rem',
             marginBottom: '2rem',
         }
+    },
+
+    recent: {
+        color: '#212628',
+        //fontStyle: 'strong',
     },
 
     blogImg: {
@@ -79,7 +91,7 @@ const styles = {
     blogContainer: {
         paddingTop: '30px',
         textAlign: 'center',
-        backgroundColor: '#444f56',
+        backgroundColor: '#212628',
         borderRadius: '30px 30px 30px 30px',
         minHeight: '600px',
         overflow: 'hidden',
@@ -159,7 +171,7 @@ class Home extends Component {
                 </div>
 
                 <div className={classes.blogSection}>
-                    <Typography variant="h4" component="h2" gutterBottom>
+                    <Typography variant="h4" component="h2" gutterBottom className={classes.recent}>
                         Recent Blog Posts
                     </Typography>
 
