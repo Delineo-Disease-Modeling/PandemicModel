@@ -79,6 +79,7 @@ class Submodule:
         numGroups = 0  # placeholder
         return numGroups
 
+    #TODO This code will be adapted to fit household model - Likely want to instantiate houses as groups
     def createGroups(self):
         count = 0
         groups = []
@@ -133,12 +134,13 @@ class Submodule:
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
         # plt.show()
         # print(idList)
-        G = nx.stochastic_block_model(sizes, p, idList)
+        G = nx.stochastic_block_model(sizes, p, idList)  # Creates graph based on sizes of groups, prob of edges, list of people
         infected_ids = [person.getID() for person in self.__Infected]
         options = {"node_size": 400, "alpha": 0.8}
         pos = nx.spring_layout(G)
-        nx.generate_edgelist(G)
+        nx.generate_edgelist(G) #Generates edges
 
+        #visualize graph
         labels = {}
         for i in range(len(self.__People)):
             labels[self.__People[i].getID()] = r"$" + \
@@ -176,7 +178,7 @@ class Submodule:
 
                 # TODO Make this more accurate
                 randNum = rnd.randint(1, 101)
-                if (randNum < 30):
+                if (randNum < 30): #Probability of infection if edge exists
                     for j in range(len(self.__People)):
                         if self.__People[j].getID() == i:
                             self.__People[j].setInfectionState(True)
@@ -220,7 +222,7 @@ class Submodule:
         if (facility == 'Gym' or 'Community center' or 'Church'):
             return 48
 
-    def probability(self):
+    def probability(self):  # Code for the Wells Reilly Model
         p = self.pulmonaryVentilation()
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
