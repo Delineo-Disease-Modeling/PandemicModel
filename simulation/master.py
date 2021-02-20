@@ -92,9 +92,9 @@ class MasterController:
         Pop = M.createPopulation() # Population created and returned as array of People class objects
 
         # Assign initial state status for each person
-        initialIndected = 10  # Should be customizable in  the future
+        initialInfected = 10  # Should be customizable in  the future
         assigned = set()
-        for i in range(initialIndected):
+        for i in range(initialInfected):
             nextInfected = random.randint(0, len(Pop) - 1)
             while nextInfected in assigned:
                 nextInfected = random.randint(0, len(Pop) - 1)
@@ -145,7 +145,7 @@ class MasterController:
                 while (facilities[facility].getCapacity() ==
                 facilities[facility].getVisitors() and not facilityIsOpen):
                     facility = random.randint(0, numFacilities-1)
-                facilities[facility].addPerson(Pop[nextID])  # TODO* Currently does not account for closed facilities ie can add someone to a closed faciltiy
+                facilities[facility].addPerson(Pop[nextID]) 
                 # TODO* This is where we create, populate and calculate infections for household submodule.
             for i in range(len(facilities)):  # iterate through facilities
                 open = False
