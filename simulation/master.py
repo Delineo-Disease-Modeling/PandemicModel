@@ -127,6 +127,8 @@ class MasterController:
             # number of people who are not at home/school/work
             numberOut = random.randint(
                 0, min(len(Pop)-1, totalFacilityCapacities))
+            day = (int(h / 24)) % 7
+            hour = h % 24
             # TODO: retention rate within the same facility. currently no one is retained - Retention rate eventually covered by ML team
             for id in facilities:
                 facility = facilities[id]
@@ -138,7 +140,10 @@ class MasterController:
                     nextID = random.randint(0, len(Pop)-1)
                 facility = random.randint(0, numFacilities-1)
                 # if facility is full, put the person out to the another facility
-                while facilities[facility].getCapacity() == facilities[facility].getVisitors():
+                facilityIsOpen = (daysDict[day] in facilities[facility].getDays()
+                                    and facilities[facility] in openHours[hour])
+                while (facilities[facility].getCapacity() ==
+                facilities[facility].getVisitors() and not facilityIsOpen):
                     facility = random.randint(0, numFacilities-1)
                 facilities[facility].addPerson(Pop[nextID])  # TODO* Currently does not account for closed facilities ie can add someone to a closed faciltiy
                 # TODO* This is where we create, populate and calculate infections for household submodule.
@@ -146,11 +151,9 @@ class MasterController:
                 open = False
                 # check if open in this hour on this day
                 # h % 24, h / 24
-                day = (int(h / 24)) % 7
                 if daysDict[day] not in facilities[i].getDays():
                     infectionInFacilities[i].append("Not open")
                     continue
-                hour = h % 24
                 if facilities[i] not in openHours[hour]:
                     infectionInFacilities[i].append("Not open")
                     continue
