@@ -63,8 +63,12 @@ const styles = {
         borderRadius: '30px 30px 30px 30px'
     },
 
+    // .MuiTypography-gutterBottom {
+    //     marginBottom: '0px'
+    // },
+
     blogSection: {
-        padding: '0px 30px 30px 30px',
+        padding: '40px 22px 0px 22px',
         backgroundColor: '#93BDC1',
         overflow: 'hidden',
 
@@ -72,6 +76,7 @@ const styles = {
             fontSize: '18px',
             marginTop: '1rem',
             marginBottom: '2rem',
+            color: 'lightgrey'
         }
     },
 
@@ -176,7 +181,7 @@ class Home extends Component {
                         Recent Blog Posts
                     </Typography>
 
-                    <Grid container spacing={2}>
+                    <Grid container spacing={0}>
                         <Grid item xs={4}>
                             <div className={classes.blogContainer}>
                                 <div className={classes.blogContent}>
