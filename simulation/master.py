@@ -109,6 +109,8 @@ class MasterController:
                                 # totalFacilityCapacities is int
         infectionInFacilities = {id: []
                                  for id in range(len(facilities.keys()))} # dictionary with id as keys, empty list as vals
+        households = Submodule(len(facilities), "Household", len(Pop),
+                                range(24), ["M", "T", "W", "Th", "F", "Sat", "Sun"])
         total = [0]  # for infected number across the city
         # iterate through the hours in the days input by user. Assume movements to facilities in the day only (10:00 - 18:00)
         daysDict = {
@@ -130,6 +132,8 @@ class MasterController:
             day = (int(h / 24)) % 7
             hour = h % 24
             # TODO: retention rate within the same facility. currently no one is retained - Retention rate eventually covered by ML team
+            households.setVisitors(0)
+            households.clearPeople()
             for id in facilities:
                 facility = facilities[id]
                 facility.setVisitors(0)
@@ -146,7 +150,18 @@ class MasterController:
                 facilities[facility].getVisitors() and not facilityIsOpen):
                     facility = random.randint(0, numFacilities-1)
                 facilities[facility].addPerson(Pop[nextID]) 
-                # TODO* This is where we create, populate and calculate infections for household submodule.
+
+            # TODO* This is where we create, populate and calculate infections for household submodule.
+            numberIn = len(Pop) - numberOut
+            for i in range(len(Pop)):
+                if i not in assigned:
+                    households.addPerson(Pop[i])
+            """
+            households.createGroups()
+            G = households.createGraph()
+            households.calcInfection(G)
+            """
+
             for i in range(len(facilities)):  # iterate through facilities
                 open = False
                 # check if open in this hour on this day
