@@ -109,6 +109,8 @@ class MasterController:
                                 # totalFacilityCapacities is int
         infectionInFacilities = {id: []
                                  for id in range(len(facilities.keys()))} # dictionary with id as keys, empty list as vals
+        infectionInFacilitiesDaily = {id: [0 for day in range(num_days)]
+                                for id in range(len(facilities.keys()))}
         households = Submodule(len(facilities), "Household", len(Pop),
                                 range(24), ["M", "T", "W", "Th", "F", "Sat", "Sun"])
         total = [0]  # for infected number across the city
@@ -181,14 +183,12 @@ class MasterController:
                         person.infectionState = 1
                         finalInfectionNumber += 1
                         total[-1] += 1
+                        infectionInFacilitiesDaily[i][h//24] += 1
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
         # print progression for each facility
         #f = open('output.txt', 'w')
-        # Process number of people infected per day in each submodule
-        infectionInFacilitiesDaily = {id: [0 if delta == 'Not open' else delta[1]-delta[0]
-                                    for delta in deltaArray]
-                                    for id, deltaArray in infectionInFacilities.items()}
+        print(infectionInFacilitiesDaily)
         print(
             f"Results for {self.county}, {self.state} over {num_days} days")  # , file=f)
         for id in infectionInFacilities:
