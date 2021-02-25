@@ -144,15 +144,13 @@ class MasterController:
                     nextID = random.randint(0, len(Pop)-1)
                 facility = random.randint(0, numFacilities-1)
                 # if facility is full, put the person out to the another facility
-                facilityIsOpen = (daysDict[day] in facilities[facility].getDays()
+                isFacilityOpen = (daysDict[day] in facilities[facility].getDays()
                                     and facilities[facility] in openHours[hour])
                 while (facilities[facility].getCapacity() ==
-                facilities[facility].getVisitors() and not facilityIsOpen):
+                facilities[facility].getVisitors() and not isFacilityOpen):
                     facility = random.randint(0, numFacilities-1)
                 facilities[facility].addPerson(Pop[nextID]) 
 
-            # TODO* This is where we create, populate and calculate infections for household submodule.
-            numberIn = len(Pop) - numberOut
             for i in range(len(Pop)):
                 if i not in assigned:
                     households.addPerson(Pop[i])
@@ -181,12 +179,16 @@ class MasterController:
                     temp = random.uniform(0, 1)
                     if temp > prob: # Infects according to prob model
                         person.infectionState = 1
-                        finalInfectionNumber += 1  # TODO* Submodules should have a tracker as to how many people get infected there per day ie a list.
+                        finalInfectionNumber += 1
                         total[-1] += 1
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
         # print progression for each facility
         #f = open('output.txt', 'w')
+        # Process number of people infected per day in each submodule
+        infectionInFacilitiesDaily = {id: [0 if delta == 'Not open' else delta[1]-delta[0]
+                                    for delta in deltaArray]
+                                    for id, deltaArray in infectionInFacilities.items()}
         print(
             f"Results for {self.county}, {self.state} over {num_days} days")  # , file=f)
         for id in infectionInFacilities:
