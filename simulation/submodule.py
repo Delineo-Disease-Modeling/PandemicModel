@@ -140,6 +140,8 @@ class Submodule:
         pos = nx.spring_layout(G)
         nx.generate_edgelist(G) #Generates edges
 
+        """
+        # hide visualization for now
         #visualize graph
         labels = {}
         for i in range(len(self.__People)):
@@ -167,6 +169,7 @@ class Submodule:
             G, pos, nodelist=neighbours_ids, node_color="blue", label=labels, **options)
 
         plt.show()
+        """
         return G
 
     # It seems for simplicity, it would make the most sense to calcInfection here

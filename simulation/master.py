@@ -159,11 +159,10 @@ class MasterController:
             for i in range(len(Pop)):
                 if i not in assigned:
                     households.addPerson(Pop[i])
-            """
+
             households.createGroups()
             G = households.createGraph()
             households.calcInfection(G)
-            """
 
             for i in range(len(facilities)):  # iterate through facilities
                 open = False
@@ -189,25 +188,6 @@ class MasterController:
                         infectionInFacilitiesDaily[i][h//24] += 1
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
-            #infect people in households
-            #probability() does not work because there is no facVentRate or quantaGen value for Households
-            """
-            initialInfectionNumber = len(households.getInfected())
-            finalInfectionNumber = initialInfectionNumber
-            prob = households.probability()
-            for person in households.getPeople():
-                if person.infectionState == 0:
-                    continue
-                temp = random.uniform(0, 1)
-                if temp > prob:
-                    person.infectionState = 1
-                    finalInfectionNumber += 1
-                    total[-1] += 1
-                    infectionInHouseholdsDaily[h//24] += 1
-                infectionInHouseholds.append(
-                        [initialInfectionNumber, finalInfectionNumber])
-            """
-                    
                 
         # print progression for each facility
         #f = open('output.txt', 'w')
