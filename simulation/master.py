@@ -113,6 +113,9 @@ class MasterController:
                                 for id in range(len(facilities.keys()))}
         households = Submodule(len(facilities), "Household", len(Pop),
                                 range(24), ["M", "T", "W", "Th", "F", "Sat", "Sun"])
+        infectionInHouseholds = []
+        infectionInHouseholdsDaily = [0 for day in range(num_days)]
+        
         total = [0]  # for infected number across the city
         # iterate through the hours in the days input by user. Assume movements to facilities in the day only (10:00 - 18:00)
         daysDict = {
@@ -186,15 +189,41 @@ class MasterController:
                         infectionInFacilitiesDaily[i][h//24] += 1
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
+            #infect people in households
+            #probability() does not work because there is no facVentRate or quantaGen value for Households
+            """
+            initialInfectionNumber = len(households.getInfected())
+            finalInfectionNumber = initialInfectionNumber
+            prob = households.probability()
+            for person in households.getPeople():
+                if person.infectionState == 0:
+                    continue
+                temp = random.uniform(0, 1)
+                if temp > prob:
+                    person.infectionState = 1
+                    finalInfectionNumber += 1
+                    total[-1] += 1
+                    infectionInHouseholdsDaily[h//24] += 1
+                infectionInHouseholds.append(
+                        [initialInfectionNumber, finalInfectionNumber])
+            """
+                    
+                
         # print progression for each facility
         #f = open('output.txt', 'w')
-        print(infectionInFacilitiesDaily)
+        print("Infection In Facilities Daily:", infectionInFacilitiesDaily)
+        """
+        print("Infection In Households Daily:", infectionInHouseholdsDaily)
+        """
         print(
             f"Results for {self.county}, {self.state} over {num_days} days")  # , file=f)
         for id in infectionInFacilities:
             facility = facilities[id]
             print(facility.getID(), facility.getFacilityType(),
                   infectionInFacilities[id])  # , file=f)
+        """
+        print("Households:", infectionInHouseholds)
+        """
         print()
         # , file=f)
         print("Change in total infection number in the population is ", total)
