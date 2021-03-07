@@ -98,7 +98,7 @@ class MasterController:
             nextInfected = random.randint(0, len(Pop) - 1)
             while nextInfected in assigned:
                 nextInfected = random.randint(0, len(Pop) - 1)
-            Pop[nextInfected].infectionState = 1  # mild, to be callibrated with disease driver. Consider what initial states should be.
+            Pop[nextInfected].setInfectionState(1)  # mild, to be callibrated with disease driver. Consider what initial states should be.
             assigned.add(nextInfected)
 
         # initialize submodules
@@ -111,8 +111,14 @@ class MasterController:
                                  for id in range(len(facilities.keys()))} # dictionary with id as keys, empty list as vals
         infectionInFacilitiesDaily = {id: [0 for day in range(num_days)]
                                 for id in range(len(facilities.keys()))}
+        # Instantiate households submodule and graph
         households = Submodule(len(facilities), "Household", len(Pop),
                                 range(24), ["M", "T", "W", "Th", "F", "Sat", "Sun"])
+        for person in Pop.values():
+            households.addPerson(person)
+        households.createGroupsHH()
+        G = households.createGraph()
+
         infectionInHouseholds = []
         infectionInHouseholdsDaily = [0 for day in range(num_days)]
         
@@ -137,8 +143,6 @@ class MasterController:
             day = (int(h / 24)) % 7
             hour = h % 24
             # TODO: retention rate within the same facility. currently no one is retained - Retention rate eventually covered by ML team
-            households.setVisitors(0)
-            households.clearPeople()
             for id in facilities:
                 facility = facilities[id]
                 facility.setVisitors(0)
@@ -155,14 +159,10 @@ class MasterController:
                 facilities[facility].getVisitors() and not isFacilityOpen):
                     facility = random.randint(0, numFacilities-1)
                 facilities[facility].addPerson(Pop[nextID]) 
+                assigned.add(nextID)
 
-            for i in range(len(Pop)):
-                if i not in assigned:
-                    households.addPerson(Pop[i])
-
-            households.createGroupsHH()
-            G = households.createGraph()
-            households.calcInfection(G)
+            atHomeIDs = [id for id in Pop.keys() if id not in assigned]
+            households.calcInfection(G, atHomeIDs)
 
             for i in range(len(facilities)):  # iterate through facilities
                 open = False
@@ -178,11 +178,11 @@ class MasterController:
                 finalInfectionNumber = initialInfectionNumber
                 prob = facilities[i].probability() # returns a probability of others in the same submodule contracting covid
                 for person in facilities[i].getPeople():
-                    if person.infectionState == 0:
+                    if person.getInfectionState() >= 0:
                         continue
                     temp = random.uniform(0, 1)
-                    if temp > prob: # Infects according to prob model
-                        person.infectionState = 1
+                    if temp < prob: # Infects according to prob model
+                        person.setInfectionState(1) # calibrate
                         finalInfectionNumber += 1
                         total[-1] += 1
                         infectionInFacilitiesDaily[i][h//24] += 1
@@ -192,21 +192,18 @@ class MasterController:
         # print progression for each facility
         #f = open('output.txt', 'w')
         print("Infection In Facilities Daily:", infectionInFacilitiesDaily)
-        """
-        print("Infection In Households Daily:", infectionInHouseholdsDaily)
-        """
+        # print("Infection In Households Daily:", infectionInHouseholdsDaily)
         print(
             f"Results for {self.county}, {self.state} over {num_days} days")  # , file=f)
         for id in infectionInFacilities:
             facility = facilities[id]
             print(facility.getID(), facility.getFacilityType(),
                   infectionInFacilities[id])  # , file=f)
-        """
-        print("Households:", infectionInHouseholds)
-        """
+        # print("Households:", infectionInHouseholds)
         print()
         # , file=f)
-        print("Change in total infection number in the population is ", total)
+        print("Change in total infection number in the population through facilities is ", total)
+        print(totalFacilityCapacities)
         # f.close()
 
 

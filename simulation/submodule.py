@@ -56,12 +56,12 @@ class Submodule:
     def addPerson(self, person):
         self.__People.append(person)
 
+    def addInfected(self, person):
+        self.__Infected.append(person)
+
     def clearPeople(self):
         self.__People = []
         self.__Infected = []
-
-    def addPerson(self, person):
-        self.__People.append(person)
 
     def calcContact(self):
         contact = 0  # placeholder
@@ -122,11 +122,10 @@ class Submodule:
         return cleanliness
 
     def getInfected(self):
-        infected = []
-        for person in self.__People:
-            if person.infectionState != 0:  # infected TODO in the future incorporate recovered state
-                infected.append(person)
-        return infected
+        # infected TODO in the future incorporate recovered state
+        # return self.__Infected
+        return [person for person in self.__People if
+                person.getInfectionState() >= 0]
 
     # This is a potential new function to create the graph, which calcInfection will then traverse
     def createGraph(self):
@@ -143,16 +142,16 @@ class Submodule:
             for j in range(self.__numGroups):
                 if j == i:
                     tmp_p[
-                        j] = 1  # If you're in the same group as an infected person, this is the likelihood you are in contact
+                        j] = .8  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
                     tmp_p[
-                        j] = .05  # Likelihood of connections between groups, arbitrary formula
+                        j] = .001  # Likelihood of connections between groups, arbitrary formula
             p.append(tmp_p)
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
         # plt.show()
         # print(idList)
         G = nx.stochastic_block_model(sizes, p, idList)  # Creates graph based on sizes of groups, prob of edges, list of people
-        infected_ids = [person.getID() for person in self.__Infected]
+        infected_ids = [person.getID() for person in self.getInfected()]
         options = {"node_size": 400, "alpha": 0.8}
         pos = nx.spring_layout(G)
         nx.generate_edgelist(G) #Generates edges
@@ -191,29 +190,31 @@ class Submodule:
 
     # It seems for simplicity, it would make the most sense to calcInfection here
 
-    def calcInfection(self, stochGraph):
-        # OPTIMIZE THIS: WE DO NOT LIKE TRINARY NESTED LOOPS
-        for person in self.__Infected:
-            for i in list(stochGraph.neighbors(person.getID())):
-
-                # TODO Make this more accurate
-                randNum = rnd.randint(1, 101)
-                if (randNum < 30): #Probability of infection if edge exists
-                    for j in range(len(self.__People)):
-                        if self.__People[j].getID() == i:
-                            self.__People[j].setInfectionState(True)
+    def calcInfection(self, stochGraph, atHomeIDs):
+        peopleDict = {person.getID(): person for person in self.__People}
+        infectedAndHome = [person for person in self.__People if
+                person.getInfectionState() >= 0 and person.getID() in atHomeIDs]
+        for person in infectedAndHome:
+            for neighborID in list(stochGraph.neighbors(person.getID())):
+                neighbor = peopleDict[neighborID]
+                if neighbor.infectionState:
+                    continue
+                randNum = rnd.uniform(0, 1)
+                if (randNum < 0.05): #Probability of infection if edge exists
+                    neighbor.setInfectionState(1)
 
     # Wells Riley
     def pulmonaryVentilation(self):
         infected = []
-        for person in self.__Infected:
-            if (person.infectionState == "critical"):
+        peopleInfected = self.getInfected()
+        for person in peopleInfected:
+            if (person.infectionState == 3): #critical
                 infected.append(3.4)
-            elif (person.infectionState == "severe"):
+            elif (person.infectionState == 2):#severe
                 infected.append(1.4)
-            elif (person.infectionState == "mild"):
+            elif (person.infectionState == 1):#mild
                 infected.append(0.55)
-            elif (person.infectionState == "asymptomatic"):
+            elif (person.infectionState == 0): #asymptomatic
                 infected.append(0.55)
         return sum(infected)/len(infected) if infected else 0
 
@@ -248,5 +249,4 @@ class Submodule:
         q = self.quantaGen(self.__Facilitytype)
         I = len(self.getInfected())
         t = 1
-
         return 1 - math.exp(-(I*q*p*t)/Q)
