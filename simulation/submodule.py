@@ -99,6 +99,23 @@ class Submodule:
         """
         self.__numGroups = len(groups)
         self.__Groups = groups
+        
+    #create groups based on household network
+    def createGroupsHH(self):
+        people = self.__People.copy()
+        groups = []
+        while len(people) > 0:
+            group = []
+            p = people[0]
+            group.append(p)
+            for hhm in p.getHouseholdMembers():
+                if hhm in self.__People:
+                    group.append(hhm)
+                    people.remove(hhm)
+            people.remove(p)
+            groups.append(group)
+        self.__numGroups = len(groups)
+        self.__Groups = groups
 
     def calcCleanliness(self):
         cleanliness = 0  # placeholder

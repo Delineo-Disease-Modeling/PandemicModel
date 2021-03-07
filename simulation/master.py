@@ -160,7 +160,7 @@ class MasterController:
                 if i not in assigned:
                     households.addPerson(Pop[i])
 
-            households.createGroups()
+            households.createGroupsHH()
             G = households.createGraph()
             households.calcInfection(G)
 
