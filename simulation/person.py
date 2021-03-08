@@ -97,3 +97,9 @@ class Person:
 
     def updateState(self):
         return self.incubation + self.severityRisk
+
+    def addDisease(self, disease):
+        self.disease.append(disease)
+
+    def getConditions(self):
+        return self.disease

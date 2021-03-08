@@ -10,6 +10,10 @@ class Module:
         self.__State = State
         self.__County = County
 
+    def createPopulationObj(self):
+        Pop = Population(self.__State, self.__County)
+        return Pop
+
     def createPopulation(self):
         print("createPop function")
         Pop = Population(self.__State, self.__County).get_dict()
