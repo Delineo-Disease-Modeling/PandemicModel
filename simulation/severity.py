@@ -8,5 +8,8 @@ class SeverityRisk:
         mc = MasterController()
         M = mc.createModule()
         Pop = M.createPopulationObj()
-        Pop.get_dict()
+        peopleArray = Pop.get_dict()
         Pop.addDisease()
+        for person in peopleArray.values():
+            person.setInfectionState(True)
+
