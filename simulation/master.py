@@ -127,8 +127,8 @@ class MasterController:
         for i in range(initialInfected):
             nextInfected = notInfected.pop(random.randint(0,
                                                 len(notInfected)- 1))
-            # 1: mild, to be calibrated with disease driver
-            Pop[nextInfected].setInfectionState(1)  
+            # 2: mild, to be calibrated with disease driver
+            Pop[nextInfected].setInfectionState(2)  
 
         # TODO: to pull from actual data of Oklahoma/frontend map.
         # Currently assuming a fixed number of each, and using a range of 6
@@ -237,7 +237,7 @@ class MasterController:
 
                     temp = random.uniform(0, 1)
                     if temp < prob: # Infect
-                        person.setInfectionState(1) # TODO: calibrate
+                        person.setInfectionState(2) # TODO: calibrate
 
                         # Update statistics
                         finalInfectionNumber += 1

@@ -31,8 +31,7 @@ class Population():
         peopleArray = {}
         for i in range(npop):
             person = Person(i)
-            person.setSynthPopParameters(population[i]['age'], population[i]['sex'],
-                                         population[i]['loc'], population[i]['contacts'])
+            person.setSynthPopParameters(population[i])
             peopleArray[i] = person
         self.peopleArray = peopleArray
         return peopleArray

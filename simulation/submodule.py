@@ -102,18 +102,17 @@ class Submodule:
         
     #create groups based on household network
     def createGroupsHH(self):
-        people = self.__People.copy()
-        groups = []
-        while len(people) > 0:
-            group = []
-            p = people[0]
-            group.append(p)
-            for hhm in p.getHouseholdMembers():
-                if hhm in self.__People:
-                    group.append(hhm)
-                    people.remove(hhm)
-            people.remove(p)
-            groups.append(group)
+        groupsDict = {} # If we know total number households here, we can just use a list
+        for person in self.__People:
+            # Create new group if household not yet instantiated
+            # Else, add to existing household group
+            if not groupsDict.get(person.hhid):
+                groupsDict[person.hhid] = [person]
+            else:
+                groupsDict[person.hhid].append(person)
+        # Map dictionary to an array
+        groups = [group for group in groupsDict.values()]
+        print(len(groups))
         self.__numGroups = len(groups)
         self.__Groups = groups
 
@@ -193,28 +192,37 @@ class Submodule:
     def calcInfection(self, stochGraph, atHomeIDs):
         peopleDict = {person.getID(): person for person in self.__People}
         infectedAndHome = [person for person in self.__People if
-                person.getInfectionState() >= 0 and person.getID() in atHomeIDs]
+                person.getInfectionState() > 0 and person.getID() in atHomeIDs]
+        total = 0
         for person in infectedAndHome:
-            for neighborID in list(stochGraph.neighbors(person.getID())):
+            neighborIDs = list(stochGraph.neighbors(person.getID()))
+            for neighborID in neighborIDs:
                 neighbor = peopleDict[neighborID]
-                if neighbor.infectionState:
+                if neighbor.getInfectionState() > 0:
                     continue
-                randNum = rnd.uniform(0, 1)
-                if (randNum < 0.05): #Probability of infection if edge exists
-                    neighbor.setInfectionState(1)
+                if (rnd.random() < 0.3): # Probability of infection if edge exists
+                    neighbor.setInfectionState(2)
+                    total += 1
+        print(total)
 
     # Wells Riley
     def pulmonaryVentilation(self):
+        d = {"asymptomatic": 0,
+            "susceptible": 1,
+            "mild":        2,
+            "severe":      3,
+            "critical":    4,
+            "recovered":   5}
         infected = []
         peopleInfected = self.getInfected()
         for person in peopleInfected:
-            if (person.infectionState == 3): #critical
+            if (person.infectionState == d["critical"]): #critical
                 infected.append(3.4)
-            elif (person.infectionState == 2):#severe
+            elif (person.infectionState == d["severe"]):#severe
                 infected.append(1.4)
-            elif (person.infectionState == 1):#mild
+            elif (person.infectionState == d["mild"]):#mild
                 infected.append(0.55)
-            elif (person.infectionState == 0): #asymptomatic
+            elif (person.infectionState == d["asymptomatic"]): #asymptomatic
                 infected.append(0.55)
         return sum(infected)/len(infected) if infected else 0
 
