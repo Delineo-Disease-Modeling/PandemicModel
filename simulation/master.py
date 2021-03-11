@@ -115,44 +115,53 @@ class MasterController:
         '''
         This function calculates the disease progression by each person in the
         '''
-        M = self.createModule()  # Module instantiated - holds the submodules(facilities), population
-        Pop = M.createPopulation() # Population created and returned as array of People class objects
+        # Module instantiated - holds the submodules(facilities), population
+        M = self.createModule()  
 
-        # Assign initial state status for each person
+        # Population created and returned as array of People class objects
+        Pop = M.createPopulation()
+
+        # Assign initial infection state status for each person
         initialInfected = 10  # Should be customizable in  the future
-        assigned = set()
+        notInfected = [*range(len(Pop))]
         for i in range(initialInfected):
-            nextInfected = random.randint(0, len(Pop) - 1)
-            while nextInfected in assigned:
-                nextInfected = random.randint(0, len(Pop) - 1)
-            Pop[nextInfected].setInfectionState(1)  # mild, to be callibrated with disease driver. Consider what initial states should be.
-            assigned.add(nextInfected)
+            nextInfected = notInfected.pop(random.randint(0,
+                                                len(notInfected)- 1))
+            # 1: mild, to be calibrated with disease driver
+            Pop[nextInfected].setInfectionState(1)  
 
-        # initialize submodules
         # TODO: to pull from actual data of Oklahoma/frontend map.
-        # currently assuming a fixed number of each, and using a range of 6 types of facilities representing different essential level and attributes eg ventilation rate
+        # Currently assuming a fixed number of each, and using a range of 6
+        # types of facilities representing different essential level and attributes eg ventilation rate
+
+        # Instantiate submodules with
+        # {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilities(
-            "submodules.json")  # Facilities is dictionary of id: submodule object, openHours dict of hour: set of facilities open,
-                                # totalFacilityCapacities is int
+            "submodules.json")  
+
+        # Fill with change in infections as [initial, final] per hour
+        # for each facilityID, or "Not Open" if facility is closed
         infectionInFacilities = {id: []
-                                 for id in range(len(facilities.keys()))} # dictionary with id as keys, empty list as vals
+                                for id in range(len(facilities.keys()))} 
+
+        # Statistics for each facility and the households 
+        totalInfectedInFacilities = [0]
         infectionInFacilitiesDaily = {id: [0 for day in range(num_days)]
-                                for id in range(len(facilities.keys()))}
+                                    for id in range(len(facilities.keys()))}
         infectionInFacilitiesHourly = {id: [0 for hour in range(num_days*24)]
-                                for id in range(len(facilities.keys()))}
+                                        for id in range(len(facilities.keys()))}
+        # TODO: statistics for households
+        infectionInHouseholds = []
+        infectionInHouseholdsDaily = [0 for day in range(num_days)]
+
         # Instantiate households submodule and graph
         households = Submodule(len(facilities), "Household", len(Pop),
-                                range(24), ["M", "T", "W", "Th", "F", "Sat", "Sun"])
+                        range(24), ["M", "T", "W", "Th", "F", "Sat", "Sun"])
         for person in Pop.values():
             households.addPerson(person)
         households.createGroupsHH()
         G = households.createGraph()
-
-        infectionInHouseholds = []
-        infectionInHouseholdsDaily = [0 for day in range(num_days)]
         
-        total = [0]  # for infected number across the city
-        # iterate through the hours in the days input by user. Assume movements to facilities in the day only (10:00 - 18:00)
         daysDict = {
             0: "Sun",
             1: "M",
@@ -163,76 +172,96 @@ class MasterController:
             6: "Sat"
         }
         numFacilities = len(facilities)
+
+        # Main simulation loop
+        # Assume movements to facilities in the day only (10:00 - 18:00)
         for h in range(num_days * 24):
-            total.append(total[-1])  # initialize num infected based on end of last day
-            assigned = set()  # keeping track of people assigned to a facility
-            # number of people who are not at home/school/work
-            numberOut = random.randint(
-                0, min(len(Pop)-1, totalFacilityCapacities))
-            day = (int(h / 24)) % 7
-            hour = h % 24
+            # Initialize current hour's total infections by previous hour
+            totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
+
+            # Number of people at facilities
+            numberOut = random.randint(0, min(len(Pop)-1,
+                                    totalFacilityCapacities))
+
+            dayOfWeek = (h // 24) % 7
+            hourOfDay = h % 24
+
             # TODO: retention rate within the same facility. currently no one is retained - Retention rate eventually covered by ML team
             for id in facilities:
                 facility = facilities[id]
                 facility.setVisitors(0)
                 facility.clearPeople()
+
+            # Array of facility submodules that are both open and not full
+            openFacilities = [facility for facility in facilities.values()
+                                if daysDict[dayOfWeek] in facility.getDays()
+                                and facility in openHours[hourOfDay]]
+            # list of IDs not yet assigned to a facility
+            notAssigned = [*range(len(Pop))]
+
+            # Randomly assign numberOut people to open facilities not yet at
+            # capacity (to be updated by ML)
             for i in range(numberOut):
-                nextID = random.randint(0, len(Pop)-1)
-                while nextID in assigned:
-                    nextID = random.randint(0, len(Pop)-1)
-                facility = random.randint(0, numFacilities-1)
-                # if facility is full, put the person out to the another facility
-                isFacilityOpen = (daysDict[day] in facilities[facility].getDays()
-                                    and facilities[facility] in openHours[hour])
-                while (facilities[facility].getCapacity() ==
-                facilities[facility].getVisitors() and not isFacilityOpen):
-                    facility = random.randint(0, numFacilities-1)
-                facilities[facility].addPerson(Pop[nextID]) 
-                assigned.add(nextID)
+                if not openFacilities:
+                    break
+                nextID = notAssigned.pop(random.randint(0, len(notAssigned)-1))
+                j = random.randint(0, len(openFacilities)-1)
+                facility = openFacilities[j]
+                facility.addPerson(Pop[nextID]) 
 
-            atHomeIDs = [id for id in Pop.keys() if id not in assigned]
-            households.calcInfection(G, atHomeIDs)
+                # Remove facility from openFacilities if full
+                if facility.getCapacity() == facility.getVisitors():
+                    openFacilities.pop(j)
 
-            for i in range(len(facilities)):  # iterate through facilities
-                open = False
-                # check if open in this hour on this day
-                # h % 24, h / 24
-                if daysDict[day] not in facilities[i].getDays():
+            # Calculate infections for those still not assigned (assume all
+            # not in a facility are at home)
+            households.calcInfection(G, notAssigned) 
+
+            for i in range(len(facilities)):
+                if daysDict[dayOfWeek] not in facilities[i].getDays():
                     infectionInFacilities[i].append("Not open")
                     continue
-                if facilities[i] not in openHours[hour]:
+                if facilities[i] not in openHours[hourOfDay]:
                     infectionInFacilities[i].append("Not open")
                     continue
                 initialInfectionNumber = len(facilities[i].getInfected())
                 finalInfectionNumber = initialInfectionNumber
-                prob = facilities[i].probability() # returns a probability of others in the same submodule contracting covid
+
+                #Probability of infection in facility i
+                prob = facilities[i].probability() 
+
                 for person in facilities[i].getPeople():
+                    # Don't re-infect
                     if person.getInfectionState() >= 0:
                         continue
+
                     temp = random.uniform(0, 1)
-                    if temp < prob: # Infects according to prob model
-                        person.setInfectionState(1) # calibrate
+                    if temp < prob: # Infect
+                        person.setInfectionState(1) # TODO: calibrate
+
+                        # Update statistics
                         finalInfectionNumber += 1
-                        total[-1] += 1
+                        totalInfectedInFacilities[-1] += 1
                         infectionInFacilitiesDaily[i][h//24] += 1
                         infectionInFacilitiesHourly[i][h] += 1
+
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
                 
-        # print progression for each facility
         #f = open('output.txt', 'w')
-        print("Infection In Facilities Daily:", infectionInFacilitiesDaily)
-        # print("Infection In Households Daily:", infectionInHouseholdsDaily)
         print(
             f"Results for {self.county}, {self.state} over {num_days} days")  # , file=f)
         for id in infectionInFacilities:
             facility = facilities[id]
             print(facility.getID(), facility.getFacilityType(),
                   infectionInFacilities[id])  # , file=f)
-        # print("Households:", infectionInHouseholds)
         print()
+        print("Infection In Facilities Daily: ", infectionInFacilitiesDaily)
+        print("Infection In Facilities Hourly: ", infectionInFacilitiesHourly)
+        print("Infection In Households")
         # , file=f)
-        print("Change in total infection number in the population through facilities is ", total)
+        print("Total number infected in facilities hourly is ",
+                totalInfectedInFacilities)
         print(totalFacilityCapacities)
         # f.close()
 
