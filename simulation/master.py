@@ -258,11 +258,9 @@ class MasterController:
         print()
         print("Infection In Facilities Daily: ", infectionInFacilitiesDaily)
         print("Infection In Facilities Hourly: ", infectionInFacilitiesHourly)
-        print("Infection In Households")
         # , file=f)
         print("Total number infected in facilities hourly is ",
                 totalInfectedInFacilities)
-        print(totalFacilityCapacities)
         # f.close()
 
 

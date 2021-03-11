@@ -3,20 +3,22 @@ class Person:
     # Initialization function, sets all parameters at once.
     # TODO: have some default parameters if we can't set all of them at once, for initializing them with synthpops.
     def __init__(self, ID, age=0, sex=0, householdLocation=0,
-            householdMembers=[], comorbidities=0, demographicInfo=0,
+            householdContacts=[], comorbidities=0, demographicInfo=0,
             severityRisk=0, currentLocation=0, infectionState=-1, incubation=0):
-        self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities,
-                              demographicInfo, severityRisk, currentLocation, infectionState, incubation)
+        self.setAllParameters(ID, age, sex, householdLocation,
+                             householdContacts, comorbidities,
+                             demographicInfo, severityRisk, currentLocation,
+                             infectionState, incubation)
 
     # Sets all parameters.
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0,
-            householdMembers=[], comorbidities=0, demographicInfo=0,
+            householdContacts=[], comorbidities=0, demographicInfo=0,
             severityRisk=0, currentLocation=0, infectionState=0, incubation=0):
         self.ID = ID
         self.age = age
         self.sex = sex
         self.householdLocation = householdLocation
-        self.householdMembers = householdMembers
+        self.householdContacts = householdContacts
         self.comorbidities = comorbidities
         self.demographicInfo = demographicInfo
         self.severityRisk = severityRisk

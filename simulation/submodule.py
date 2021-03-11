@@ -112,7 +112,6 @@ class Submodule:
                 groupsDict[person.hhid].append(person)
         # Map dictionary to an array
         groups = [group for group in groupsDict.values()]
-        print(len(groups))
         self.__numGroups = len(groups)
         self.__Groups = groups
 
