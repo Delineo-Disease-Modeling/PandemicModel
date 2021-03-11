@@ -2,6 +2,7 @@ from person import Person
 from module import Module
 from submodule import Submodule
 import random
+import json
 
 
 class MasterController:
@@ -83,6 +84,32 @@ class MasterController:
                 count += 1
         print(count)
 
+    def jsonRequest(self, request):
+        """ Parse json_string and store values in MasterController members
+        Key strings must be valid attribute names.
+        Parameters:
+        request (string): Json string of the form {"Request": {"key": value, ...}}
+        """
+        json_dictionary = json.loads(request)['Request']
+        print(json_dictionary)
+        for k, v in json_dictionary.items():
+            setattr(self, k, v)
+
+    def jsonResponse(self, response):
+        """ Form json response
+        Usage: 
+        jsonResponse(infectionInFacilitiesHourly)
+
+        Parameters:
+        response (obj): Data to load into response. May be of any form accepted by the json.dumps() function
+
+        Returns:
+        string: string containing json response of the form {"Response": data}
+        """
+        response = {"Response": response}
+        return json.dumps(response)
+
+
     # Wells-Riley
     def WellsRiley(self, num_days=7):
         '''
@@ -110,6 +137,8 @@ class MasterController:
         infectionInFacilities = {id: []
                                  for id in range(len(facilities.keys()))} # dictionary with id as keys, empty list as vals
         infectionInFacilitiesDaily = {id: [0 for day in range(num_days)]
+                                for id in range(len(facilities.keys()))}
+        infectionInFacilitiesHourly = {id: [0 for hour in range(num_days*24)]
                                 for id in range(len(facilities.keys()))}
         # Instantiate households submodule and graph
         households = Submodule(len(facilities), "Household", len(Pop),
@@ -186,6 +215,7 @@ class MasterController:
                         finalInfectionNumber += 1
                         total[-1] += 1
                         infectionInFacilitiesDaily[i][h//24] += 1
+                        infectionInFacilitiesHourly[i][h] += 1
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
                 
