@@ -192,7 +192,6 @@ class Submodule:
         peopleDict = {person.getID(): person for person in self.__People}
         infectedAndHome = [person for person in self.__People if
                 person.getInfectionState() > 0 and person.getID() in atHomeIDs]
-        total = 0
         for person in infectedAndHome:
             neighborIDs = list(stochGraph.neighbors(person.getID()))
             for neighborID in neighborIDs:
@@ -201,8 +200,6 @@ class Submodule:
                     continue
                 if (rnd.random() < 0.3): # Probability of infection if edge exists
                     neighbor.setInfectionState(2)
-                    total += 1
-        print(total)
 
     # Wells Riley
     def pulmonaryVentilation(self):
