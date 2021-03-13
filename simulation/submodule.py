@@ -150,7 +150,7 @@ class Submodule:
         # print(idList)
         G = nx.stochastic_block_model(sizes, p, idList)  # Creates graph based on sizes of groups, prob of edges, list of people
         infected_ids = [person.getID() for person in self.getInfected()]
-        options = {"node_size": 400, "alpha": 0.8}
+        options = {'node_size': 400, 'alpha': 0.8}
         pos = nx.spring_layout(G)
         nx.generate_edgelist(G) #Generates edges
 
@@ -203,22 +203,22 @@ class Submodule:
 
     # Wells Riley
     def pulmonaryVentilation(self):
-        d = {"asymptomatic": 0,
-            "susceptible": 1,
-            "mild":        2,
-            "severe":      3,
-            "critical":    4,
-            "recovered":   5}
+        d = {'asymptomatic': 0,
+            'susceptible': 1,
+            'mild':        2,
+            'severe':      3,
+            'critical':    4,
+            'recovered':   5}
         infected = []
         peopleInfected = self.getInfected()
         for person in peopleInfected:
-            if (person.infectionState == d["critical"]): #critical
+            if (person.infectionState == d['critical']): #critical
                 infected.append(3.4)
-            elif (person.infectionState == d["severe"]):#severe
+            elif (person.infectionState == d['severe']):#severe
                 infected.append(1.4)
-            elif (person.infectionState == d["mild"]):#mild
+            elif (person.infectionState == d['mild']):#mild
                 infected.append(0.55)
-            elif (person.infectionState == d["asymptomatic"]): #asymptomatic
+            elif (person.infectionState == d['asymptomatic']): #asymptomatic
                 infected.append(0.55)
         return sum(infected)/len(infected) if infected else 0
 

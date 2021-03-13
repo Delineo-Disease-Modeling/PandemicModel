@@ -106,8 +106,23 @@ class MasterController:
         Returns:
         string: string containing json response of the form {"Response": data}
         """
-        response = {"Response": response}
+        response = {'Response': response}
         return json.dumps(response)
+
+    def jsonResponseToFile(self, response, filename):
+        """ Form json response and write to a file
+        Usage:
+        jsonResponse(infectionInFacilitiesHourly, file)
+
+        Parameters:
+        response (obj): Data to load into response. May be of any form accepted by the json.dumps() function
+        filename (string): filename to write to
+        """
+        response = self.jsonResponse(response)
+        file = open(filename, 'w')
+        file.write(response)
+        file.close()
+
 
 
     # Wells-Riley
@@ -137,7 +152,7 @@ class MasterController:
         # Instantiate submodules with
         # {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilities(
-            "submodules.json")  
+            'submodules.json')  
 
         # Fill with change in infections as [initial, final] per hour
         # for each facilityID, or "Not Open" if facility is closed
@@ -155,21 +170,21 @@ class MasterController:
         infectionInHouseholdsDaily = [0 for day in range(num_days)]
 
         # Instantiate households submodule and graph
-        households = Submodule(len(facilities), "Household", len(Pop),
-                        range(24), ["M", "T", "W", "Th", "F", "Sat", "Sun"])
+        households = Submodule(len(facilities), 'Household', len(Pop),
+                        range(24), ['M', 'T', 'W', 'Th', 'F', 'Sat', 'Sun'])
         for person in Pop.values():
             households.addPerson(person)
         households.createGroupsHH()
         G = households.createGraph()
         
         daysDict = {
-            0: "Sun",
-            1: "M",
-            2: "T",
-            3: "W",
-            4: "Th",
-            5: "F",
-            6: "Sat"
+            0: 'Sun',
+            1: 'M',
+            2: 'T',
+            3: 'W',
+            4: 'Th',
+            5: 'F',
+            6: 'Sat'
         }
         numFacilities = len(facilities)
 
@@ -219,10 +234,10 @@ class MasterController:
 
             for i in range(len(facilities)):
                 if daysDict[dayOfWeek] not in facilities[i].getDays():
-                    infectionInFacilities[i].append("Not open")
+                    infectionInFacilities[i].append('Not open')
                     continue
                 if facilities[i] not in openHours[hourOfDay]:
-                    infectionInFacilities[i].append("Not open")
+                    infectionInFacilities[i].append('Not open')
                     continue
                 initialInfectionNumber = len(facilities[i].getInfected())
                 finalInfectionNumber = initialInfectionNumber
@@ -248,19 +263,20 @@ class MasterController:
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
                 
-        #f = open('output.txt', 'w')
         print(
-            f"Results for {self.county}, {self.state} over {num_days} days")  # , file=f)
+            f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
         for id in infectionInFacilities:
             facility = facilities[id]
             print(facility.getID(), facility.getFacilityType(),
                   infectionInFacilities[id])  # , file=f)
         print()
-        print("Infection In Facilities Daily: ", infectionInFacilitiesDaily)
-        print("Infection In Facilities Hourly: ", infectionInFacilitiesHourly)
-        # , file=f)
-        print("Total number infected in facilities hourly is ",
+        print('Infection In Facilities Daily: ', infectionInFacilitiesDaily)
+        print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
+        print('Total number infected in facilities hourly is ',
                 totalInfectedInFacilities)
+        response = {f'({id}, {facilities[id].getFacilityType()})': array
+                    for id, array in infectionInFacilitiesHourly.items()}
+        self.jsonResponseToFile(response, "output.txt")
         # f.close()
 
 
