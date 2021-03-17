@@ -5,6 +5,7 @@ import random
 import json
 
 
+
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
 
@@ -106,7 +107,7 @@ class MasterController:
         Returns:
         string: string containing json response of the form {"Response": data}
         """
-        response = {'Response': response}
+        response = {'Buildings': response}
         return json.dumps(response)
 
     def jsonResponseToFile(self, response, filename):
@@ -164,6 +165,9 @@ class MasterController:
         infectionInFacilitiesDaily = {id: [0 for day in range(num_days)]
                                     for id in range(len(facilities.keys()))}
         infectionInFacilitiesHourly = {id: [0 for hour in range(num_days*24)]
+                                        for id in range(len(facilities.keys()))}
+        #Number of people in each facility for every hour
+        peopleInFacilitiesHourly = {id: [0 for hour in range(num_days*24)]
                                         for id in range(len(facilities.keys()))}
         # TODO: statistics for households
         infectionInHouseholds = []
@@ -244,6 +248,9 @@ class MasterController:
 
                 #Probability of infection in facility i
                 prob = facilities[i].probability() 
+                
+                #get number of people in facilities
+                peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
 
                 for person in facilities[i].getPeople():
                     # Don't re-infect
@@ -274,8 +281,13 @@ class MasterController:
         print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
         print('Total number infected in facilities hourly is ',
                 totalInfectedInFacilities)
-        response = {f'({id}, {facilities[id].getFacilityType()})': array
-                    for id, array in infectionInFacilitiesHourly.items()}
+        #Updated the formatting of the json file
+        response = [{"Building Name": facilities[i].getFacilityType(), "Infected Daily":
+            infectionInFacilitiesHourly[i], "PeopleDaily": peopleInFacilitiesHourly[i]}
+                for i in range(len(facilities))]
+        
+        #response = {f'({id}, {facilities[id].getFacilityType()})': array
+                    #for id, array in infectionInFacilitiesHourly.items()}
         self.jsonResponseToFile(response, "output.txt")
         # f.close()
 
