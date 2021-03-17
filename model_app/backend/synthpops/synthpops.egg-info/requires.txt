@@ -1,9 +1,0 @@
-sciris>=0.16.5
-matplotlib
-numpy
-scipy
-pandas
-numba==0.48.0
-networkx
-cmocean
-graphviz
