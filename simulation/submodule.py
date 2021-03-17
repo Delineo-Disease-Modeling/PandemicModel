@@ -148,7 +148,7 @@ class Submodule:
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
         # plt.show()
         # print(idList)
-        G = nx.stochastic_block_model(sizes, p, idList)  # Creates graph based on sizes of groups, prob of edges, list of people
+        G = nx.stochastic_block_model(sizes, p, idList, sparse=True)  # Creates graph based on sizes of groups, prob of edges, list of people
         infected_ids = [person.getID() for person in self.getInfected()]
         options = {'node_size': 400, 'alpha': 0.8}
         pos = nx.spring_layout(G)

@@ -107,7 +107,6 @@ class MasterController:
         Returns:
         string: string containing json response of the form {"Response": data}
         """
-        response = {'Buildings': response}
         return json.dumps(response)
 
     def jsonResponseToFile(self, response, filename):
@@ -282,9 +281,12 @@ class MasterController:
         print('Total number infected in facilities hourly is ',
                 totalInfectedInFacilities)
         #Updated the formatting of the json file
-        response = [{"Building Name": facilities[i].getFacilityType(), "Infected Daily":
-            infectionInFacilitiesHourly[i], "PeopleDaily": peopleInFacilitiesHourly[i]}
-                for i in range(len(facilities))]
+        response = {'Buildings': [
+                    {"BuildingName": str(facilities[id].getFacilityType())+ str(id),
+                    "InfectedDaily": infectionInFacilitiesHourly[id],
+                    "PeopleDaily": peopleInFacilitiesHourly[id]}
+                    for id in range(len(facilities))]
+                    }
         
         #response = {f'({id}, {facilities[id].getFacilityType()})': array
                     #for id, array in infectionInFacilitiesHourly.items()}
