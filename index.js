@@ -1,14 +1,16 @@
-// index.js file
-// run "npm install" then use "node index.js" to run locally
 const express = require("express");
-const app = express();
-const port = 5000;
-const data = require('./Simulation/submodules.json');
+const app = express()
 
-app.get("/", (req, res) => {
-  res.send(data);
-});
+app.get('/', (req, res) => {
 
-app.listen(port, () => {
-  console.log(`Express app listening at http://localhost:${port}`);
-});
+    const { spawn } = require('child_process');
+    const pyProg = spawn('python3', ['test.py']);
+
+    pyProg.stdout.on('data', function(data) {
+        console.log(data.toString());
+        res.write(data);
+        res.end('end');
+    });
+})
+
+app.listen(4000, () => console.log('Application listening on port 4000!'))
