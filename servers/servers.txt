@@ -1,0 +1,7 @@
+Steps to running servers:
+1) run "npm install" in PandemicModel (main folder)
+2) "cd servers"
+3) "node ." (in one terminal, runs index.js server)
+4) "node server.js" (run second server)
+5) Go to "localhost:3000" then "localhost:4000" (expect to see nothing)
+6) return to terminals to see server interaction via console logs
