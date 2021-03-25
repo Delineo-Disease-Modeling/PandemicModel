@@ -3,7 +3,7 @@ const server1 = express();
 const querystring = require("querystring");
 const http = require("http");
 const port = process.env.PORT || 3000;
-
+// server1 = unityGame, server2 = simulator
 server1.get("/", function (req, res) {
   var data = querystring.stringify({
     username: "myname",
@@ -36,3 +36,12 @@ server1.get("/", function (req, res) {
 
 // listen on port 3000(or whichever port is open)
 server1.listen(port, () => console.log(`Listening on ${port}`));
+/*
+  Unity server -> makes request to simulator (passes user data json)
+  then simulator passes back json (different file, visual version of data) 
+  to unity game to start game.
+
+  testing: python -> outputs json to a file
+  get json data file then return it (response, perhaps 
+    listen for post/get request)
+*/
