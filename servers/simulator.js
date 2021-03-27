@@ -4,9 +4,7 @@ const jsonData = require("../package.json");
 const http = require("http");
 const fs = require("fs");
 
-// we want this to start when we say so not done automatically
-
-// sends post request to itself, then read by other server
+// returns post request to website then read by other server
 simulator.post("/test", (req, res) => {
   const { spawn } = require("child_process");
   const pyProg = spawn("python3", ["test.py"]);
@@ -17,12 +15,15 @@ simulator.post("/test", (req, res) => {
   });
   res.json(jsonData); // send JSON file
   console.log(jsonData.toString());
-  
+
   let data = "";
-  fs.readFile("data.json", (e, data) => {
-    if (e) throw e;
-    data = this.data;
-    console.log(data);
+  fs.readFile("data.json", async (e, data) => {
+    try {
+      data = await this.data;
+      console.log(data);
+    } catch (e) {
+      throw e;
+    }
   });
 
   // gets post request from other server
@@ -43,7 +44,7 @@ simulator.post("/test", (req, res) => {
       console.log("body: " + chunk);
     });
     response.on("end", function () {
-      res.send("ok");
+      res.send("Simulator sent POST to Website");
     });
   });
   httpreq.write(data);

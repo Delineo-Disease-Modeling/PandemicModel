@@ -1,17 +1,17 @@
 Steps to running servers:
 1) run "npm install" in PandemicModel (main folder)
 2) "cd servers"
-3) "node ." (in one terminal, runs index.js server)
-4) "node server.js" (run second server)
-5) Go to "localhost:3000" then "localhost:4000" (expect to see nothing)
+3) "node website.js" (in one terminal, runs website.js server)
+4) "node simulator.js" (in second terminal)
+5) Go to "localhost:3000" (expect to see only a note on the page)
 6) return to terminals to see server interaction via console logs
+    and check folder for new json creation
 
-/*
-  Unity server -> makes request to simulator (passes user data json)
-  then simulator passes back json (different file, visual version of data) 
-  to unity game to start game.
+Unity server -> makes request to simulator (passes user data json)
+then simulator passes back JSON (different file, visual version of data) 
+to unity game to start game.
 
-  testing: python -> outputs json to a file
-  get json data file then return it (response, perhaps 
-    listen for post/get request)
-*/
+Testing: python -> outputs JSON data to a file
+get json data file then return it (response, perhaps 
+listen for post/get request)
+p

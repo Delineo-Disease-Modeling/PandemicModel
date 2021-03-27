@@ -10,33 +10,33 @@ website.get("/", function (req, res) {
   // res.render("index");
   // document.getElementById("btn").addEventListener("click", postReq);
   // function postReq() {
-    let data = querystring.stringify({
-      username: "myname",
-      password: "pass",
+  let data = querystring.stringify({
+    username: "myname",
+    password: "pass",
+  });
+  // gets post request from other server
+  let options = {
+    host: "localhost",
+    port: 4000,
+    path: "/test",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Length": Buffer.byteLength(data),
+    },
+  };
+  // parses data from other server
+  let httpreq = http.request(options, function (response) {
+    response.setEncoding("utf8");
+    response.on("data", function (chunk) {
+      console.log("body: " + chunk);
     });
-    // gets post request from other server
-    let options = {
-      host: "localhost",
-      port: 4000,
-      path: "/test",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Content-Length": Buffer.byteLength(data),
-      },
-    };
-    // parses data from other server
-    let httpreq = http.request(options, function (response) {
-      response.setEncoding("utf8");
-      response.on("data", function (chunk) {
-        console.log("body: " + chunk);
-      });
-      response.on("end", function () {
-        res.send("ok");
-      });
+    response.on("end", function () {
+      res.send("Website sent POST to Simulator");
     });
-    httpreq.write(data);
-    httpreq.end();
+  });
+  httpreq.write(data);
+  httpreq.end();
   // }
 });
 

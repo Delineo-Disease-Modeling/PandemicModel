@@ -14,5 +14,8 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Boccca2014/PandemicModel/issues"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
