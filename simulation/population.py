@@ -5,7 +5,9 @@ import random
 
 class Population():
     # constructor
+
     def __init__(self, state, country, population=[], peopleArray={}, populationSize=0):
+
         self.state = state
         self.country = country
         self.population = population  # array of different person classes
@@ -34,6 +36,7 @@ class Population():
             person.setSynthPopParameters(population[i])
             peopleArray[i] = person
         self.peopleArray = peopleArray
+
         return peopleArray
 
     # calls synthpops and generates population (dictionary)
@@ -46,7 +49,9 @@ class Population():
             person.setSynthPopParameters(population[i]['age'], population[i]['sex'],
                                          population[i]['location'], population[i]['contacts'])
             peopleArray[i] = person
+
         self.peopleArray = peopleArray
+
         return peopleArray
 
     def addComorbidities(self):
@@ -69,10 +74,12 @@ class Population():
     # assigns a person cancer based on the percentages for their risk
     def addCancer(self):
         cancerDistr = open("diseasedata/cancer.dat", "r")
+
         distr = {}
         for lines in cancerDistr:
             brackets = lines.split(",")
             distr[brackets[0]] = float(brackets[1])
+
         for p in self.peopleArray.values():
             for key, value in distr.items():
                 range = key.split("_")
@@ -86,10 +93,12 @@ class Population():
     # assigns a person diabetes based on the percentage for their risk
     def addDiabetes(self):
         diabetesDistr = open("diseasedata/diabetes.dat", "r")
+
         distr = {}
         for lines in diabetesDistr:
             brackets = lines.split(",")
             distr[brackets[0]] = float(brackets[1])
+
         for p in self.peopleArray.values():
             for key, value in distr.items():
                 range = key.split("_")
@@ -97,16 +106,20 @@ class Population():
                     n = random.random()
                     if n <= value:
                         p.addDisease("diabetes")
+
                         break
                     break
 
     # assigns a person kidney disease based on the percentage for their risk
+
     def addKidneyDisease(self):
         kidneyDistr = open("diseasedata/kidney_disease.dat", "r")
+
         distr = {}
         for lines in kidneyDistr:
             brackets = lines.split(",")
             distr[brackets[0]] = float(brackets[1])
+
         for p in self.peopleArray.values():
             for key, value in distr.items():
                 range = key.split("_")
@@ -114,16 +127,20 @@ class Population():
                     n = random.random()
                     if n <= value:
                         p.addDisease("kidney disease")
+
                         break
                     break
 
     # assigns a person COPD based on the percentage for their risk
+
     def addCOPD(self):
         copdDistr = open("diseasedata/COPD.dat", "r")
+
         distr = {}
         for lines in copdDistr:
             brackets = lines.split(",")
             distr[brackets[0]] = float(brackets[1])
+
         for p in self.peopleArray.values():
             for key, value in distr.items():
                 range = key.split("_")
@@ -131,10 +148,12 @@ class Population():
                     n = random.random()
                     if n <= value:
                         p.addDisease("COPD")
+
                         break
                     break
 
     # assigns a person obesity based on the percentage for their risk
+
     def addObesity(self):
         for p in self.peopleArray.values():
             if p.age >= 18:
@@ -153,10 +172,12 @@ class Population():
     # assigns a person hypertension based on the percentage for their risk
     def addHypertension(self):
         hypertensionDistr = open("diseasedata/hypertension.dat", "r")
+
         distr = {}
         for lines in hypertensionDistr:
             brackets = lines.split(",")
             distr[brackets[0]] = float(brackets[1])
+
         for p in self.peopleArray.values():
             for key, value in distr.items():
                 range = key.split("_")
@@ -164,16 +185,20 @@ class Population():
                     n = random.random()
                     if n <= value:
                         p.addDisease("hypertension")
+
                         break
                     break
 
     # assigns a person smoking based on the percentage for their risk
+
     def addSmoking(self):
         smokingDistr = open("diseasedata/smoking.dat", "r")
+
         distr = {}
         for lines in smokingDistr:
             brackets = lines.split(",")
             distr[brackets[0]] = float(brackets[1])
+
         for p in self.peopleArray.values():
             for key, value in distr.items():
                 range = key.split("_")
@@ -181,16 +206,20 @@ class Population():
                     n = random.random()
                     if n <= value:
                         p.addDisease("smoking")
+
                         break
                     break
 
     # assigns a person asthma based on the percentage for their risk
+
     def addAsthma(self):
         asthmaDistr = open("diseasedata/asthma.dat", "r")
+
         distr = {}
         for lines in asthmaDistr:
             brackets = lines.split(",")
             distr[brackets[0]] = float(brackets[1])
+
         for p in self.peopleArray.values():
             for key, value in distr.items():
                 range = key.split("_")
@@ -198,16 +227,20 @@ class Population():
                     n = random.random()
                     if n <= value:
                         p.addDisease("asthma")
+
                         break
                     break
 
     # assigns a person liver disease based on the percentage for their risk
+
     def addLiverDisease(self):
         liverDistr = open("diseasedata/liver_disease.dat", "r")
+
         distr = {}
         for lines in liverDistr:
             brackets = lines.split(",")
             distr[brackets[0]] = float(brackets[1])
+
         for p in self.peopleArray.values():
             for key, value in distr.items():
                 range = key.split("_")
@@ -215,10 +248,12 @@ class Population():
                     n = random.random()
                     if n <= value:
                         p.addDisease("liver disease")
+
                         break
                     break
 
     # assign all diseases based on the percentage of risk
+
     def addDisease(self):
         self.addCancer()
         self.addDiabetes()
@@ -230,3 +265,4 @@ class Population():
         self.addLiverDisease()
         self.addCysticFibrosis()
         self.addHypertension()
+

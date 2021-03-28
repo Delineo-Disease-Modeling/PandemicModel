@@ -79,7 +79,9 @@ class Submodule:
         numGroups = 0  # placeholder
         return numGroups
 
+
     #TODO This code will be adapted to fit household model - Likely want to instantiate houses as groups
+
     def createGroups(self):
         count = 0
         groups = []
@@ -99,6 +101,7 @@ class Submodule:
         """
         self.__numGroups = len(groups)
         self.__Groups = groups
+
         
     #create groups based on household network
     def createGroupsHH(self):
@@ -139,11 +142,11 @@ class Submodule:
             tmp_p = [0] * self.__numGroups
             for j in range(self.__numGroups):
                 if j == i:
-                    tmp_p[
-                        j] = .8  # If you're in the same group as an infected person, this is the likelihood you are in contact
+                    tmp_p[j] = .8  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
                     tmp_p[
                         j] = .001  # Likelihood of connections between groups, arbitrary formula
+
             p.append(tmp_p)
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
         # plt.show()
@@ -157,6 +160,7 @@ class Submodule:
         """
         # hide visualization for now
         #visualize graph
+
         labels = {}
         for i in range(len(self.__People)):
             labels[self.__People[i].getID()] = r"$" + \
@@ -184,6 +188,7 @@ class Submodule:
 
         plt.show()
         """
+
         return G
 
     # It seems for simplicity, it would make the most sense to calcInfection here
@@ -247,7 +252,9 @@ class Submodule:
         if (facility == 'Gym' or 'Community center' or 'Church'):
             return 48
 
+
     def probability(self):  # Code for the Wells Reilly Model
+
         p = self.pulmonaryVentilation()
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
