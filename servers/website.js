@@ -3,6 +3,9 @@ const website = express();
 const querystring = require("querystring");
 const http = require("http");
 const port = process.env.PORT || 3000;
+const data = require("../package.json");
+
+website.use(express.json());
 
 // website.set("view engine", "ejs");
 
@@ -10,10 +13,10 @@ website.get("/", function (req, res) {
   // res.render("index");
   // document.getElementById("btn").addEventListener("click", postReq);
   // function postReq() {
-  let data = querystring.stringify({
-    username: "myname",
-    password: "pass",
-  });
+  // let data = querystring.stringify({
+  //   username: "myname",
+  //   password: "pass",
+  // });
   // gets post request from other server
   let options = {
     host: "localhost",
@@ -21,8 +24,8 @@ website.get("/", function (req, res) {
     path: "/test",
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Content-Length": Buffer.byteLength(data),
+      //application/x-www-form-urlencoded
+      "Content-Type": "application/json"
     },
   };
   // parses data from other server
@@ -35,7 +38,8 @@ website.get("/", function (req, res) {
       res.send("Website sent POST to Simulator");
     });
   });
-  httpreq.write(data);
+  httpreq.write(JSON.stringify(data));
+  // httpreq.write(data);
   httpreq.end();
   // }
 });

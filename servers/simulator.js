@@ -4,23 +4,25 @@ const jsonData = require("../package.json");
 const http = require("http");
 const fs = require("fs");
 
+simulator.use(express.json());
+
 // returns post request to website then read by other server
 simulator.post("/test", (req, res) => {
+  // console.log(JSON.stringify(req.body.name));
   const { spawn } = require("child_process");
-  const pyProg = spawn("python3", ["test.py"]);
+  const pyProg = spawn("python3", ["./test.py", req.body]);
   pyProg.stdout.on("data", function (data) {
     console.log(data.toString());
     res.write(data); // send python file
     res.end("end");
   });
   res.json(jsonData); // send JSON file
-  console.log(jsonData.toString());
 
   let data = "";
   fs.readFile("data.json", async (e, data) => {
     try {
       data = await this.data;
-      console.log(data);
+      console.log(JSON.stringify(data));
     } catch (e) {
       throw e;
     }
