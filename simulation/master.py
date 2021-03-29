@@ -3,6 +3,8 @@ from module import Module
 from submodule import Submodule
 import random
 import json
+import pickle
+import pandas as pd
 
 
 
@@ -123,6 +125,21 @@ class MasterController:
         file.write(response)
         file.close()
 
+    def loadVisitMatrix(self, filename):
+        """Load full visit matrix from a pickle file
+
+        Parameters:
+        filename (string): pickle file to read from
+
+        Returns:
+        (obj): visit matrix with CBGs in x-axis and POIs in y-axis, 
+        """
+        file = open(filename, 'r')
+        matrices = pickle.load(file)
+
+        file.close()
+        return matrices['poi_cbg_visit_matrix_history']
+
 
 
     # Wells-Riley
@@ -135,6 +152,9 @@ class MasterController:
 
         # Population created and returned as array of People class objects
         Pop = M.createPopulation()
+
+        # Visit matrix: (CBG x POI) x hour = gives number people from CBG at POI in a given hour
+        # visitMatrix = loadVisitMatrix('filename')
 
         # Assign initial infection state status for each person
         initialInfected = 10  # Should be customizable in  the future
@@ -217,6 +237,7 @@ class MasterController:
             # list of IDs not yet assigned to a facility
             notAssigned = [*range(len(Pop))]
 
+
             # Randomly assign numberOut people to open facilities not yet at
             # capacity (to be updated by ML)
             for i in range(numberOut):
@@ -234,6 +255,8 @@ class MasterController:
             # Calculate infections for those still not assigned (assume all
             # not in a facility are at home)
             households.calcInfection(G, notAssigned) 
+
+
 
             for i in range(len(facilities)):
                 if daysDict[dayOfWeek] not in facilities[i].getDays():
