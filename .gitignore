@@ -2,9 +2,6 @@
 # Created by https://www.gitignore.io/api/node
 # Edit at https://www.gitignore.io/?templates=node
 
-# For Macs
-.DS_Store
-
 ### Node ###
 # Logs
 logs
