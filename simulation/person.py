@@ -2,22 +2,28 @@ class Person:
 
     # Initialization function, sets all parameters at once.
     # TODO: have some default parameters if we can't set all of them at once, for initializing them with synthpops.
-    def __init__(self, ID, age=0, sex=0, householdLocation=0, householdMembers=[], comorbidities=0, demographicInfo=0, severityRisk=0, currentLocation=0, infectionState=0, incubation=0):
-        self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities,
-                              demographicInfo, severityRisk, currentLocation, infectionState, incubation)
+    def __init__(self, ID, age=0, sex=0, householdLocation=0,
+            householdContacts=[], comorbidities=0, demographicInfo=0,
+            severityRisk=0, currentLocation=0, infectionState=-1, incubation=0):
+        self.setAllParameters(ID, age, sex, householdLocation,
+                             householdContacts, comorbidities,
+                             demographicInfo, severityRisk, currentLocation,
+                             infectionState, incubation)
 
     # Sets all parameters.
-    def setAllParameters(self, ID, age=0, sex=0, householdLocation=0, householdMembers=[], comorbidities=0, demographicInfo=0, severityRisk=0, currentLocation=0, infectionState=False, incubation=0):
+    def setAllParameters(self, ID, age=0, sex=0, householdLocation=0,
+            householdContacts=[], comorbidities=0, demographicInfo=0,
+            severityRisk=0, currentLocation=0, infectionState=0, incubation=0):
         self.ID = ID
         self.age = age
         self.sex = sex
         self.householdLocation = householdLocation
-        self.householdMembers = householdMembers
+        self.householdContacts = householdContacts
         self.comorbidities = comorbidities
         self.demographicInfo = demographicInfo
         self.severityRisk = severityRisk
         self.currentLocation = currentLocation
-        # 0: susceptible, 1: mild, 2: severe, 3: critical, 4: recovered
+        # 0: susceptible, 1: asymptomatic, 2: mild, 3: severe, 4: critical, 5: recovered
         self.infectionState = infectionState
         self.incubation = incubation
         self.disease = []
@@ -27,11 +33,17 @@ class Person:
 
     # sets specific parameters from the info available in the synthpops generated population.
     #householdLocation = location, householdMembers = contacts
-    def setSynthPopParameters(self, age, sex, householdLocation, householdMembers):
-        self.age = age
-        self.sex = sex
-        self.householdLocation = householdLocation
-        self.householdMembers = householdMembers
+    """
+        age, household ID (hhid), school ID (scid), workplace ID (wpid), workplace industry code (wpindcode) if available, and the IDs of their contacts in different layers. Different layers
+        available are households ('H'), schools ('S'), and workplaces ('W'). Contacts in these layers are clustered and thus form a network composed of groups of people interacting with each other. For example, all
+        household members are contacts of each other, and everyone in the same school is a contact of each other. Else, return None.
+    """
+    def setSynthPopParameters(self, synthPopsPersonDict):
+        for k, v in synthPopsPersonDict.items():
+            setattr(self, k, v)
+        self.householdContacts = self.contacts['H']
+        self.schoolContacts = self.contacts['S']
+        self.workplaceContacts = self.contacts['W']
 
     # setters for remaining variables
     def setComorbidities(self, comorbidity):
@@ -93,3 +105,10 @@ class Person:
 
     def updateState(self):
         return self.incubation + self.severityRisk
+
+    def addDisease(self, disease):
+        self.disease.append(disease)
+
+    def getConditions(self):
+        return self.disease
+

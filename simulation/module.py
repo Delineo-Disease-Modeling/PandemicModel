@@ -10,6 +10,11 @@ class Module:
         self.__State = State
         self.__County = County
 
+    def createPopulationObj(self):
+        Pop = Population(self.__State, self.__County)
+        return Pop
+
+
     def createPopulation(self):
         print("createPop function")
         Pop = Population(self.__State, self.__County).get_dict()
@@ -23,7 +28,6 @@ class Module:
         for each in subdict:
             subList.append(Submodule(each, each[0]))
         return subList
-    # TODO
 
     def movePop(self, TOD, DOW, population, facilities):
         for each in facilities:
