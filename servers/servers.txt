@@ -14,4 +14,3 @@ to unity game to start game.
 Testing: python -> outputs JSON data to a file
 get json data file then return it (response, perhaps 
 listen for post/get request)
-p
