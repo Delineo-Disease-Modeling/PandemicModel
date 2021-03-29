@@ -47,8 +47,8 @@ class Module:
         for key in data:
             # JSON file key is 1-indexed
             nextFacility = Submodule(
-                int(key) - 1, facilitytype=data[key][0], capacity=data[key][1], hours=data[key][2], days=data[key][3])
-            facilities[int(key) - 1] = nextFacility
+                int(key), facilitytype=data[key][0], capacity=data[key][1], hours=data[key][2], days=data[key][3])
+            facilities[int(key)] = nextFacility
             totalCapacities += data[key][1]
             hours=data[key][2]
             for h in hours:

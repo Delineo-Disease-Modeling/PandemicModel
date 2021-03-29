@@ -5,6 +5,7 @@ import random
 import json
 import pickle
 import pandas as pd
+import math
 
 
 
@@ -143,6 +144,11 @@ class MasterController:
         self.visitMatrices = pickle.load(file)
         file.close()
 
+        self.poi_cbg_visit_matrix_history = self.visitMatrices['poi_cbg_visit_matrix_history']
+        self.cbgs_idxs_to_ids = self.visitMatrices['cbgs_idxs_to_ids']
+        self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
+        self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
+
     # Wells-Riley
     def WellsRiley(self, num_days=7):
         '''
@@ -173,7 +179,7 @@ class MasterController:
         # Instantiate submodules with
         # {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilities(
-            'submodules.json')  
+            'submodules2.json')  
 
         # Fill with change in infections as [initial, final] per hour
         # for each facilityID, or "Not Open" if facility is closed
@@ -233,26 +239,29 @@ class MasterController:
                 facility.clearPeople()
 
             # Array of facility submodules that are both open and not full
-            openFacilities = [facility for facility in facilities.values()
+            openFacilities = {id: facility for id, facility in facilities.items()
                                 if daysDict[dayOfWeek] in facility.getDays()
-                                and facility in openHours[hourOfDay]]
+                                and facility in openHours[hourOfDay]}
             # list of IDs not yet assigned to a facility
             notAssigned = [*range(len(Pop))]
 
+            # Assign people to facilities based on visit matrices
+            hourVisitMatrix = self.poi_cbg_visit_matrix_history[h]
+            dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
+            dfVisitMatrix = dfVisitMatrix.sum(axis=1) # Just sum all cbgs for now
 
-            # Randomly assign numberOut people to open facilities not yet at
-            # capacity (to be updated by ML)
-            for i in range(numberOut):
-                if not openFacilities:
+            scale = len(Pop)/ 600000.0 # Scale down number of visitors by percentage of OKC population
+            for poiID, numPeople in dfVisitMatrix.iteritems():
+                facility = openFacilities.get(poiID)
+                if not facility:
                     break
-                nextID = notAssigned.pop(random.randint(0, len(notAssigned)-1))
-                j = random.randint(0, len(openFacilities)-1)
-                facility = openFacilities[j]
-                facility.addPerson(Pop[nextID]) 
-
-                # Remove facility from openFacilities if full
                 if facility.getCapacity() == facility.getVisitors():
-                    openFacilities.pop(j)
+                    break
+                for i in range(math.ceil(numPeople * scale)): # Scale by population of OKC for now
+                    if not notAssigned:
+                        break
+                    facilities[poiID].addPerson(Pop[notAssigned.pop()]) # Add random person to POI for now
+
 
             # Calculate infections for those still not assigned (assume all
             # not in a facility are at home)
