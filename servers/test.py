@@ -1,7 +1,7 @@
 import json
 import sys
 
-print("First name: " + sys.argv[1])
+print(sys.argv[1])
 # Parse original JSON (would be here)
 
 

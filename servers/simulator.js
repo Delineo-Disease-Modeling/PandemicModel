@@ -1,27 +1,29 @@
 const express = require("express");
 const simulator = express();
-const jsonData = require("../package.json");
+const jsonData = require("./data.json");
 const http = require("http");
 const fs = require("fs");
 
 simulator.use(express.json());
 
 // returns post request to website then read by other server
-simulator.post("/test", (req, res) => {
-  // console.log(JSON.stringify(req.body.name));
+simulator.post("/simulator", (req, res) => {
+  console.log(req.body);
   const { spawn } = require("child_process");
   const pyProg = spawn("python3", ["./test.py", req.body]);
   pyProg.stdout.on("data", function (data) {
-    console.log(data.toString());
-    res.write(data); // send python file
+    console.log(data);
+    res.write(data);
     res.end("end");
   });
-  res.json(jsonData); // send JSON file
 
-  let data = "";
+  res.json(jsonData); // send new JSON file
+
+  // read newly generated json file
+  let data = ""; 
   fs.readFile("data.json", async (e, data) => {
     try {
-      data = await this.data;
+      data = await JSON.parse(data);
       console.log(JSON.stringify(data));
     } catch (e) {
       throw e;
@@ -35,8 +37,8 @@ simulator.post("/test", (req, res) => {
     path: "/",
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Content-Length": Buffer.byteLength(data),
+      "Content-Type": "application/json",
+      "Accept": "application/json",
     },
   };
   // parses data from other server
@@ -46,9 +48,15 @@ simulator.post("/test", (req, res) => {
       console.log("body: " + chunk);
     });
     response.on("end", function () {
-      res.send("Simulator sent POST to Website");
+      res.json(JSON.stringify(jsonData));
     });
   });
+
+  // handle error on failed POST
+  httpreq.on("error", (e) => {
+    console.error(`problem with request: ${e.message}`);
+  });
+
   httpreq.write(data);
   httpreq.end();
 });
