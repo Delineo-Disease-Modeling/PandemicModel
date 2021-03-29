@@ -56,12 +56,12 @@ class Submodule:
     def addPerson(self, person):
         self.__People.append(person)
 
+    def addInfected(self, person):
+        self.__Infected.append(person)
+
     def clearPeople(self):
         self.__People = []
         self.__Infected = []
-
-    def addPerson(self, person):
-        self.__People.append(person)
 
     def calcContact(self):
         contact = 0  # placeholder
@@ -78,6 +78,9 @@ class Submodule:
     def calcNumGroups(self):
         numGroups = 0  # placeholder
         return numGroups
+
+
+    #TODO This code will be adapted to fit household model - Likely want to instantiate houses as groups
 
     def createGroups(self):
         count = 0
@@ -99,16 +102,31 @@ class Submodule:
         self.__numGroups = len(groups)
         self.__Groups = groups
 
+        
+    #create groups based on household network
+    def createGroupsHH(self):
+        groupsDict = {} # If we know total number households here, we can just use a list
+        for person in self.__People:
+            # Create new group if household not yet instantiated
+            # Else, add to existing household group
+            if not groupsDict.get(person.hhid):
+                groupsDict[person.hhid] = [person]
+            else:
+                groupsDict[person.hhid].append(person)
+        # Map dictionary to an array
+        groups = [group for group in groupsDict.values()]
+        self.__numGroups = len(groups)
+        self.__Groups = groups
+
     def calcCleanliness(self):
         cleanliness = 0  # placeholder
         return cleanliness
 
     def getInfected(self):
-        infected = []
-        for person in self.__People:
-            if person.infectionState != 0:  # infected TODO in the future incorporate recovered state
-                infected.append(person)
-        return infected
+        # infected TODO in the future incorporate recovered state
+        # return self.__Infected
+        return [person for person in self.__People if
+                person.getInfectionState() >= 0]
 
     # This is a potential new function to create the graph, which calcInfection will then traverse
     def createGraph(self):
@@ -124,20 +142,24 @@ class Submodule:
             tmp_p = [0] * self.__numGroups
             for j in range(self.__numGroups):
                 if j == i:
-                    tmp_p[
-                        j] = 1  # If you're in the same group as an infected person, this is the likelihood you are in contact
+                    tmp_p[j] = .8  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
                     tmp_p[
-                        j] = .05  # Likelihood of connections between groups, arbitrary formula
+                        j] = .001  # Likelihood of connections between groups, arbitrary formula
+
             p.append(tmp_p)
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
         # plt.show()
         # print(idList)
-        G = nx.stochastic_block_model(sizes, p, idList)
-        infected_ids = [person.getID() for person in self.__Infected]
-        options = {"node_size": 400, "alpha": 0.8}
+        G = nx.stochastic_block_model(sizes, p, idList, sparse=True)  # Creates graph based on sizes of groups, prob of edges, list of people
+        infected_ids = [person.getID() for person in self.getInfected()]
+        options = {'node_size': 400, 'alpha': 0.8}
         pos = nx.spring_layout(G)
-        nx.generate_edgelist(G)
+        nx.generate_edgelist(G) #Generates edges
+
+        """
+        # hide visualization for now
+        #visualize graph
 
         labels = {}
         for i in range(len(self.__People)):
@@ -165,33 +187,43 @@ class Submodule:
             G, pos, nodelist=neighbours_ids, node_color="blue", label=labels, **options)
 
         plt.show()
+        """
+
         return G
 
     # It seems for simplicity, it would make the most sense to calcInfection here
 
-    def calcInfection(self, stochGraph):
-        # OPTIMIZE THIS: WE DO NOT LIKE TRINARY NESTED LOOPS
-        for person in self.__Infected:
-            for i in list(stochGraph.neighbors(person.getID())):
-
-                # TODO Make this more accurate
-                randNum = rnd.randint(1, 101)
-                if (randNum < 30):
-                    for j in range(len(self.__People)):
-                        if self.__People[j].getID() == i:
-                            self.__People[j].setInfectionState(True)
+    def calcInfection(self, stochGraph, atHomeIDs):
+        peopleDict = {person.getID(): person for person in self.__People}
+        infectedAndHome = [person for person in self.__People if
+                person.getInfectionState() > 0 and person.getID() in atHomeIDs]
+        for person in infectedAndHome:
+            neighborIDs = list(stochGraph.neighbors(person.getID()))
+            for neighborID in neighborIDs:
+                neighbor = peopleDict[neighborID]
+                if neighbor.getInfectionState() > 0:
+                    continue
+                if (rnd.random() < 0.3): # Probability of infection if edge exists
+                    neighbor.setInfectionState(2)
 
     # Wells Riley
     def pulmonaryVentilation(self):
+        d = {'asymptomatic': 0,
+            'susceptible': 1,
+            'mild':        2,
+            'severe':      3,
+            'critical':    4,
+            'recovered':   5}
         infected = []
-        for person in self.__Infected:
-            if (person.infectionState == "critical"):
+        peopleInfected = self.getInfected()
+        for person in peopleInfected:
+            if (person.infectionState == d['critical']): #critical
                 infected.append(3.4)
-            elif (person.infectionState == "severe"):
+            elif (person.infectionState == d['severe']):#severe
                 infected.append(1.4)
-            elif (person.infectionState == "mild"):
+            elif (person.infectionState == d['mild']):#mild
                 infected.append(0.55)
-            elif (person.infectionState == "asymptomatic"):
+            elif (person.infectionState == d['asymptomatic']): #asymptomatic
                 infected.append(0.55)
         return sum(infected)/len(infected) if infected else 0
 
@@ -220,11 +252,12 @@ class Submodule:
         if (facility == 'Gym' or 'Community center' or 'Church'):
             return 48
 
-    def probability(self):
+
+    def probability(self):  # Code for the Wells Reilly Model
+
         p = self.pulmonaryVentilation()
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
         I = len(self.getInfected())
         t = 1
-
         return 1 - math.exp(-(I*q*p*t)/Q)

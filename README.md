@@ -1,6 +1,18 @@
 # PandemicModel
 Repository for Delineo Disease Modeling at Johns Hopkins University 
 
+## Developer Notes
+
+### Setting up local dev environment
+1. Ensure you have `python3.8` installed and set up.
+2. Clone this repository.
+3. Initialize a virtual environment: `python3.8 -m venv ~/.envs/PandemicModel`. (Consider using `virtualenvwrapper` for steps 3-4)
+4. Activate the virtual environment: `source ~/.envs/PandemicModel/bin/activate`.
+5. Install dependencies: `pip install -r requirements.txt`.
+
+### Misc.
+- Please do not commit `venv` stuff
+- If you `pip install ` anything, remember to  `pip freeze > requirements.txt` before committing any changes.
 ## `Architecture Branch General`
 
 The architecture group is responsible for deploying the web application that will make Delineo's simulation available to the end users. This application is being built using the MERN stack. In addition, the architecture group is responsible for implementing the interface between the backend/database and the module & control group, and the interface between the backend/database and the visualizations group. 
@@ -45,4 +57,3 @@ Development server is running on port: 5000
 **model_app/backend/server.js**: connects to the MongoDB database and links all routes to corresponding URI's
 
 **model_app/backend/frontend/src**: All the folders for implementing the Redux architecture are here.
-
