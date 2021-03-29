@@ -111,3 +111,4 @@ class Person:
 
     def getConditions(self):
         return self.disease
+

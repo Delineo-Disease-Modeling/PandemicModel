@@ -8,6 +8,7 @@ import pandas as pd
 
 
 
+
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
 
@@ -15,6 +16,7 @@ class MasterController:
     county = 'Barnsdall'
     population = 1243
     # Uncertain exactly what/how many interventions to expect
+
     interventions = [True, False, True]  # Interventions represented as boolean list
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
@@ -69,6 +71,7 @@ class MasterController:
         # TODO
 
     def main(self):
+
         # TODO Integrate Graph approach with current spread model
         M = self.createModule()  # Module instantiated - holds the submodules(facilities), population
         Pop = M.createPopulation()  # Population created and returned as array of People class objects
@@ -139,8 +142,6 @@ class MasterController:
 
         file.close()
         return matrices['poi_cbg_visit_matrix_history']
-
-
 
     # Wells-Riley
     def WellsRiley(self, num_days=7):
@@ -225,6 +226,7 @@ class MasterController:
             hourOfDay = h % 24
 
             # TODO: retention rate within the same facility. currently no one is retained - Retention rate eventually covered by ML team
+
             for id in facilities:
                 facility = facilities[id]
                 facility.setVisitors(0)
@@ -294,6 +296,7 @@ class MasterController:
                 
         print(
             f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
+
         for id in infectionInFacilities:
             facility = facilities[id]
             print(facility.getID(), facility.getFacilityType(),
@@ -314,13 +317,16 @@ class MasterController:
         #response = {f'({id}, {facilities[id].getFacilityType()})': array
                     #for id, array in infectionInFacilitiesHourly.items()}
         self.jsonResponseToFile(response, "output.txt")
+
         # f.close()
 
 
 if __name__ == '__main__':
+
     mc = MasterController()  # Instantiate a MasterController
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
     # TODO School and Work spread need to be implemented as well - either through Wells Reilly model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
     mc.WellsRiley(7)  # Run Wells Reilly
+
