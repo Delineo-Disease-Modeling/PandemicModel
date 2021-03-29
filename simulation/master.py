@@ -21,6 +21,8 @@ class MasterController:
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
 
+    visitMatrices = None # Save matrices 
+
     # getUserInput: This function will assign the state, county, and interventions as the user specifies
     # params:
     #   state - the state passed by the user
@@ -71,7 +73,7 @@ class MasterController:
         # TODO
 
     def main(self):
-
+        print("Hello")
         # TODO Integrate Graph approach with current spread model
         M = self.createModule()  # Module instantiated - holds the submodules(facilities), population
         Pop = M.createPopulation()  # Population created and returned as array of People class objects
@@ -137,11 +139,9 @@ class MasterController:
         Returns:
         (obj): visit matrix with CBGs in x-axis and POIs in y-axis, 
         """
-        file = open(filename, 'r')
-        matrices = pickle.load(file)
-
+        file = open(filename, 'rb')
+        self.visitMatrices = pickle.load(file)
         file.close()
-        return matrices['poi_cbg_visit_matrix_history']
 
     # Wells-Riley
     def WellsRiley(self, num_days=7):
@@ -328,5 +328,6 @@ if __name__ == '__main__':
     # TODO School and Work spread need to be implemented as well - either through Wells Reilly model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
+    mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     mc.WellsRiley(7)  # Run Wells Reilly
 
