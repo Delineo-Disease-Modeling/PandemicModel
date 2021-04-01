@@ -131,6 +131,7 @@ class Submodule:
     # This is a potential new function to create the graph, which calcInfection will then traverse
     def createGraph(self):
         sizes = [0] * self.__numGroups
+        print("Number of groups: ",self.__numGroups)
         idList = []
         p = []
         for i in range(self.__numGroups):
@@ -145,7 +146,7 @@ class Submodule:
                     tmp_p[j] = .8  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
                     tmp_p[
-                        j] = .001  # Likelihood of connections between groups, arbitrary formula
+                        j] = .001  # Likelihood of connections between groups, arbitrary formula - #TODO change to based on number of households
 
             p.append(tmp_p)
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
@@ -194,6 +195,10 @@ class Submodule:
     # It seems for simplicity, it would make the most sense to calcInfection here
 
     def calcInfection(self, stochGraph, atHomeIDs):
+        numperhour = 0
+        averageinfectiouslength = 24 * 3 # number of days an individual is infectious
+        averageinfectionrate = .2 # total odds of infecting someone whom they are connected to in a household with
+        # note this math may need to be worked out more, along with correct, scientific numbers
         peopleDict = {person.getID(): person for person in self.__People}
         infectedAndHome = [person for person in self.__People if
                 person.getInfectionState() > 0 and person.getID() in atHomeIDs]
@@ -203,8 +208,11 @@ class Submodule:
                 neighbor = peopleDict[neighborID]
                 if neighbor.getInfectionState() > 0:
                     continue
-                if (rnd.random() < 0.3): # Probability of infection if edge exists
+                if (rnd.random() < averageinfectionrate/averageinfectiouslength): # Probability of infection if edge exists
                     neighbor.setInfectionState(2)
+                    numperhour += 1
+        return numperhour
+
 
     # Wells Riley
     def pulmonaryVentilation(self):
@@ -253,11 +261,13 @@ class Submodule:
             return 48
 
 
-    def probability(self):  # Code for the Wells Reilly Model
-
-        p = self.pulmonaryVentilation()
+    def probability(self, interventions):  # Code for the Wells Reilly Model
+        if interventions["MaskWearing"]:
+            r = 2
+        p = self.pulmonaryVentilation() / 2 # Reduce pulmonary ventilation by factor of 2 if mask wearing
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
         I = len(self.getInfected())
         t = 1
-        return 1 - math.exp(-(I*q*p*t)/Q)
+        return .005
+        return 1 - math.exp(-(I*q*p*t)/Q) # This needs to be fixed so wells reilly is actually implemented!

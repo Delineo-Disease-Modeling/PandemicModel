@@ -18,7 +18,7 @@ class MasterController:
     population = 1243
     # Uncertain exactly what/how many interventions to expect
 
-    interventions = [True, False, True]  # Interventions represented as boolean list
+    interventions = {"MaskWearing": True,"FacilityCap": .1, "StayAtHome": True}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
 
@@ -72,7 +72,7 @@ class MasterController:
     def displayResult(self):
         print('Nothing to show yet')
         # TODO
-
+    """
     def main(self):
         print("Hello")
         # TODO Integrate Graph approach with current spread model
@@ -92,7 +92,7 @@ class MasterController:
             if Pop[each].getInfectionState():
                 count += 1
         print(count)
-
+    """
     def jsonRequest(self, request):
         """ Parse json_string and store values in MasterController members
         Key strings must be valid attribute names.
@@ -165,7 +165,7 @@ class MasterController:
 
         # Assign initial infection state status for each person
         initialInfected = 10  # Should be customizable in  the future
-        notInfected = [*range(len(Pop))]
+        notInfected = [*range(len(Pop))] # list from 1 to num in pop
         for i in range(initialInfected):
             nextInfected = notInfected.pop(random.randint(0,
                                                 len(notInfected)- 1))
@@ -226,7 +226,7 @@ class MasterController:
 
             # Number of people at facilities
             numberOut = random.randint(0, min(len(Pop)-1,
-                                    totalFacilityCapacities))
+                                    totalFacilityCapacities)) #Not used anymore
 
             dayOfWeek = (h // 24) % 7
             hourOfDay = h % 24
@@ -243,7 +243,7 @@ class MasterController:
                                 if daysDict[dayOfWeek] in facility.getDays()
                                 and facility in openHours[hourOfDay]}
             # list of IDs not yet assigned to a facility
-            notAssigned = [*range(len(Pop))]
+            notAssigned = [*range(len(Pop))] #about 1200 right now
 
             # Assign people to facilities based on visit matrices
             hourVisitMatrix = self.poi_cbg_visit_matrix_history[h]
@@ -257,16 +257,23 @@ class MasterController:
                     break
                 if facility.getCapacity() == facility.getVisitors():
                     break
-                for i in range(math.ceil(numPeople * scale)): # Scale by population of OKC for now
+                r = 1
+                if self.interventions["StayAtHome"]:
+                    r = 2 # Reduce number of people at facilities by factor of 2 if stay at home orders.
+                for i in range(min((math.ceil(numPeople * scale / r)),math.ceil(self.interventions["FacilityCap"]*facility.getCapacity()))): # Scale by population of OKC for now
                     if not notAssigned:
                         break
-                    facilities[poiID].addPerson(Pop[notAssigned.pop()]) # Add random person to POI for now
+                    idindextoadd = random.randint(0,len(notAssigned)-1)
+                    facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)]) # Add random person to POI for now
 
 
             # Calculate infections for those still not assigned (assume all
             # not in a facility are at home)
-            households.calcInfection(G, notAssigned) 
-
+            numinfectedathome = households.calcInfection(G, notAssigned)
+            if h == 0:
+                infectionInHouseholds.append(numinfectedathome)
+            else:
+                infectionInHouseholds.append(numinfectedathome+infectionInHouseholds[h-1])
 
 
             for i in range(len(facilities)):
@@ -280,7 +287,7 @@ class MasterController:
                 finalInfectionNumber = initialInfectionNumber
 
                 #Probability of infection in facility i
-                prob = facilities[i].probability() 
+                prob = facilities[i].probability(self.interventions) # this is crazy high???
                 
                 #get number of people in facilities
                 peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
@@ -289,7 +296,6 @@ class MasterController:
                     # Don't re-infect
                     if person.getInfectionState() >= 0:
                         continue
-
                     temp = random.uniform(0, 1)
                     if temp < prob: # Infect
                         person.setInfectionState(2) # TODO: calibrate
@@ -315,6 +321,7 @@ class MasterController:
         print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
         print('Total number infected in facilities hourly is ',
                 totalInfectedInFacilities)
+        print('Total Infected In Households Hourly: ', infectionInHouseholds)
         #Updated the formatting of the json file
         response = {'Buildings': [
                     {"BuildingName": str(facilities[id].getFacilityType())+ str(id),
@@ -326,7 +333,12 @@ class MasterController:
         #response = {f'({id}, {facilities[id].getFacilityType()})': array
                     #for id, array in infectionInFacilitiesHourly.items()}
         self.jsonResponseToFile(response, "output.txt")
-
+        num = 0
+        print(Pop)
+        for each in Pop:
+            if Pop[each].getInfectionState()>=0:
+                num+=1
+        print(num)
         # f.close()
 
 
