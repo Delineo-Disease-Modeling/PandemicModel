@@ -2,7 +2,7 @@ const express = require("express");
 const website = express();
 // const querystring = require("querystring");
 const http = require("http");
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 22;
 const postData = require("../package.json");
 
 website.use(express.json());
@@ -12,7 +12,7 @@ website.get("/", function (req, res) {
 
   // sends POST request from other server
   let options = {
-    host: "covidweb.local",
+    host: "covidmod.local",
     port: 22,
     path: "/simulator",
     method: "POST",
@@ -29,7 +29,7 @@ website.get("/", function (req, res) {
       console.log("body: " + chunk);
     });
     response.on("end", function () {
-      res.json(data); // shows data being sent to port 4000
+      res.json(data); // shows data being sent to covidmod.local
     });
   });
 
