@@ -12,8 +12,8 @@ website.get("/", function (req, res) {
 
   // sends POST request from other server
   let options = {
-    host: "localhost",
-    port: 4000,
+    host: "covidweb.local",
+    port: 22,
     path: "/simulator",
     method: "POST",
     headers: {

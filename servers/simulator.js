@@ -10,7 +10,7 @@ simulator.use(express.json());
 simulator.post("/simulator", (req, res) => {
   console.log(req.body);
   const { spawn } = require("child_process");
-  const pyProg = spawn("python3", ["./test.py", req.body]);
+  const pyProg = spawn("python3", ["../simulation/master", req.body]);
   pyProg.stdout.on("data", function (data) {
     console.log(data);
     res.write(data);
@@ -61,7 +61,7 @@ simulator.post("/simulator", (req, res) => {
   httpreq.end();
 });
 
-// listen on port 4000
-simulator.listen(4000, () =>
-  console.log("Application listening on port 4000!")
+// listen on port 22
+simulator.listen(22, () =>
+  console.log("Application listening on port 22!")
 );
