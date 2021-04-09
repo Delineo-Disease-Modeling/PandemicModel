@@ -1,7 +1,7 @@
 const express = require("express");
 const simulator = express();
 const http = require("http");
-const port = process.env.PORT || 22;
+const port = process.env.PORT || 80;
 // const jsonData = require("./data.json");
 // const fs = require("fs");
 
@@ -23,19 +23,6 @@ simulator.post("/", (req, res) => {
     res.end("end");
   });
 
-  // res.json(jsonData); // send new JSON file
-
-  // // read newly generated json file
-  // let data = ""; 
-  // fs.readFile("data.json", async (e, data) => {
-  //   try {
-  //     data = await JSON.parse(data);
-  //     console.log(JSON.stringify(data));
-  //   } catch (e) {
-  //     throw e;
-  //   }
-  // });
-
   // gets post request from other server
   var options = {
     host: "covidweb.local",
@@ -54,7 +41,7 @@ simulator.post("/", (req, res) => {
       console.log("body: " + chunk);
     });
     response.on("end", function () {
-      res.json(JSON.stringify(data));
+      res.json(data); //JSON.stringify(data));
     });
   });
 
@@ -67,7 +54,7 @@ simulator.post("/", (req, res) => {
   httpreq.end();
 });
 
-// listen on port 22
+// listen on port 80
 simulator.listen(port, () =>
-  console.log("Application listening on port 22!")
+  console.log("Application listening on port 80!")
 );

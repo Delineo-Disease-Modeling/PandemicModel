@@ -13,8 +13,8 @@ website.get("/", function (req, res) {
   // sends POST request from other server
   let options = {
     host: "covidmod.local",
-    port: 22,
-    path: "/simulator",
+    port: 80,
+    path: "/",
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +45,7 @@ website.get("/", function (req, res) {
 website.post("/", (req, res) => {
   console.log("New JSON passed in return");
   // console.log(`Query String: ${req.query}`);
-  // console.log(`Body: ${req.body}`);
+  console.log(`Body: ${req.body}`);
 });
 
 // listen on port 3000(or whichever port is open)
