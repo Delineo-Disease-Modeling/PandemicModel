@@ -15,5 +15,7 @@
   "bugs": {
     "url": "https://github.com/Boccca2014/PandemicModel/issues"
   },
-  "homepage": "https://github.com/Boccca2014/PandemicModel#readme"
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
