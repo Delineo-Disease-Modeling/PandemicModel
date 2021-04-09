@@ -2,7 +2,7 @@ const express = require("express");
 const website = express();
 // const querystring = require("querystring");
 const http = require("http");
-const port = process.env.PORT || 22;
+const port = 22; 
 const postData = require("../package.json");
 
 website.use(express.json());
@@ -48,5 +48,5 @@ website.post("/", (req, res) => {
   console.log(`Body: ${req.body}`);
 });
 
-// listen on port 3000(or whichever port is open)
+// listen on port 22
 website.listen(port, () => console.log(`Listening on ${port}`));

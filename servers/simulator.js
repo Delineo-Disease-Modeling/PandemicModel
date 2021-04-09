@@ -1,7 +1,7 @@
 const express = require("express");
 const simulator = express();
 const http = require("http");
-const port = process.env.PORT || 80;
+const port = 22; // process.env.PORT || 
 // const jsonData = require("./data.json");
 // const fs = require("fs");
 
@@ -54,7 +54,7 @@ simulator.post("/", (req, res) => {
   httpreq.end();
 });
 
-// listen on port 80
+// listen on port 22
 simulator.listen(port, () =>
-  console.log("Application listening on port 80!")
+  console.log(`Application listening on port ${port}!`)
 );
