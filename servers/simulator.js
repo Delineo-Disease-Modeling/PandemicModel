@@ -1,9 +1,7 @@
 const express = require("express");
 const simulator = express();
 const http = require("http");
-const port = 22; // process.env.PORT || 
-// const jsonData = require("./data.json");
-// const fs = require("fs");
+const port = 80 || process.env.PORT;
 
 simulator.use(express.json());
 
@@ -26,7 +24,6 @@ simulator.post("/", (req, res) => {
   // gets post request from other server
   var options = {
     host: "covidweb.local",
-    port: 22,
     path: "/",
     method: "POST",
     headers: {
@@ -54,7 +51,7 @@ simulator.post("/", (req, res) => {
   httpreq.end();
 });
 
-// listen on port 22
+// listen on port 80
 simulator.listen(port, () =>
   console.log(`Application listening on port ${port}!`)
 );

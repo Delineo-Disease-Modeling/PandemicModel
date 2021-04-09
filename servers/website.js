@@ -2,7 +2,7 @@ const express = require("express");
 const website = express();
 // const querystring = require("querystring");
 const http = require("http");
-const port = 22; 
+const port = 80 || process.env.PORT;
 const postData = require("../package.json");
 
 website.use(express.json());
@@ -13,7 +13,6 @@ website.get("/", function (req, res) {
   // sends POST request from other server
   let options = {
     host: "covidmod.local",
-    port: 80,
     path: "/",
     method: "POST",
     headers: {
@@ -48,5 +47,5 @@ website.post("/", (req, res) => {
   console.log(`Body: ${req.body}`);
 });
 
-// listen on port 22
+// listen on port 80
 website.listen(port, () => console.log(`Listening on ${port}`));
