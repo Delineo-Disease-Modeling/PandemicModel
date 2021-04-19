@@ -126,7 +126,7 @@ class Submodule:
         # infected TODO in the future incorporate recovered state
         # return self.__Infected
         return [person for person in self.__People if
-                person.getInfectionState() >= 0]
+                0 <= person.getInfectionState() <= 3]
 
     # This is a potential new function to create the graph, which calcInfection will then traverse
     def createGraph(self):
@@ -196,32 +196,34 @@ class Submodule:
 
     def calcInfection(self, stochGraph, atHomeIDs):
         numperhour = 0
+        newlyinfectedathome = []
         averageinfectiouslength = 24 * 3 # number of days an individual is infectious
         averageinfectionrate = .2 # total odds of infecting someone whom they are connected to in a household with
         # note this math may need to be worked out more, along with correct, scientific numbers
         peopleDict = {person.getID(): person for person in self.__People}
         infectedAndHome = [person for person in self.__People if
-                person.getInfectionState() > 0 and person.getID() in atHomeIDs]
+                           0 <= person.getInfectionState() <= 3 and person.getID() in atHomeIDs]
         for person in infectedAndHome:
             neighborIDs = list(stochGraph.neighbors(person.getID()))
             for neighborID in neighborIDs:
                 neighbor = peopleDict[neighborID]
-                if neighbor.getInfectionState() > 0:
+                if len(neighbor.getInfectionTrack()) > 0:
                     continue
-                if (rnd.random() < averageinfectionrate/averageinfectiouslength): # Probability of infection if edge exists
-                    neighbor.setInfectionState(2)
+                if (rnd.random() < (averageinfectionrate/(24*(len(person.getInfectionTrack())-person.getIncubation())))): # Probability of infection if edge exists
+                    neighbor.assignTrajectory()
+                    newlyinfectedathome.append(neighbor)
                     numperhour += 1
-        return numperhour
+        return newlyinfectedathome
 
 
     # Wells Riley
     def pulmonaryVentilation(self):
-        d = {'asymptomatic': 0,
-            'susceptible': 1,
-            'mild':        2,
-            'severe':      3,
-            'critical':    4,
-            'recovered':   5}
+        d = {'susceptible' : -1,
+            'asymptomatic': 0,
+            'mild':        1,
+            'severe':      2,
+            'critical':    3,
+            'recovered':   4}
         infected = []
         peopleInfected = self.getInfected()
         for person in peopleInfected:
@@ -262,12 +264,15 @@ class Submodule:
 
 
     def probability(self, interventions):  # Code for the Wells Reilly Model
+        r = 1
         if interventions["MaskWearing"]:
             r = 2
-        p = self.pulmonaryVentilation() / 2 # Reduce pulmonary ventilation by factor of 2 if mask wearing
+        p = self.pulmonaryVentilation() / 1 # Reduce pulmonary ventilation by factor of 2 if mask wearing
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
         I = len(self.getInfected())
         t = 1
-        return .005
-        return 1 - math.exp(-(I*q*p*t)/Q) # This needs to be fixed so wells reilly is actually implemented!
+        #print("p:",p,"Q:",Q,"q:",q,"I:",I,"prob", 1 - math.exp(-(I*q*p*t)/(Q*100)) )
+        temporarytuningfactor = 500
+        return 1 - math.exp(-(I*q*p*t)/(Q*temporarytuningfactor)) # This needs to be fixed so wells reilly is actually implemented with better numbers!
+        #return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!

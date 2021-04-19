@@ -18,7 +18,7 @@ class MasterController:
     population = 1243
     # Uncertain exactly what/how many interventions to expect
 
-    interventions = {"MaskWearing": True,"FacilityCap": .1, "StayAtHome": True}  # Default Interventions 1=100% facilitycap
+    interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
 
@@ -162,15 +162,21 @@ class MasterController:
 
         # Visit matrix: (CBG x POI) x hour = gives number people from CBG at POI in a given hour
         # visitMatrix = loadVisitMatrix('filename')
-
+        currentInfected = set()
+        facilityinfections = 0
+        houseinfections = 0
         # Assign initial infection state status for each person
         initialInfected = 10  # Should be customizable in  the future
         notInfected = [*range(len(Pop))] # list from 1 to num in pop
         for i in range(initialInfected):
             nextInfected = notInfected.pop(random.randint(0,
-                                                len(notInfected)- 1))
-            # 2: mild, to be calibrated with disease driver
-            Pop[nextInfected].setInfectionState(2)  
+                                                len(notInfected) - 1))
+
+            currentInfected.add(Pop[nextInfected]) #adding to current infected
+            Pop[nextInfected].assignTrajectory() #function which makes someone start sickness trajectory
+            #Pop[nextInfected].setInfectionState()
+
+
 
         # TODO: to pull from actual data of Oklahoma/frontend map.
         # Currently assuming a fixed number of each, and using a range of 6
@@ -221,6 +227,14 @@ class MasterController:
         # Main simulation loop
         # Assume movements to facilities in the day only (10:00 - 18:00)
         for h in range(num_days * 24):
+            if h % 24 == 0:
+                toremove = set()
+                for each in currentInfected:
+                    timer = each.incrementInfectionTimer()
+                    state = each.setInfectionState(each.getInfectionTrack()[timer])
+                    if state == 4: toremove.add(each) #if recovered remove from infected list
+                for each in toremove:
+                    currentInfected.remove(each)
             # Initialize current hour's total infections by previous hour
             totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
 
@@ -246,7 +260,7 @@ class MasterController:
             notAssigned = [*range(len(Pop))] #about 1200 right now
 
             # Assign people to facilities based on visit matrices
-            hourVisitMatrix = self.poi_cbg_visit_matrix_history[h]
+            hourVisitMatrix = self.poi_cbg_visit_matrix_history[h%168] #mod resets h to be the hour in current week ie all mondays at midnight will be 0
             dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
             dfVisitMatrix = dfVisitMatrix.sum(axis=1) # Just sum all cbgs for now
 
@@ -260,16 +274,23 @@ class MasterController:
                 r = 1
                 if self.interventions["StayAtHome"]:
                     r = 2 # Reduce number of people at facilities by factor of 2 if stay at home orders.
+                traffic = 0
                 for i in range(min((math.ceil(numPeople * scale / r)),math.ceil(self.interventions["FacilityCap"]*facility.getCapacity()))): # Scale by population of OKC for now
                     if not notAssigned:
                         break
                     idindextoadd = random.randint(0,len(notAssigned)-1)
+                    traffic += 1
                     facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)]) # Add random person to POI for now
+
 
 
             # Calculate infections for those still not assigned (assume all
             # not in a facility are at home)
-            numinfectedathome = households.calcInfection(G, notAssigned)
+            infectedathome = households.calcInfection(G, notAssigned) #TODO return list of persons infected
+            for each in infectedathome:
+                currentInfected.add(each)
+            numinfectedathome = len(infectedathome)
+            houseinfections += numinfectedathome
             if h == 0:
                 infectionInHouseholds.append(numinfectedathome)
             else:
@@ -287,21 +308,22 @@ class MasterController:
                 finalInfectionNumber = initialInfectionNumber
 
                 #Probability of infection in facility i
-                prob = facilities[i].probability(self.interventions) # this is crazy high???
+                prob = facilities[i].probability(self.interventions) # this is crazy high???, wells reilly here
                 
                 #get number of people in facilities
                 peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
-
                 for person in facilities[i].getPeople():
                     # Don't re-infect
-                    if person.getInfectionState() >= 0:
+                    if len(person.getInfectionTrack()) > 0: # continue if already infected
                         continue
                     temp = random.uniform(0, 1)
                     if temp < prob: # Infect
-                        person.setInfectionState(2) # TODO: calibrate
+                        person.assignTrajectory()
+                        currentInfected.add(person)
 
                         # Update statistics
                         finalInfectionNumber += 1
+                        facilityinfections +=1
                         totalInfectedInFacilities[-1] += 1
                         infectionInFacilitiesDaily[i][h//24] += 1
                         infectionInFacilitiesHourly[i][h] += 1
@@ -328,18 +350,24 @@ class MasterController:
                     "InfectedDaily": infectionInFacilitiesHourly[id],
                     "PeopleDaily": peopleInFacilitiesHourly[id]}
                     for id in range(len(facilities))]
-                    }
+                    } #we should probably have households at least as one large "household"
         
         #response = {f'({id}, {facilities[id].getFacilityType()})': array
                     #for id, array in infectionInFacilitiesHourly.items()}
         self.jsonResponseToFile(response, "output.txt")
         num = 0
-        print(Pop)
+        print("pop:",Pop)
         for each in Pop:
-            if Pop[each].getInfectionState()>=0:
+            if len(Pop[each].getInfectionTrack())> 0:
                 num+=1
-        print(num)
+                #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
+        print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
         # f.close()
+        totalinf = 0
+        for id in range(len(infectionInFacilitiesHourly)):
+            for i in range(len(infectionInFacilitiesHourly[id])):
+                #print("num here", peopleInFacilitiesHourly[id][i],"infected here", infectionInFacilitiesHourly[id][i])
+                totalinf += peopleInFacilitiesHourly[id][i]
 
 
 if __name__ == '__main__':
@@ -350,5 +378,5 @@ if __name__ == '__main__':
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    mc.WellsRiley(7)  # Run Wells Reilly
+    mc.WellsRiley(61)  # Run Wells Reilly
 
