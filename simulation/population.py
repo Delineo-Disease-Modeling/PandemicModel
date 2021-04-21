@@ -1,4 +1,6 @@
 import synthpops.synthpops as sp
+#If above not working try
+#import synthpops as sp
 from person import Person
 import random
 
@@ -23,13 +25,16 @@ class Population():
         sheet_name = 'United States of America'
         level = 'county'
 
-        num_households = 459
-        npop = 1132
+
+        num_households = 2400 # 459
+        npop = 6000 #1132 #this is 6000 - but when increased synthpops does not work
         num_workplaces = 200
 
         # TODO: default school sizes are still being used
         population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
-                                                                 state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
+
+                                                              state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
+
         peopleArray = {}
         for i in range(npop):
             person = Person(i)
