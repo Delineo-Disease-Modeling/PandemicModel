@@ -1,9 +1,11 @@
 import random
 import numpy as np
+
 class Person:
 
     # Initialization function, sets all parameters at once.
     # TODO: have some default parameters if we can't set all of them at once, for initializing them with synthpops.
+
     def __init__(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                  severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
                  extendedhousehold=None):
@@ -22,6 +24,7 @@ class Person:
             householdContacts = []
         if infectionTrack is None:
             infectionTrack = []
+
         self.ID = ID
         self.age = age
         self.sex = sex
@@ -31,6 +34,7 @@ class Person:
         self.demographicInfo = demographicInfo
         self.severityRisk = severityRisk
         self.currentLocation = currentLocation
+
         # -1: normal, 0: asymp, 1: mild, 2: severe, 3: critical, 4: recovered
         self.infectionState = infectionState
         self.incubation = incubation
@@ -48,6 +52,7 @@ class Person:
         return self.infectionTrack
     def getinfectionTimer(self):
         return self.infectionTimer
+
     # sets specific parameters from the info available in the synthpops generated population.
     #householdLocation = location, householdMembers = contacts
     """
@@ -55,7 +60,9 @@ class Person:
         available are households ('H'), schools ('S'), and workplaces ('W'). Contacts in these layers are clustered and thus form a network composed of groups of people interacting with each other. For example, all
         household members are contacts of each other, and everyone in the same school is a contact of each other. Else, return None.
     """
+
     def setSynthPopParameters(self, synthPopsPersonDict): #maybe need changes here
+
         for k, v in synthPopsPersonDict.items():
             setattr(self, k, v)
         self.householdContacts = self.contacts['H']
@@ -78,7 +85,9 @@ class Person:
 
     def setInfectionState(self, state):
         self.infectionState = state
+
         return state
+
 
     def setIncubation(self, incubation):
         self.incubation = incubation
@@ -100,6 +109,7 @@ class Person:
         return self.householdLocation
 
     def getHouseholdMembers(self):
+
         return self.householdContacts
 
     def getSeverityRisk(self):
@@ -125,6 +135,7 @@ class Person:
 
     def getConditions(self):
         return self.disease
+
 
         # calculate severity risk based on demographic factors, as of now calculation is undefined.
 
@@ -286,3 +297,4 @@ class Person:
             self.infectionState -= 1 # infection state becomes -1
             self.recoveryDays[self.infectionState] -= 1 
             """
+

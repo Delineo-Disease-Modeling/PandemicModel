@@ -9,7 +9,6 @@ import math
 
 
 
-
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
 
@@ -17,6 +16,7 @@ class MasterController:
     county = 'Barnsdall'
     population = 6000
     # Uncertain exactly what/how many interventions to expect
+
 
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
@@ -74,7 +74,9 @@ class MasterController:
         # TODO
     """
     def main(self):
+
         print("Hello")
+
         # TODO Integrate Graph approach with current spread model
         M = self.createModule()  # Module instantiated - holds the submodules(facilities), population
         Pop = M.createPopulation()  # Population created and returned as array of People class objects
@@ -180,6 +182,7 @@ class MasterController:
                     newlyinfectedathome.append(Pop[each])
                     numperhour += 1
         return newlyinfectedathome
+
     # Wells-Riley
     def WellsRiley(self, num_days=7, interventions=None):
         '''
@@ -201,6 +204,7 @@ class MasterController:
             interventions["stayAtHome"] = False
         M = self.createModule()
 
+
         # Population created and returned as array of People class objects
         Pop = M.createPopulation()
 
@@ -219,8 +223,6 @@ class MasterController:
             currentInfected.add(Pop[nextInfected]) #adding to current infected
             Pop[nextInfected].assignTrajectory() #function which makes someone start sickness trajectory
             #Pop[nextInfected].setInfectionState()
-
-
 
         # TODO: to pull from actual data of Oklahoma/frontend map.
         # Currently assuming a fixed number of each, and using a range of 6
@@ -250,6 +252,7 @@ class MasterController:
         infectionInHouseholdsDaily = [0 for day in range(num_days)]
 
         # Instantiate households submodule and graph
+
         """
         # ____GRAPH STRATEGY______
         households = Submodule(len(facilities), 'Household', len(Pop),
@@ -258,6 +261,7 @@ class MasterController:
             households.addPerson(person)
         households.createGroupsHH()
         G = households.createGraph()
+
         """
         # ____SET HOUSEHOLDS + NETWORK STRATEGY____
         for person in Pop:
@@ -269,8 +273,6 @@ class MasterController:
                     # for each in Pop[extendedtoadd].getHouseholdMembers():
                      #   Pop[person].addtoextendedhousehold(each)
                      #   Pop[each].addtoextendedhousehold(person)
-
-
         daysDict = {
             0: 'Sun',
             1: 'M',
@@ -281,6 +283,7 @@ class MasterController:
             6: 'Sat'
         }
         numFacilities = len(facilities)
+
         tested = set()
         # Main simulation loop
         # Assume movements to facilities in the day only (10:00 - 18:00)
@@ -299,10 +302,12 @@ class MasterController:
                     currentInfected.remove(each)
                     if each in tested:
                         tested.remove(each)
+
             # Initialize current hour's total infections by previous hour
             totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
 
             # Number of people at facilities
+
             #numberOut = random.randint(0, min(len(Pop)-1,
             #                       totalFacilityCapacities)) #Not used anymore
 
@@ -317,6 +322,7 @@ class MasterController:
                 facility.clearPeople()
 
             # Array of facility submodules that are both open and not full
+
             openFacilities = {id: facility for id, facility in facilities.items()
                                 if daysDict[dayOfWeek] in facility.getDays()
                                 and facility in openHours[hourOfDay]}
@@ -376,6 +382,7 @@ class MasterController:
                 finalInfectionNumber = initialInfectionNumber
 
                 #Probability of infection in facility i
+
                 prob = facilities[i].probability(interventions) # Wells reilly here
                 
                 #get number of people in facilities
@@ -383,9 +390,12 @@ class MasterController:
                 for person in facilities[i].getPeople():
                     # Don't re-infect
                     if len(person.getInfectionTrack()) > 0: # continue if already infected
+
                         continue
+
                     temp = random.uniform(0, 1)
                     if temp < prob: # Infect
+
                         person.assignTrajectory()
                         currentInfected.add(person)
 
@@ -411,24 +421,29 @@ class MasterController:
         print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
         print('Total number infected in facilities hourly is ',
                 totalInfectedInFacilities)
+
         print('Total Infected In Households Hourly: ', infectionInHouseholds)
+
         #Updated the formatting of the json file
         response = {'Buildings': [
                     {"BuildingName": str(facilities[id].getFacilityType())+ str(id),
                     "InfectedDaily": infectionInFacilitiesHourly[id],
                     "PeopleDaily": peopleInFacilitiesHourly[id]}
                     for id in range(len(facilities))]
+
                     } #we should probably have households at least as one large "household"
         
         #response = {f'({id}, {facilities[id].getFacilityType()})': array
                     #for id, array in infectionInFacilitiesHourly.items()}
         self.jsonResponseToFile(response, "output.txt")
+
         num = 0
         for each in Pop:
             if len(Pop[each].getInfectionTrack())> 0:
                 num+=1
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
         print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
+
         # f.close()
         totalinf = 0
         for id in range(len(infectionInFacilitiesHourly)):
@@ -444,6 +459,7 @@ if __name__ == '__main__':
     # TODO School and Work spread need to be implemented as well - either through Wells Reilly model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
+
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
