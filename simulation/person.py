@@ -5,16 +5,19 @@ class Person:
     # Initialization function, sets all parameters at once.
     # TODO: have some default parameters if we can't set all of them at once, for initializing them with synthpops.
     def __init__(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
-                 severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None):
+                 severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
+                 extendedhousehold=None):
         self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities,
                               demographicInfo, severityRisk, currentLocation, infectionState, incubation,
-                              infectionTimer, infectionTrack)
+                              infectionTimer, infectionTrack,extendedhousehold)
 
     # Sets all parameters.
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0,
                          householdContacts=None, comorbidities=0, demographicInfo=0,
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0,
-                         infectionTimer=-1, infectionTrack=None):
+                         infectionTimer=-1, infectionTrack=None,extendedhousehold=None):
+        if extendedhousehold is None:
+            self.extendedhousehold = set()
         if householdContacts is None: #python specific way of creating mutable defaults
             householdContacts = []
         if infectionTrack is None:
@@ -35,6 +38,10 @@ class Person:
         self.infectionTimer = infectionTimer
         self.infectionTrack = infectionTrack
 
+    def getextendedhousehold(self):
+        return self.extendedhousehold
+    def addtoextendedhousehold(self, p):
+        self.extendedhousehold.add(p)
     def getID(self):
         return self.ID
     def getInfectionTrack(self):
@@ -133,6 +140,8 @@ class Person:
             distrWithComorbidities[int(brackets[0])] = float(brackets[2])
             distrWithoutComorbidities[int(brackets[0])] = float(brackets[1])
         ageCategory = int((self.age // 10)) * 10
+        if ageCategory >= 100: #temporary fix to no data for 100+
+            ageCategory = 90
         if numComorbidities == 0:
             srScore = int(distrWithoutComorbidities[ageCategory])
         else:

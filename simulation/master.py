@@ -15,7 +15,7 @@ class MasterController:
 
     state = 'Oklahoma'
     county = 'Barnsdall'
-    population = 1243
+    population = 6000
     # Uncertain exactly what/how many interventions to expect
 
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
@@ -149,6 +149,37 @@ class MasterController:
         self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
         self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
 
+
+    def calcInfectionsHomes(self, atHomeIDs, Pop, currentInfected):
+        numperhour = 0
+        newlyinfectedathome = []
+        averageinfectiouslength = 24 * 3  # number of days an individual is infectious
+        averageinfectionrate = .2  # total odds of infecting someone whom they are connected to in a household with
+        # note this math may need to be worked out more, along with correct, scientific numbers
+        infectedAndHome = set()
+        for each in currentInfected:
+            if each.getID() in atHomeIDs and 0 <= each.getInfectionState() <= 3:
+                infectedAndHome.add(each)
+
+        while infectedAndHome:
+            current = infectedAndHome.pop()
+            currentlywith = list(current.getHouseholdMembers()) #id's
+            r = random.randint(1,24)
+            if r <= 2:
+                neighborhouse = list(current.getextendedhousehold())[random.randint(0, len(current.getextendedhousehold())-1)]
+                currentlywith.append(neighborhouse)
+                for each in Pop[neighborhouse].getHouseholdMembers():
+                    currentlywith.append(each)
+
+            for each in currentlywith:
+                if len(Pop[each].getInfectionTrack()) > 0:
+                    continue
+                if (random.random() < (averageinfectionrate / (24 * (len(
+                        current.getInfectionTrack()) - current.getIncubation()))) and each in atHomeIDs):  # Probability of infection if in same house at the moment
+                    Pop[each].assignTrajectory()
+                    newlyinfectedathome.append(Pop[each])
+                    numperhour += 1
+        return newlyinfectedathome
     # Wells-Riley
     def WellsRiley(self, num_days=7, interventions=None):
         '''
@@ -156,8 +187,18 @@ class MasterController:
         '''
         # Module instantiated - holds the submodules(facilities), population
         if interventions is None:
-            interventions = {"maskWearing": 0, "dailyTesting": 0, "roomCapacity": 0, "contactTracing": 0,
+            interventions = {"maskWearing": 0, "dailyTesting": 0, "roomCapacity": 100, "contactTracing": 0,
                              "stayAtHome": False}
+        if "dailyTesting" not in interventions:
+            interventions["dailyTesting"] = 0
+        if "maskWearing" not in interventions:
+            interventions["maskWearing"] = 0
+        if "roomCapacity" not in interventions:
+            interventions["roomCapacity"] = 100
+        if "contactTracing" not in interventions:
+            interventions["contactTracing"] = 0
+        if "stayAtHome" not in interventions:
+            interventions["stayAtHome"] = False
         M = self.createModule()
 
         # Population created and returned as array of People class objects
@@ -209,13 +250,27 @@ class MasterController:
         infectionInHouseholdsDaily = [0 for day in range(num_days)]
 
         # Instantiate households submodule and graph
+        """
+        # ____GRAPH STRATEGY______
         households = Submodule(len(facilities), 'Household', len(Pop),
                         range(24), ['M', 'T', 'W', 'Th', 'F', 'Sat', 'Sun'])
         for person in Pop.values():
             households.addPerson(person)
         households.createGroupsHH()
         G = households.createGraph()
-        
+        """
+        # ____SET HOUSEHOLDS + NETWORK STRATEGY____
+        for person in Pop:
+            for i in range(9):
+                extendedtoadd = random.randint(0,len(Pop) - 1)
+                if Pop[extendedtoadd] != Pop[person] and extendedtoadd not in Pop[person].getHouseholdMembers():
+                    Pop[person].addtoextendedhousehold(extendedtoadd)
+                    Pop[extendedtoadd].addtoextendedhousehold(person)
+                    # for each in Pop[extendedtoadd].getHouseholdMembers():
+                     #   Pop[person].addtoextendedhousehold(each)
+                     #   Pop[each].addtoextendedhousehold(person)
+
+
         daysDict = {
             0: 'Sun',
             1: 'M',
@@ -226,7 +281,7 @@ class MasterController:
             6: 'Sat'
         }
         numFacilities = len(facilities)
-
+        tested = set()
         # Main simulation loop
         # Assume movements to facilities in the day only (10:00 - 18:00)
         for h in range(num_days * 24):
@@ -235,15 +290,21 @@ class MasterController:
                 for each in currentInfected:
                     timer = each.incrementInfectionTimer()
                     state = each.setInfectionState(each.getInfectionTrack()[timer])
+                    r = random.random()
+                    if r <= interventions["dailyTesting"]/100 * .1 + (interventions["dailyTesting"]/100)*(interventions["contactTracing"]/100) * .1:
+                        tested.add(each)
+                        rt = random.random()
                     if state == 4: toremove.add(each) #if recovered remove from infected list
                 for each in toremove:
                     currentInfected.remove(each)
+                    if each in tested:
+                        tested.remove(each)
             # Initialize current hour's total infections by previous hour
             totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
 
             # Number of people at facilities
-            numberOut = random.randint(0, min(len(Pop)-1,
-                                    totalFacilityCapacities)) #Not used anymore
+            #numberOut = random.randint(0, min(len(Pop)-1,
+            #                       totalFacilityCapacities)) #Not used anymore
 
             dayOfWeek = (h // 24) % 7
             hourOfDay = h % 24
@@ -275,10 +336,10 @@ class MasterController:
                 if facility.getCapacity() == facility.getVisitors():
                     break
                 r = 1
-                if self.interventions["StayAtHome"]:
+                if interventions["stayAtHome"]:
                     r = 2 # Reduce number of people at facilities by factor of 2 if stay at home orders.
                 traffic = 0
-                for i in range(min((math.ceil(numPeople * scale / r)),math.ceil(self.interventions["FacilityCap"]*facility.getCapacity()))): # Scale by population of OKC for now
+                for i in range(min((math.ceil(numPeople * scale / r)),math.ceil((interventions["roomCapacity"]/100)*facility.getCapacity()))): # Scale by population of OKC for now
                     if not notAssigned:
                         break
                     idindextoadd = random.randint(0,len(notAssigned)-1)
@@ -289,7 +350,12 @@ class MasterController:
 
             # Calculate infections for those still not assigned (assume all
             # not in a facility are at home)
+            """
+            #_____GRAPH VERSION______
             infectedathome = households.calcInfection(G, notAssigned) #TODO return list of persons infected
+            """
+            # ____SETHOUSEHOLDS_____
+            infectedathome = self.calcInfectionsHomes(notAssigned, Pop, currentInfected)
             for each in infectedathome:
                 currentInfected.add(each)
             numinfectedathome = len(infectedathome)
@@ -298,7 +364,6 @@ class MasterController:
                 infectionInHouseholds.append(numinfectedathome)
             else:
                 infectionInHouseholds.append(numinfectedathome+infectionInHouseholds[h-1])
-
 
             for i in range(len(facilities)):
                 if daysDict[dayOfWeek] not in facilities[i].getDays():
@@ -311,7 +376,7 @@ class MasterController:
                 finalInfectionNumber = initialInfectionNumber
 
                 #Probability of infection in facility i
-                prob = facilities[i].probability(self.interventions) # this is crazy high???, wells reilly here
+                prob = facilities[i].probability(interventions) # Wells reilly here
                 
                 #get number of people in facilities
                 peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
@@ -359,7 +424,6 @@ class MasterController:
                     #for id, array in infectionInFacilitiesHourly.items()}
         self.jsonResponseToFile(response, "output.txt")
         num = 0
-        print("pop:",Pop)
         for each in Pop:
             if len(Pop[each].getInfectionTrack())> 0:
                 num+=1
@@ -382,5 +446,6 @@ if __name__ == '__main__':
     # TODO Callibration to match realistic/standard data once above is completed.
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
+    #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
     mc.WellsRiley(61,interventions)  # Run Wells Reilly
 

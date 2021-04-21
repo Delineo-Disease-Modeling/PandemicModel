@@ -25,7 +25,7 @@ class Population():
         sheet_name = 'United States of America'
         level = 'county'
 
-        num_households = 3000 # 459
+        num_households = 2400 # 459
         npop = 6000 #1132 #this is 6000 - but when increased synthpops does not work
         num_workplaces = 200
 

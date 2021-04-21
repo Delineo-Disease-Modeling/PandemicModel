@@ -264,15 +264,15 @@ class Submodule:
 
 
     def probability(self, interventions):  # Code for the Wells Reilly Model
-        r = 1
-        if interventions["MaskWearing"]:
-            r = 2
-        p = self.pulmonaryVentilation() / 1 # Reduce pulmonary ventilation by factor of 2 if mask wearing
+        maskwear = interventions["maskWearing"] / 100
+        r = 1 + maskwear # maskwearing can reduce pulmonary ventilation by up to a factor of 2
+
+        p = self.pulmonaryVentilation() / r # Reduce pulmonary ventilation by factor r
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
         I = len(self.getInfected())
         t = 1
         #print("p:",p,"Q:",Q,"q:",q,"I:",I,"prob", 1 - math.exp(-(I*q*p*t)/(Q*100)) )
-        temporarytuningfactor = 500
+        temporarytuningfactor = 105
         return 1 - math.exp(-(I*q*p*t)/(Q*temporarytuningfactor)) # This needs to be fixed so wells reilly is actually implemented with better numbers!
         #return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!
