@@ -381,5 +381,6 @@ if __name__ == '__main__':
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+    interventions = {}
     mc.WellsRiley(61,interventions)  # Run Wells Reilly
 
