@@ -150,12 +150,15 @@ class MasterController:
         self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
 
     # Wells-Riley
-    def WellsRiley(self, num_days=7):
+    def WellsRiley(self, num_days=7, interventions=None):
         '''
         This function calculates the disease progression by each person in the
         '''
         # Module instantiated - holds the submodules(facilities), population
-        M = self.createModule()  
+        if interventions is None:
+            interventions = {"maskWearing": 0, "dailyTesting": 0, "roomCapacity": 0, "contactTracing": 0,
+                             "stayAtHome": False}
+        M = self.createModule()
 
         # Population created and returned as array of People class objects
         Pop = M.createPopulation()
@@ -378,5 +381,5 @@ if __name__ == '__main__':
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    mc.WellsRiley(61)  # Run Wells Reilly
+    mc.WellsRiley(61,interventions)  # Run Wells Reilly
 
