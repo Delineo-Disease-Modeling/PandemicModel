@@ -439,7 +439,7 @@ class MasterController:
 
         num = 0
         for each in Pop:
-            if len(Pop[each].getInfectionTrack())> 0:
+            if len(Pop[each].getInfectionTrack()) > 0:
                 num+=1
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
         print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
