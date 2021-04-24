@@ -13,9 +13,13 @@ class Submodule:
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
-        capacities = {                          # TODO: add to the default/medium number of capacity
-            'Supermarket': 100,
+        capacities = {
+            'Supermarket': 50,
             'Restaurant': 20,
+            "Retail": 20, #TODO: there is so much variablity in retail/restaraunt capacities and airflow etc. How can we model them all with one factor?
+            "School": 20,
+            "Hospital": 60,
+            "Gym": 30
         }
         self.__Capacity = capacities[facilitytype] if facilitytype in capacities else 20
         self.__Visitors = 0  # the current number of customers in the facility
@@ -260,13 +264,18 @@ class Submodule:
                 return ventRate[i]
 
     def quantaGen(self, facility):
-        # 14 - 48
-        if (facility == 'Gas station' or 'Park' or 'Zoo'):
+        # 14 - 48 - wells reilly needs updating
+        if facility == 'Gas station' or facility == 'Park' or facility == 'Zoo':
             return 14
-        if (facility == 'Casino' or 'Movie theater'):
+        if facility == 'Retail' or facility =="Restaurant":
+            return 15
+        if facility == 'Casino' or facility == 'Movie theater' or facility == "Supermarket":
             return 20
-        if (facility == 'Gym' or 'Community center' or 'Church'):
+        if facility == 'Hospital':
+            return 25
+        if facility == 'Gym' or facility =='Community center' or facility =='Church' or facility == 'School':
             return 48
+        return 14 # catch case
 
 
 
@@ -278,10 +287,11 @@ class Submodule:
 
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
+        #print(self.__Facilitytype, q)
         I = len(self.getInfected())
         t = 1
 
         #print("p:",p,"Q:",Q,"q:",q,"I:",I,"prob", 1 - math.exp(-(I*q*p*t)/(Q*100)) )
-        temporarytuningfactor = 105
+        temporarytuningfactor = 90
         return 1 - math.exp(-(I*q*p*t)/(Q*temporarytuningfactor)) # This needs to be fixed so wells reilly is actually implemented with better numbers!
         #return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!
