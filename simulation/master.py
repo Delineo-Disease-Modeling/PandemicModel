@@ -447,10 +447,15 @@ class MasterController:
         # f.close()
         totalinf = 0
         for id in range(len(infectionInFacilitiesHourly)):
+            individual = 0
+            people = 0
             for i in range(len(infectionInFacilitiesHourly[id])):
                 #print("num here", peopleInFacilitiesHourly[id][i],"infected here", infectionInFacilitiesHourly[id][i])
-                totalinf += peopleInFacilitiesHourly[id][i]
-
+                totalinf += infectionInFacilitiesHourly[id][i]
+                individual += infectionInFacilitiesHourly[id][i]
+                people += peopleInFacilitiesHourly[id][i]
+            print(id, individual, people)
+        print(totalinf)
 
 if __name__ == '__main__':
 
