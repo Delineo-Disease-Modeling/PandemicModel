@@ -1,5 +1,5 @@
 # PandemicModel
-Repository for Delineo Disease Modeling at Johns Hopkins University 
+Repository for Delineo Disease Modeling at the Johns Hopkins University. 
 
 ## Developer Notes
 
@@ -27,33 +27,8 @@ The architecture group is responsible for deploying the web application that wil
 	npm run client-install
 	```
 
-2. Set up environment variables: Create two .env files, one in **model_app/frontend** and one in **model_app/backend**.
-
-The frontend .env file looks like
-```
-MAP_API=<your-map-api>
-```
-
-The backend .env file looks like
-```
-ATLAS_URI=<MongoDB-URI>
-PYTHON_PATH=<path-where-to-locate-the-"python"-executable>
-SCRIPT_PATH=<path-of-the-script-to-execute>
-```
-
-3. Activate the virtual environment for the synthpops simulation. Instructions for creating the virtual environment are found in **model_app/backend/synthpops**
-
-4. Begin website development: In **model_app**, enter `npm run dev` to start the client and server connections. When you make changes to any file, the servers will restart. You should see a message
-
-```
-MongoDB database connection established successfully.
-Development server is running on port: 5000
-```
-
-## `Structure`
-**model_app/backend/models**: contains all database schemas   
-**model_app/backend/routes**: contains all routing information for server  
-**model_app/backend/synthpops**: contains all Python scripts needed for simulations  
-**model_app/backend/server.js**: connects to the MongoDB database and links all routes to corresponding URI's
-
-**model_app/backend/frontend/src**: All the folders for implementing the Redux architecture are here.
+## `Important Folders/Files`
+All important files for running are in the /simulation folder
+**simulation/diseasedata**: contains comorbidity data  
+**simulation/synthpops**: DO NOT TOUCH unless you really know what you're doing  
+**simulation/master.py**: runs the simulation- call this file on command line to get a result  
