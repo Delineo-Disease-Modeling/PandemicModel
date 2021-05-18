@@ -29,6 +29,7 @@ The architecture group is responsible for deploying the web application that wil
 
 ## `Important Folders/Files`
 All important files for running are in the /simulation folder
+
 **simulation/diseasedata**: contains comorbidity data  
 **simulation/synthpops**: DO NOT TOUCH unless you really know what you're doing  
 **simulation/master.py**: runs the simulation- call this file on command line to get a result  
