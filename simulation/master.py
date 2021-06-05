@@ -414,15 +414,14 @@ class MasterController:
 
         for id in infectionInFacilities:
             facility = facilities[id]
-            print(facility.getID(), facility.getFacilityType(),
-                  infectionInFacilities[id])  # , file=f)
-        print()
-        print('Infection In Facilities Daily: ', infectionInFacilitiesDaily)
-        print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
-        print('Total number infected in facilities hourly is ',
-                totalInfectedInFacilities)
+            # print(facility.getID(), facility.getFacilityType(),   # not useful
+            #         infectionInFacilities[id])  # , file=f)
 
-        print('Total Infected In Households Hourly: ', infectionInHouseholds)
+        # print('Infection In Facilities Daily: ', infectionInFacilitiesDaily)     # none of this is useful
+        # print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
+        # print('Total number infected in facilities hourly is ',
+        #        totalInfectedInFacilities)
+        # print('Total Infected In Households Hourly: ', infectionInHouseholds)
 
         #Updated the formatting of the json file
         response = {'Buildings': [
@@ -442,7 +441,8 @@ class MasterController:
             if len(Pop[each].getInfectionTrack()) > 0:
                 num+=1
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
-        print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
+        # print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
+
 
         # f.close()
         totalinf = 0
@@ -454,19 +454,23 @@ class MasterController:
                 totalinf += infectionInFacilitiesHourly[id][i]
                 individual += infectionInFacilitiesHourly[id][i]
                 people += peopleInFacilitiesHourly[id][i]
-            print(id, individual, people)
-        print(totalinf)
+            # print(id, individual, people)    # not useful
+
+        print("Initial infections:", initialInfected)
+        print("Total infections in households:", houseinfections)
+        print("Total infections in facilities:", facilityinfections)
+        print("Total infections:", num)
 
 if __name__ == '__main__':
 
     mc = MasterController()  # Instantiate a MasterController
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
-    # TODO School and Work spread need to be implemented as well - either through Wells Reilly model or Graph approach.
+    # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
 
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
-    mc.WellsRiley(61,interventions)  # Run Wells Reilly
+    mc.WellsRiley(61, interventions)  # Run Wells Riley
 
