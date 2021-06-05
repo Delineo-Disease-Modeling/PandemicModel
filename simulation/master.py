@@ -184,7 +184,7 @@ class MasterController:
         return newlyinfectedathome
 
     # Wells-Riley
-    def WellsRiley(self, num_days=7, interventions=None):
+    def WellsRiley(self, print_infection_breakdown, num_days=7, interventions=None):
         '''
         This function calculates the disease progression by each person in the
         '''
@@ -455,10 +455,10 @@ class MasterController:
                 individual += infectionInFacilitiesHourly[id][i]
                 people += peopleInFacilitiesHourly[id][i]
             # print(id, individual, people)    # not useful
-
-        print("Initial infections:", initialInfected)
-        print("Total infections in households:", houseinfections)
-        print("Total infections in facilities:", facilityinfections)
+        if print_infection_breakdown:
+            print("Initial infections:", initialInfected)
+            print("Total infections in households:", houseinfections)
+            print("Total infections in facilities:", facilityinfections)
         print("Total infections:", num)
 
 if __name__ == '__main__':
@@ -472,5 +472,5 @@ if __name__ == '__main__':
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
-    mc.WellsRiley(61, interventions)  # Run Wells Riley
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
 
