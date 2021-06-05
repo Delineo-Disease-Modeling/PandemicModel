@@ -45,7 +45,7 @@ class Population():
         return peopleArray
 
     # calls synthpops and generates population (dictionary)
-    def generatePopulation(populationSize):
+    def generatePopulation(self, populationSize):
         # call function from person class
         peopleArray = {}
         population = sp.generate_synthetic_population(populationSize)
