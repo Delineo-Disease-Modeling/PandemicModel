@@ -240,4 +240,7 @@ dist/
 tmp/
 temp/
 
+# Output files
+output.txt
+
 # End of https://www.gitignore.io/api/node
