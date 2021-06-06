@@ -309,7 +309,7 @@ class Submodule:
             return
         apptSlot = (week, day, hour)
         apptDetails = (person.ID, vaccine)
-        if(len(self.appointments[apptSlot]) >= rate):
+        if(len(self.appointments[apptSlot]) >= self.rate):
             return
         self.appointments[apptSlot].append(apptDetails)
         self.vaccineStock[vaccine] = self.vaccineStock[vaccine] - 1
