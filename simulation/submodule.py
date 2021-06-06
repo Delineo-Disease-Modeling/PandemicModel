@@ -109,7 +109,7 @@ class Submodule:
         self.__numGroups = len(groups)
         self.__Groups = groups
 
-        
+
     #create groups based on household network
     def createGroupsHH(self):
         groupsDict = {} # If we know total number households here, we can just use a list
@@ -312,7 +312,7 @@ class Submodule:
         if(len(self.appointments[apptSlot]) >= self.rate):
             return
         self.appointments[apptSlot].append(apptDetails)
-        self.vaccineStock[vaccine] = self.vaccineStock[vaccine] - 1
+        self.vaccineStock[vaccine] -= 1
         #set person's madeVacAppt to true
 
     def getAppointment(self, week, day, hour):

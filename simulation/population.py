@@ -7,7 +7,6 @@ import random
 
 class Population():
     # constructor
-
     def __init__(self, state, country, population=[], peopleArray={}, populationSize=0):
 
         self.state = state

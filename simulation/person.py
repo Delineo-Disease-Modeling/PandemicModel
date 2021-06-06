@@ -289,7 +289,7 @@ class Person:
         self.infectionTrack.append(4)
 
     def incrementDaysAfterShot(self):
-        self.daysAfterShot = self.daysAfterShot + 1
+        self.daysAfterShot += 1
 
     def administerVaccine(self, name, shotNumberGiven):
         self.vaccineName = name
