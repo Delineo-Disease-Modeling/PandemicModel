@@ -45,7 +45,7 @@ class Population():
         return peopleArray
 
     # calls synthpops and generates population (dictionary)
-    def generatePopulation(populationSize):
+    def generatePopulation(self, populationSize):
         # call function from person class
         peopleArray = {}
         population = sp.generate_synthetic_population(populationSize)
@@ -271,3 +271,21 @@ class Population():
         self.addCysticFibrosis()
         self.addHypertension()
 
+    def generateVacinationPopulation(self):
+        peopleArray = self.generatePopulation(self.populationSize)
+        vaccinated = {} # create a dictionary of people and their vaccination status
+        for i in range(len(peopleArray)):
+            if (peopleArray[i].age > 60 or peopleArray[i].essentialWorker == True or peopleArray[i].comorbidities > 2):
+                vaccinated[peopleArray[i]] = True
+            else:
+                vaccinated[peopleArray[i]] = False
+        return vaccinated
+
+    def infectedPop(self):
+        vaccinated = self.generateVacinationPopulation()
+        infectedArray = {}
+        for i in range(len(vaccinated)):
+            if (vaccinated[i]):
+                vaccinated[i].infectedAfterCompletelyVaccinated()
+            infectedArray[vaccinated[i]] = vaccinated[i].infected
+        return infectedArray
