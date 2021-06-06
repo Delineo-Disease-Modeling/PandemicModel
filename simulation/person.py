@@ -297,11 +297,11 @@ class Person:
         self.daysAfterShot = 0
 
     def completeVaccinated(self):
-	    if (self.vaccineName == "Moderna" && self.shotNumber == 2 && self.daysAfterShot == 14):
+	    if (self.vaccineName == "Moderna" and self.shotNumber == 2 and self.daysAfterShot == 14):
             self.vaccinated = True
-        elif (self.vaccineName == "Pfizer" && self.shotNumber == 2 && self.daysAfterShot == 14):
+        elif (self.vaccineName == "Pfizer" and self.shotNumber == 2 and self.daysAfterShot == 14):
 		    self.vaccinated = True
-        elif (self.vaccineName == "Johnson&Johnson" && self.shotNumber == 1 && self.daysAfterShot == 14):
+        elif (self.vaccineName == "Johnson&Johnson" and self.shotNumber == 1 and self.daysAfterShot == 14):
 		    self.vaccinated = True
 
     def infectionRatesBasedOnCOVID(self)

@@ -9,7 +9,7 @@ import math
 
 class Submodule:
 
-    def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected=[]):
+    def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected=[], vaccineStock = {"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments = {}, rate = 0):
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
@@ -35,6 +35,9 @@ class Submodule:
         self.__People = People
         self.__Infected = Infected
         self.__MedianRetentionHour = 1  # TODO: research and add
+        self.vaccineStock = vaccineStock
+        self.appointments = appointments
+        self.rate = rate
 
     def getID(self):
         return self.__id
@@ -295,3 +298,26 @@ class Submodule:
         temporarytuningfactor = 90
         return 1 - math.exp(-(I*q*p*t)/(Q*temporarytuningfactor)) # This needs to be fixed so wells reilly is actually implemented with better numbers!
         #return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!
+
+    def restockVaccines(self, restock):
+        self.vaccineStock["Pfizer"] = self.vaccineStock["Pfizer"] + restock["Pfizer"]
+        self.vaccineStock["Moderna"] = self.vaccineStock["Moderna"] + restock["Moderna"]
+        self.vaccineStock["Johnson&Johnson"] = self.vaccineStock["Johnson&Johnson"] + restock["Johnson&Johnson"]
+
+    def scheduleAppointment(self, person, week, day, hour, vaccine):
+        if(self.vaccineStock[vaccine] == 0) or ((person.ID, "Pfizer") in self.appointments.values()) or ((person.ID, "Moderna") in  self.appointments.values()) or ((person.ID, "Johnson&Johnson") in  self.appointments.values()):
+            return
+        apptSlot = (week, day, hour)
+        apptDetails = (person.ID, vaccine)
+        if(len(self.appointments[apptSlot]) >= rate):
+            return
+        self.appointments[apptSlot].append(apptDetails)
+        self.vaccineStock[vaccine] = self.vaccineStock[vaccine] - 1
+        #set person's madeVacAppt to true
+
+    def getAppointment(self, week, day, hour):
+        apptSlot = (week, day, hour)
+        return self.appointments[apptSlot]
+
+    def administerShot(self, person, vaccine):
+        person.administerVaccine(vaccine, person.shotNumber + 1)
