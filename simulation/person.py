@@ -8,19 +8,21 @@ class Person:
 
     def __init__(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                  severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
-                 householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="", infected=False,
-                 shotNumber=0, daysAfterShot=0, variant1RatePfizer=0.5, variant1RateModerna=0.5, variant1RateJohnson=0.5, essentialWorker=False):
+                 householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
+                 shotNumber=0, daysAfterShot=0, variant1RatePfizer=0.5, variant1RateModerna=0.5, variant1RateJohnson=0.5, essentialWorker=False,
+                 madeVaccAppt = False, vaccApptDate = (0, 0, 0)):
         self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities,
                               demographicInfo, severityRisk, currentLocation, infectionState, incubation,
                               infectionTimer, infectionTrack, householdContacts, extendedhousehold, vaccinated, COVID_type,
-                              vaccineName, infected, shotNumber, daysAfterShot, variant1RatePfizer,
-                              variant1RateModerna, variant1RateJohnson, essentialWorker)
+                              vaccineName, shotNumber, daysAfterShot, variant1RatePfizer,
+                              variant1RateModerna, variant1RateJohnson, essentialWorker, madeVaccAppt, vaccApptDate)
 
     # Sets all parameters.
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
-                         householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="", infected=False,
-                         shotNumber=0, daysAfterShot=0, variant1RatePfizer=0.5, variant1RateModerna=0.5, variant1RateJohnson=0.5, essentialWorker=False):
+                         householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="", 
+                         shotNumber=0, daysAfterShot=0, variant1RatePfizer=0.5, variant1RateModerna=0.5, variant1RateJohnson=0.5,
+                         essentialWorker=False, madeVaccAppt = False, vaccApptDate = (0, 0, 0)):
         if extendedhousehold is None:
             self.extendedhousehold = set()
         if householdContacts is None: #python specific way of creating mutable defaults
@@ -40,13 +42,14 @@ class Person:
         self.vaccinated = vaccinated
         self.COVID_type = COVID_type
         self.vaccineName = vaccineName
-        self.infected = infected
         self.shotNumber = shotNumber
         self.daysAfterShot = daysAfterShot
         self.variant1RatePfizer = variant1RatePfizer
         self.variant1RateModerna = variant1RateModerna
         self.variant1RateJohnson = variant1RateJohnson
         self.essentialWorker = essentialWorker
+        self.madeVaccAppt = madeVaccAppt
+        self.vaccApptDate = vaccApptDate
 
         # -1: normal, 0: asymp, 1: mild, 2: severe, 3: critical, 4: recovered
         self.infectionState = infectionState
@@ -307,15 +310,15 @@ class Person:
     def infectionRatesBasedOnCOVID(self):
         if (self.vaccineName == "Moderna"):
             if (random.random() < self.variant1RateModerna):
-                self.infected = True
+                self.infectionState = 1
                 self.COVID_type = "variant1"
         elif (self.vaccineName =="Pfizer"):
             if (random.random() < self.variant1RatePfizer):
-                self.infected = True
+                self.infectionState = 1
                 self.COVID_type = "variant1"
         elif (self.vaccineName =="Johnson&Johnson"):
             if (random.random() < self.variant1RateJohnson):
-                self.infected = True
+                self.infectionState = 1
                 self.COVID_type = "variant1"
 
     def infectedAfterCompletelyVaccinated(self):
@@ -325,6 +328,6 @@ class Person:
         elif self.vaccineName == 'Pfizer':
             chance = 0.95
         if random.random() < chance:
-            self.infected = False # not infected
+            self.infectionState = 0 # not infected
         else:
-            self.infected = True # infected
+            self.infectionState = 1 # infected
