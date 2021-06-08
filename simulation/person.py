@@ -331,3 +331,4 @@ class Person:
             self.infectionState = 0 # not infected
         else:
             self.infectionState = 1 # infected
+        return self.infectionState
