@@ -9,7 +9,8 @@ import math
 
 class Submodule:
 
-    def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected=[], vaccineStock = {"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments = {}, rate = 0):
+    def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0,
+                 Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0):
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
@@ -153,9 +154,7 @@ class Submodule:
                 if j == i:
                     tmp_p[j] = .8  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
-                    tmp_p[
-
-                        j] = .001  # Likelihood of connections between groups, arbitrary formula - #TODO change to based on number of households
+                    tmp_p[j] = .001  # Likelihood of connections between groups, arbitrary formula - #TODO change to based on number of households
 
             p.append(tmp_p)
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
@@ -322,6 +321,7 @@ class Submodule:
         person.madeVaccAppt = True
         person.vaccApptDate = apptSlot
 
+        #set person's madeVacAppt to true
     def getAppointment(self, week, day, hour):
         apptSlot = (week, day, hour)
         return self.appointments[apptSlot]
