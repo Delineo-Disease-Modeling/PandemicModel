@@ -7,13 +7,15 @@ import random
 
 class Population():
     # constructor
-    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0):
+    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0):
 
         self.state = state
         self.country = country
         self.population = population  # array of different person classes
         self.peopleArray = peopleArray
         self.populationSize = populationSize
+        self.phaseNum = phaseNum
+        self.currPhaseDayNum = currPhaseDayNum
 
     def get_dict(self):
         sp.validate()
@@ -288,3 +290,17 @@ class Population():
                 vaccinated[i].infectedAfterCompletelyVaccinated()
             infectedArray[vaccinated[i]] = vaccinated[i].infected
         return infectedArray
+
+    def incrementPhaseDayNum(self):
+        self.currPhaseDayNum += 1
+
+    def implementPhase(self, plan):
+        # maxPhaseNum will depend on how many phases there will be
+        while self.phaseNum < plan.maxPhaseNum:
+            # phaseNumber will depend on the phase that it is in
+            while self.currPhaseDayNum < plan.daysInPhase[self.phaseNum]:
+                # vaccinate function constantly while in the phase
+                self.incrementPhaseDayNum()
+
+            self.currPhaseDayNum = 0
+            self.phaseNum += 1
