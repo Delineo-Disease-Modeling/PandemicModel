@@ -17,7 +17,6 @@ class MasterController:
     population = 6000
     # Uncertain exactly what/how many interventions to expect
 
-
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
@@ -461,6 +460,10 @@ class MasterController:
             print("Total infections in facilities:", facilityinfections)
         print("Total infections:", num)
 
+    def Anytown(self, print_infection_breakdown, num_days, intervention_list):
+        self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
+
+
 if __name__ == '__main__':
 
     mc = MasterController()  # Instantiate a MasterController
@@ -471,6 +474,6 @@ if __name__ == '__main__':
 
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
-    #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
+    # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
 
