@@ -303,12 +303,12 @@ class Submodule:
         self.vaccineStock["Moderna"] = self.vaccineStock["Moderna"] + restock["Moderna"]
         self.vaccineStock["Johnson&Johnson"] = self.vaccineStock["Johnson&Johnson"] + restock["Johnson&Johnson"]
 
-    def scheduleAppointment(self, person, week, day, hour, vaccine):
+    def scheduleAppointment(self, person, day, vaccine):
         #out of vaccines or person already has made an appointment
         if(self.vaccineStock[vaccine] == 0 or person.madeVaccAppt == True):
             return
         
-        apptSlot = (week, day, hour)
+        apptSlot = day
         apptDetails = (person.ID, vaccine)
         
         #exceeds vaccination rate
@@ -321,9 +321,8 @@ class Submodule:
         person.madeVaccAppt = True
         person.vaccApptDate = apptSlot
 
-        #set person's madeVacAppt to true
-    def getAppointment(self, week, day, hour):
-        apptSlot = (week, day, hour)
+    def getAppointment(self, day):
+        apptSlot = day
         return self.appointments[apptSlot]
 
     def administerShot(self, person, vaccine):
@@ -336,5 +335,4 @@ class Submodule:
         
         #reset person's vaccination appointment details
         person.madeVaccAppt = False
-        person.vaccApptDate = (0, 0, 0)
-        
+        person.vaccApptDate = 0

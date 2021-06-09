@@ -10,7 +10,7 @@ class Person:
                  severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
                  householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
                  shotNumber=0, daysAfterShot=0, variant1RatePfizer=0.5, variant1RateModerna=0.5, variant1RateJohnson=0.5, essentialWorker=False,
-                 madeVaccAppt = False, vaccApptDate = (0, 0, 0)):
+                 madeVaccAppt=False, vaccApptDate=0):
         self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities,
                               demographicInfo, severityRisk, currentLocation, infectionState, incubation,
                               infectionTimer, infectionTrack, householdContacts, extendedhousehold, vaccinated, COVID_type,
@@ -22,7 +22,7 @@ class Person:
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
                          householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="", 
                          shotNumber=0, daysAfterShot=0, variant1RatePfizer=0.5, variant1RateModerna=0.5, variant1RateJohnson=0.5,
-                         essentialWorker=False, madeVaccAppt = False, vaccApptDate = (0, 0, 0)):
+                         essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
         if extendedhousehold is None:
             self.extendedhousehold = set()
         if householdContacts is None: #python specific way of creating mutable defaults
