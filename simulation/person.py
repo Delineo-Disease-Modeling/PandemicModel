@@ -9,20 +9,17 @@ class Person:
     def __init__(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                  severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
                  householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
-                 shotNumber=0, daysAfterShot=0, variant1RatePfizer=0.5, variant1RateModerna=0.5, variant1RateJohnson=0.5, essentialWorker=False,
-                 madeVaccAppt=False, vaccApptDate=0):
+                 shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
         self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities,
                               demographicInfo, severityRisk, currentLocation, infectionState, incubation,
                               infectionTimer, infectionTrack, householdContacts, extendedhousehold, vaccinated, COVID_type,
-                              vaccineName, shotNumber, daysAfterShot, variant1RatePfizer,
-                              variant1RateModerna, variant1RateJohnson, essentialWorker, madeVaccAppt, vaccApptDate)
+                              vaccineName, shotNumber, daysAfterShot, essentialWorker, madeVaccAppt, vaccApptDate)
 
     # Sets all parameters.
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
                          householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="", 
-                         shotNumber=0, daysAfterShot=0, variant1RatePfizer=0.5, variant1RateModerna=0.5, variant1RateJohnson=0.5,
-                         essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
+                         shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
         if extendedhousehold is None:
             self.extendedhousehold = set()
         if householdContacts is None: #python specific way of creating mutable defaults
@@ -44,9 +41,6 @@ class Person:
         self.vaccineName = vaccineName
         self.shotNumber = shotNumber
         self.daysAfterShot = daysAfterShot
-        self.variant1RatePfizer = variant1RatePfizer
-        self.variant1RateModerna = variant1RateModerna
-        self.variant1RateJohnson = variant1RateJohnson
         self.essentialWorker = essentialWorker
         self.madeVaccAppt = madeVaccAppt
         self.vaccApptDate = vaccApptDate
@@ -306,20 +300,6 @@ class Person:
             self.vaccinated = True
         elif (self.vaccineName == "Johnson&Johnson" and self.shotNumber == 1 and self.daysAfterShot == 14):
             self.vaccinated = True
-
-    def infectionRatesBasedOnCOVID(self):
-        if (self.vaccineName == "Moderna"):
-            if (random.random() < self.variant1RateModerna):
-                self.infectionState = 1
-                self.COVID_type = "variant1"
-        elif (self.vaccineName =="Pfizer"):
-            if (random.random() < self.variant1RatePfizer):
-                self.infectionState = 1
-                self.COVID_type = "variant1"
-        elif (self.vaccineName =="Johnson&Johnson"):
-            if (random.random() < self.variant1RateJohnson):
-                self.infectionState = 1
-                self.COVID_type = "variant1"
 
     def infectedAfterCompletelyVaccinated(self):
         chance = 0
