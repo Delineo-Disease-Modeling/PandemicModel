@@ -314,6 +314,10 @@ class Submodule:
         #exceeds vaccination rate
         if(len(self.appointments[apptSlot]) >= self.rate):
             return
+        
+        if apptSlot not in self.appointments:
+            self.appointments[apptSlot] = []
+        
         self.appointments[apptSlot].append(apptDetails)
         self.vaccineStock[vaccine] -= 1
         
@@ -323,6 +327,8 @@ class Submodule:
 
     def getAppointment(self, day):
         apptSlot = day
+        if apptSlot not in self.appointments:
+            return []
         return self.appointments[apptSlot]
 
     def administerShot(self, person, vaccine):
