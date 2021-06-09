@@ -460,6 +460,7 @@ class MasterController:
             print("Total infections in facilities:", facilityinfections)
         print("Total infections:", num)
 
+    # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
         self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
 
