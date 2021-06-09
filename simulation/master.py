@@ -25,7 +25,7 @@ class MasterController:
     
     phasePlan = PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
     currDay = 0
-    phaseNum = 0
+    currPhase = 0
     
 
     visitMatrices = None # Save matrices 
@@ -74,6 +74,8 @@ class MasterController:
                 G = facility.createGraph() # Graph created
                 facility.calcInfection(G)
             self.updateTime()
+            if self.timeOfDay == 23:
+                self.implementPhaseDay(self.currDay, self.phaseNum, self.phasePlan, population, facilities)
 
     def displayResult(self):
         print('Nothing to show yet')
@@ -473,6 +475,25 @@ class MasterController:
             print(id, individual, people)
         print(totalinf)
 
+    def implementPhaseDay(self, currDay, phaseNum, phasePlan, population, facilities):
+        for facility in facilities:
+            for i in facility.getAppointment(currDay):
+                facility.administerShot(i[0], i[1])
+                
+        currDay = currDay + 1
+        
+        if currDay > phasePlan.daysInPhase[phaseNum]:
+            currDay = 0
+            phaseNum = min(phaseNum + 1, phasePlan.maxPhaseNum)
+        
+        for person in population.peopleArray:
+            if person.age >= phasePlan.minAge[phaseNum] and person.age >= phasePlan.maxAge[phaseNum]:
+                #schedule an appointment at a random facilities some time after day
+                random.randrange(0, facilities.size())
+                daysAfter = random.randint(1, 14)
+                facilities[i].scheduleAppointment(currDay + daysAfter)
+        
+        
 if __name__ == '__main__':
 
     mc = MasterController()  # Instantiate a MasterController
