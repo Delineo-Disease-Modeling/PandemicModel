@@ -1,5 +1,5 @@
-class phasePlan():
-    def __init__(self, ageMin=[], ageMax=[], maxPhaseNum=0, daysInPhase=[]):
+class PhasePlan():
+    def __init__(self, maxPhaseNum=0, ageMin=[], ageMax=[],  daysInPhase=[]):
         self.ageMin = ageMin
         self.ageMax = ageMax
         self.maxPhaseNum = maxPhaseNum

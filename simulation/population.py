@@ -285,10 +285,9 @@ class Population():
     def infectedPop(self):
         vaccinated = self.generateVacinationPopulation()
         infectedArray = {}
-        for i in range(len(vaccinated)):
+        for i in vaccinated:
             if (vaccinated[i]):
-                vaccinated[i].infectedAfterCompletelyVaccinated()
-            infectedArray[vaccinated[i]] = vaccinated[i].infected
+                infectedArray[i] = i.infectedAfterCompletelyVaccinated()
         return infectedArray
 
     def incrementPhaseDayNum(self):

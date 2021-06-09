@@ -1,6 +1,7 @@
 from person import Person
 from module import Module
 from submodule import Submodule
+from phasePlan import PhasePlan
 import random
 import json
 import pickle
@@ -21,6 +22,11 @@ class MasterController:
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
+    
+    phasePlan = PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
+    currDay = 0
+    phaseNum = 0
+    
 
     visitMatrices = None # Save matrices 
 
