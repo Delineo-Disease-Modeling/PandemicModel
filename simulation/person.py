@@ -287,6 +287,7 @@ class Person:
 
     def incrementDaysAfterShot(self):
         self.daysAfterShot += 1
+        self.completeVaccinated()
 
     def administerVaccine(self, name, shotNumberGiven):
         self.vaccineName = name

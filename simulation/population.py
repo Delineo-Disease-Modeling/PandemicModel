@@ -277,8 +277,10 @@ class Population():
         vaccinated = {} # create a dictionary of people and their vaccination status
         for i in range(len(peopleArray)):
             if (peopleArray[i].age > 60 or peopleArray[i].essentialWorker == True or peopleArray[i].comorbidities > 2):
+                peopleArray[i].vaccinated = True
                 vaccinated[peopleArray[i]] = True
             else:
+                peopleArray[i].vaccinated = False
                 vaccinated[peopleArray[i]] = False
         return vaccinated
 
