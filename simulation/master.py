@@ -493,7 +493,7 @@ class MasterController:
         #each person, if vaccinated, adds another day to the nunmber of days after their last shot.
         #they also schedule an appointment if they are eligible
         for person in population.peopleArray:
-            if person.shotNumber == 0 or (person.shotNumber > 1 and person.vaccineName != "Johnson&Johnson"):
+            if person.shotNumber == 0 or (person.shotNumber == 1 and person.vaccineName != "Johnson&Johnson" and person.daysAfterShot > 21):
                 person.incrementDaysAfterShot
             if person.vaccinated != True and person.age >= phasePlan.minAge[phaseNum] and person.age >= phasePlan.maxAge[phaseNum]:
                 #schedule an appointment at a random facilities some time after day
