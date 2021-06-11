@@ -189,10 +189,248 @@ class MasterController:
                     numperhour += 1
         return newlyinfectedathome
 
+    # Update everyone's infection status at the beginning of each day
+    def update_status(self, interventions, currentInfected, tested):
+        toremove = set()
+        for each in currentInfected:
+            timer = each.incrementInfectionTimer()
+            state = each.setInfectionState(each.getInfectionTrack()[timer])
+            r = random.random()
+            if r <= interventions["dailyTesting"] / 100 * .1 + (interventions["dailyTesting"] / 100) * (
+                    interventions["contactTracing"] / 100) * .1:
+                tested.add(each)
+                rt = random.random()
+            if state == 4:
+                toremove.add(each)  # if recovered remove from infected list
+        for each in toremove:
+            currentInfected.remove(each)
+            if each in tested:
+                tested.remove(each)
+        return (currentInfected, tested)
+
+    # Add people to facilities based on data in visit matrices
+    def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h):
+        # Array of facility submodules that are both open and not full
+
+        openFacilities = {id: facility for id, facility in facilities.items()
+                          if daysDict[dayOfWeek] in facility.getDays()
+                          and facility in openHours[hourOfDay]}
+        # list of IDs not yet assigned to a facility
+        notAssigned = [*range(len(Pop))]  # about 1200 right now
+
+        # Assign people to facilities based on visit matrices
+        hourVisitMatrix = self.poi_cbg_visit_matrix_history[
+            h % 168]  # mod resets h to be the hour in current week ie all mondays at midnight will be 0
+        dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
+        dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Just sum all cbgs for now
+
+        scale = len(Pop) / 600000.0  # Scale down number of visitors by percentage of OKC population
+        for poiID, numPeople in dfVisitMatrix.iteritems():
+            facility = openFacilities.get(poiID)
+            if not facility:
+                break
+            if facility.getCapacity() == facility.getVisitors():
+                break
+            r = 1
+            if interventions["stayAtHome"]:
+                r = 2  # Reduce number of people at facilities by factor of 2 if stay at home orders.
+            traffic = 0
+            for i in range(min((math.ceil(numPeople * scale / r)), math.ceil((interventions[
+                                                                                  "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now
+                if not notAssigned:
+                    break
+                idindextoadd = random.randint(0, len(notAssigned) - 1)
+                traffic += 1
+                facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
+        return (facilities, notAssigned)
+
+    # Main simulation
+    def simulation(self, num_days, currentInfected, interventions, totalInfectedInFacilities,
+                    facilities, infectionInFacilitiesDaily, infectionInFacilitiesHourly,
+                    peopleInFacilitiesHourly, infectionInHouseholds, facilityinfections,
+                    houseinfections, infectionInFacilities, daysDict, openHours, Pop):
+
+        # Main simulation loop
+        # Assume movements to facilities in the day only (10:00 - 18:00)
+        tested = set()
+        for h in range(num_days * 24):
+            if h % 24 == 0:
+                currentInfected, tested = self.update_status(interventions, currentInfected, tested)
+                '''
+                toremove = set()
+                for each in currentInfected:
+                    timer = each.incrementInfectionTimer()
+                    state = each.setInfectionState(each.getInfectionTrack()[timer])
+                    r = random.random()
+                    if r <= interventions["dailyTesting"] / 100 * .1 + (interventions["dailyTesting"] / 100) * (
+                            interventions["contactTracing"] / 100) * .1:
+                        tested.add(each)
+                        rt = random.random()
+                    if state == 4: toremove.add(each)  # if recovered remove from infected list
+                for each in toremove:
+                    currentInfected.remove(each)
+                    if each in tested:
+                        tested.remove(each)
+                '''
+
+            # Initialize current hour's total infections by previous hour
+            totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
+
+            # Number of people at facilities
+
+            # numberOut = random.randint(0, min(len(Pop)-1,
+            #                       totalFacilityCapacities)) #Not used anymore
+
+            dayOfWeek = (h // 24) % 7
+            hourOfDay = h % 24
+
+            # TODO: retention rate within the same facility. currently no one is retained - Retention rate eventually covered by ML team
+
+            for id in facilities:
+                facility = facilities[id]
+                facility.setVisitors(0)
+                facility.clearPeople()
+
+            facilities, notAssigned = self.move_people(facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h)
+
+            '''
+            # Array of facility submodules that are both open and not full
+
+            openFacilities = {id: facility for id, facility in facilities.items()
+                              if daysDict[dayOfWeek] in facility.getDays()
+                              and facility in openHours[hourOfDay]}
+            # list of IDs not yet assigned to a facility
+            notAssigned = [*range(len(Pop))]  # about 1200 right now
+
+            # Assign people to facilities based on visit matrices
+            hourVisitMatrix = self.poi_cbg_visit_matrix_history[
+                h % 168]  # mod resets h to be the hour in current week ie all mondays at midnight will be 0
+            dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
+            dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Just sum all cbgs for now
+
+
+            scale = len(Pop) / 600000.0  # Scale down number of visitors by percentage of OKC population
+            for poiID, numPeople in dfVisitMatrix.iteritems():
+                facility = openFacilities.get(poiID)
+                if not facility:
+                    break
+                if facility.getCapacity() == facility.getVisitors():
+                    break
+                r = 1
+                if interventions["stayAtHome"]:
+                    r = 2  # Reduce number of people at facilities by factor of 2 if stay at home orders.
+                traffic = 0
+                for i in range(min((math.ceil(numPeople * scale / r)), math.ceil((interventions[
+                                                                                      "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now
+                    if not notAssigned:
+                        break
+                    idindextoadd = random.randint(0, len(notAssigned) - 1)
+                    traffic += 1
+                    facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
+            '''
+
+            # Calculate infections for those still not assigned (assume all
+            # not in a facility are at home)
+            """
+            #_____GRAPH VERSION______
+            infectedathome = households.calcInfection(G, notAssigned) #TODO return list of persons infected
+            """
+            # ____SETHOUSEHOLDS_____
+            infectedathome = self.calcInfectionsHomes(notAssigned, Pop, currentInfected)
+            for each in infectedathome:
+                currentInfected.add(each)
+            numinfectedathome = len(infectedathome)
+            houseinfections += numinfectedathome
+            if h == 0:
+                infectionInHouseholds.append(numinfectedathome)
+            else:
+                infectionInHouseholds.append(numinfectedathome + infectionInHouseholds[h - 1])
+
+            for i in range(len(facilities)):
+                if daysDict[dayOfWeek] not in facilities[i].getDays():
+                    infectionInFacilities[i].append('Not open')
+                    continue
+                if facilities[i] not in openHours[hourOfDay]:
+                    infectionInFacilities[i].append('Not open')
+                    continue
+                initialInfectionNumber = len(facilities[i].getInfected())
+                finalInfectionNumber = initialInfectionNumber
+
+                # Probability of infection in facility i
+
+                prob = facilities[i].probability(interventions)  # Wells-Riley here
+
+                # get number of people in facilities
+                peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
+                for person in facilities[i].getPeople():
+                    # Don't re-infect
+                    if len(person.getInfectionTrack()) > 0:  # continue if already infected
+
+                        continue
+
+                    temp = random.uniform(0, 1)
+                    if temp < prob:  # Infect
+
+                        person.assignTrajectory()
+                        currentInfected.add(person)
+
+                        # Update statistics
+                        finalInfectionNumber += 1
+                        facilityinfections += 1
+                        totalInfectedInFacilities[-1] += 1
+                        infectionInFacilitiesDaily[i][h // 24] += 1
+                        infectionInFacilitiesHourly[i][h] += 1
+
+                infectionInFacilities[i].append(
+                    [initialInfectionNumber, finalInfectionNumber])
+
+        return (totalInfectedInFacilities,
+        facilities, infectionInFacilitiesHourly,
+        peopleInFacilitiesHourly, facilityinfections,
+        houseinfections, infectionInFacilities, Pop)
+
+    # Set intervention list based on inputs
+    def set_interventions(self, intervention_list):
+        if intervention_list is None:
+            intervention_list = {"maskWearing": 0, "dailyTesting": 0, "roomCapacity": 100, "contactTracing": 0,
+                                 "stayAtHome": False}
+        if "dailyTesting" not in intervention_list:
+            intervention_list["dailyTesting"] = 0
+        if "maskWearing" not in intervention_list:
+            intervention_list["maskWearing"] = 0
+        if "roomCapacity" not in intervention_list:
+            intervention_list["roomCapacity"] = 100
+        if "contactTracing" not in intervention_list:
+            intervention_list["contactTracing"] = 0
+        if "stayAtHome" not in intervention_list:
+            intervention_list["stayAtHome"] = False
+        return intervention_list
+
+    # Add people to households
+    def set_households(self, Pop):
+        for person in Pop:
+            for i in range(9):
+                extendedtoadd = random.randint(0, len(Pop) - 1)
+                if Pop[extendedtoadd] != Pop[person] and extendedtoadd not in Pop[person].getHouseholdMembers():
+                    Pop[person].addtoextendedhousehold(extendedtoadd)
+                    Pop[extendedtoadd].addtoextendedhousehold(person)
+                    # for each in Pop[extendedtoadd].getHouseholdMembers():
+                    #   Pop[person].addtoextendedhousehold(each)
+                    #   Pop[each].addtoextendedhousehold(person)
+        return Pop
+
+
     # Wells-Riley
-    def WellsRiley(self, num_days=7, interventions=None):
+
+
+
+    # Modularized: contents can be found in simulation, set_households, set interventions,
+    # move_people, update_status
+    def WellsRiley(self, print_infection_breakdown, num_days=7, interventions=None):
+
         '''
-        This function calculates the disease progression by each person in the
+        This function calculates the disease progression by each person in the population
+        '''
         '''
         # Module instantiated - holds the submodules(facilities), population
         if interventions is None:
@@ -208,10 +446,14 @@ class MasterController:
             interventions["contactTracing"] = 0
         if "stayAtHome" not in interventions:
             interventions["stayAtHome"] = False
+<<<<<<< Updated upstream
         if "vaccinatedPercent" not in interventions:
             interventions["vaccinatedPercent"] = 0
-        M = self.createModule()
+=======
+        '''
+        interventions = self.set_interventions(interventions)
 
+        M = self.createModule()
 
         # Population created and returned as array of People class objects
         Pop = M.createPopulation()
@@ -268,6 +510,7 @@ class MasterController:
         infectionInHouseholdsDaily = [0 for day in range(num_days)]
 
         # ____SET HOUSEHOLDS + NETWORK STRATEGY____
+        '''
         for person in Pop:
             for i in range(9):
                 extendedtoadd = random.randint(0,len(Pop) - 1)
@@ -277,6 +520,8 @@ class MasterController:
                     # for each in Pop[extendedtoadd].getHouseholdMembers():
                      #   Pop[person].addtoextendedhousehold(each)
                      #   Pop[each].addtoextendedhousehold(person)
+        '''
+        Pop = self.set_households(Pop)
         daysDict = {
             0: 'Sun',
             1: 'M',
@@ -288,6 +533,13 @@ class MasterController:
         }
         numFacilities = len(facilities)
 
+        totalInfectedInFacilities, facilities, infectionInFacilitiesHourly, peopleInFacilitiesHourly, facilityinfections, houseinfections, infectionInFacilities, Pop = self.simulation(
+        num_days, currentInfected, interventions, totalInfectedInFacilities,
+        facilities, infectionInFacilitiesDaily, infectionInFacilitiesHourly,
+        peopleInFacilitiesHourly, infectionInHouseholds, facilityinfections,
+        houseinfections, infectionInFacilities, daysDict, openHours, Pop)
+
+        '''
         tested = set()
         # Main simulation loop
         # Assume movements to facilities in the day only (10:00 - 18:00)
@@ -387,7 +639,7 @@ class MasterController:
 
                 #Probability of infection in facility i
 
-                prob = facilities[i].probability(interventions) # Wells reilly here
+                prob = facilities[i].probability(interventions) # Wells-Riley here
                 
                 #get number of people in facilities
                 peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
@@ -418,11 +670,15 @@ class MasterController:
 
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
-                
+        '''
+
+
         print(
             f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
 
+        '''
         for id in infectionInFacilities:
+<<<<<<< Updated upstream
             facility = facilities[id]
             print(facility.getID(), facility.getFacilityType(),
                   infectionInFacilities[id])  # , file=f)
@@ -431,6 +687,11 @@ class MasterController:
         print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
         print('Total number infected in facilities hourly is ',
                 totalInfectedInFacilities)
+=======
+            facility = facilities[id] '''
+            # print(facility.getID(), facility.getFacilityType(),   # not useful
+            #         infectionInFacilities[id])  # , file=f)
+
 
         print('Total Infected In Households Hourly: ', infectionInHouseholds)
 
@@ -440,7 +701,6 @@ class MasterController:
                     "InfectedDaily": infectionInFacilitiesHourly[id],
                     "PeopleDaily": peopleInFacilitiesHourly[id]}
                     for id in range(len(facilities))]
-
                     } #we should probably have households at least as one large "household"
         
         #response = {f'({id}, {facilities[id].getFacilityType()})': array
@@ -450,11 +710,16 @@ class MasterController:
         num = 0
         for each in Pop:
             if len(Pop[each].getInfectionTrack()) > 0:
-                num+=1
+                num += 1
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
+
         print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
 
+        # print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
+
+
         # f.close()
+        '''
         totalinf = 0
         for id in range(len(infectionInFacilitiesHourly)):
             individual = 0
@@ -464,8 +729,25 @@ class MasterController:
                 totalinf += infectionInFacilitiesHourly[id][i]
                 individual += infectionInFacilitiesHourly[id][i]
                 people += peopleInFacilitiesHourly[id][i]
+
             print(id, individual, people)
         print(totalinf)
+
+            # print(id, individual, people)    # not useful
+        '''
+
+        if print_infection_breakdown:
+            print("Initial infections:", initialInfected)
+            print("Total infections in households:", houseinfections)
+            print("Total infections in facilities:", facilityinfections)
+        print("Total infections:", num)
+
+    # Function to run Anytown
+    def Anytown(self, print_infection_breakdown, num_days, intervention_list):
+        self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+        self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
+
+
 
 if __name__ == '__main__':
 
