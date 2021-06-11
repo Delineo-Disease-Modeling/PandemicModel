@@ -462,6 +462,7 @@ class MasterController:
 
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
+        self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
         self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
 
 
