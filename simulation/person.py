@@ -18,7 +18,7 @@ class Person:
     # Sets all parameters.
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
-                         householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="", 
+                         householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
                          shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
         if extendedhousehold is None:
             self.extendedhousehold = set()
@@ -290,16 +290,17 @@ class Person:
         self.completeVaccinated()
 
     def administerVaccine(self, name, shotNumberGiven):
+        # Set fields to simulate vaccination
         self.vaccineName = name
         self.shotNumber = shotNumberGiven
         self.daysAfterShot = 0
 
     def completeVaccinated(self):
-        if (self.vaccineName == "Moderna" and self.shotNumber == 2 and self.daysAfterShot == 14):
+        if self.vaccineName == "Moderna" and self.shotNumber == 2 and self.daysAfterShot == 14:
             self.vaccinated = True
-        elif (self.vaccineName == "Pfizer" and self.shotNumber == 2 and self.daysAfterShot == 14):
+        elif self.vaccineName == "Pfizer" and self.shotNumber == 2 and self.daysAfterShot == 14:
             self.vaccinated = True
-        elif (self.vaccineName == "Johnson&Johnson" and self.shotNumber == 1 and self.daysAfterShot == 14):
+        elif self.vaccineName == "Johnson&Johnson" and self.shotNumber == 1 and self.daysAfterShot == 14:
             self.vaccinated = True
 
     def infectedAfterCompletelyVaccinated(self):
@@ -308,6 +309,7 @@ class Person:
             chance = 0.941
         elif self.vaccineName == 'Pfizer':
             chance = 0.95
+
         if random.random() < chance:
             self.infectionState = 0 # not infected
         else:

@@ -299,46 +299,49 @@ class Submodule:
         #return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!
 
     def restockVaccines(self, restock):
-        self.vaccineStock["Pfizer"] = self.vaccineStock["Pfizer"] + restock["Pfizer"]
-        self.vaccineStock["Moderna"] = self.vaccineStock["Moderna"] + restock["Moderna"]
-        self.vaccineStock["Johnson&Johnson"] = self.vaccineStock["Johnson&Johnson"] + restock["Johnson&Johnson"]
+        self.vaccineStock["Pfizer"] += restock["Pfizer"]
+        self.vaccineStock["Moderna"] += restock["Moderna"]
+        self.vaccineStock["Johnson&Johnson"] += restock["Johnson&Johnson"]
 
     def scheduleAppointment(self, person, day, vaccine):
-        #out of vaccines or person already has made an appointment
-        if(self.vaccineStock[vaccine] == 0 or person.madeVaccAppt == True):
+        # Out of vaccines or person already has made an appointment
+        if self.vaccineStock[vaccine] == 0 or person.madeVaccAppt == True:
             return
-        
+
         apptSlot = day
         apptDetails = (person.ID, vaccine)
-        
-        #exceeds vaccination rate
-        if(len(self.appointments[apptSlot]) >= self.rate):
+
+        # Exceeds vaccination rate
+        if len(self.appointments[apptSlot]) >= self.rate:
             return
-        
+
         if apptSlot not in self.appointments:
             self.appointments[apptSlot] = []
-        
+
         self.appointments[apptSlot].append(apptDetails)
         self.vaccineStock[vaccine] -= 1
-        
-        #set person.py's vaccine appt parameters
+
+        # Set person's vaccine appt parameters
         person.madeVaccAppt = True
         person.vaccApptDate = apptSlot
 
     def getAppointment(self, day):
         apptSlot = day
+
+        # Return an empty list if apptSlot not found
         if apptSlot not in self.appointments:
             return []
+
         return self.appointments[apptSlot]
 
     def administerShot(self, person, vaccine):
-        #administer using person method
+        # Administer vaccine using method in person.py
         person.administerVaccine(vaccine, person.shotNumber + 1)
-        
-        #remove from appointment list
+
+        # Remove from appointment list
         apptDetails = (person.ID, vaccine)
         self.appointments[person.vaccApptDate].remove(apptDetails)
-        
-        #reset person's vaccination appointment details
+
+        # Reset person's vaccination appointment details
         person.madeVaccAppt = False
         person.vaccApptDate = 0
