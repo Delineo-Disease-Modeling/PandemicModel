@@ -1,6 +1,6 @@
-import synthpops.synthpops as sp
+#import synthpops.synthpops as sp
 #If above not working try
-#import synthpops as sp
+import synthpops as sp
 from person import Person
 import random
 
@@ -45,7 +45,7 @@ class Population():
         return peopleArray
 
     # calls synthpops and generates population (dictionary)
-    def generatePopulation(populationSize):
+    def generatePopulation(self, populationSize):
         # call function from person class
         peopleArray = {}
         population = sp.generate_synthetic_population(populationSize)

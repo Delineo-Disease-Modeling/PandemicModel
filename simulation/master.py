@@ -369,6 +369,14 @@ class MasterController:
                         continue
 
                     temp = random.uniform(0, 1)
+
+                    if person.getVaccinatedStatus():
+                        # effect of vaccination is 20-fold decrease in chance of infection. (95% decrease)
+                        # NOTE: Multiplying by 20 is the same as dividing prob by 20, we're not increasing the
+                        # chance of infection we're just getting temp into the same scale as prob
+                        temp = 20 * temp
+
+                    temp = random.uniform(0, 1)
                     if temp < prob:  # Infect
 
                         person.assignTrajectory()
@@ -383,7 +391,6 @@ class MasterController:
 
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
-
         return (totalInfectedInFacilities,
         facilities, infectionInFacilitiesHourly,
         peopleInFacilitiesHourly, facilityinfections,
@@ -404,6 +411,8 @@ class MasterController:
             intervention_list["contactTracing"] = 0
         if "stayAtHome" not in intervention_list:
             intervention_list["stayAtHome"] = False
+        if "vaccinatedPercent" not in interventions:
+            interventions["vaccinatedPercent"] = 0
         return intervention_list
 
     # Add people to households
@@ -446,10 +455,8 @@ class MasterController:
             interventions["contactTracing"] = 0
         if "stayAtHome" not in interventions:
             interventions["stayAtHome"] = False
-<<<<<<< Updated upstream
         if "vaccinatedPercent" not in interventions:
             interventions["vaccinatedPercent"] = 0
-=======
         '''
         interventions = self.set_interventions(interventions)
 
@@ -678,7 +685,6 @@ class MasterController:
 
         '''
         for id in infectionInFacilities:
-<<<<<<< Updated upstream
             facility = facilities[id]
             print(facility.getID(), facility.getFacilityType(),
                   infectionInFacilities[id])  # , file=f)
@@ -687,13 +693,12 @@ class MasterController:
         print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
         print('Total number infected in facilities hourly is ',
                 totalInfectedInFacilities)
-=======
             facility = facilities[id] '''
             # print(facility.getID(), facility.getFacilityType(),   # not useful
             #         infectionInFacilities[id])  # , file=f)
 
 
-        print('Total Infected In Households Hourly: ', infectionInHouseholds)
+        #print('Total Infected In Households Hourly: ', infectionInHouseholds)
 
         #Updated the formatting of the json file
         response = {'Buildings': [
@@ -713,7 +718,7 @@ class MasterController:
                 num += 1
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
 
-        print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
+        #print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
 
         # print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
 
@@ -760,5 +765,5 @@ if __name__ == '__main__':
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {"vaccinatedPercent": 50}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
-    mc.WellsRiley(61,interventions)  # Run Wells Reilly
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
 
