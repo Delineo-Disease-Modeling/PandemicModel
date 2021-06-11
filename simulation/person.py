@@ -310,8 +310,7 @@ class Person:
         elif self.vaccineName == 'Pfizer':
             chance = 0.95
 
-        if random.random() < chance:
-            self.infectionState = 0 # not infected
-        else:
-            self.infectionState = 1 # infected
+        # -1 for not infected and 0 for infected (asymptomatic)
+        self.infectionState = -1 if random.random() < chance else 0
+
         return self.infectionState
