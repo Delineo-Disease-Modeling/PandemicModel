@@ -1,8 +1,8 @@
 # PandemicModel
-Repository for Delineo Disease Modeling at Johns Hopkins University 
+Repository for Delineo Disease Modeling at the Johns Hopkins University. 
 
 ## Developer Notes
-
+Choose one of the below, either a local dev environment or a Conda environment.
 ### Setting up local dev environment
 1. Ensure you have `python3.8` installed and set up.
 2. Clone this repository.
@@ -10,50 +10,26 @@ Repository for Delineo Disease Modeling at Johns Hopkins University
 4. Activate the virtual environment: `source ~/.envs/PandemicModel/bin/activate`.
 5. Install dependencies: `pip install -r requirements.txt`.
 
+### Setting up Conda environment
+1. In the Anaconda CMD.exe Prompt, create a new environment with `conda create -n myenv python=3.9.1`, where `myenv` is the name of the environment. Python version 3.9.1 is what's up and running on the covidmod server so it's a good choice to use for your conda environment.
+2. Activate the conda environment with `conda activate myenv`.
+3. Clone this repository.
+4. Navigate into the PandemicModel folder and run `pip install -r requirements.txt`. 
+
+For both, the best way to verify everything is working is to navigate into the `simulation` folder and try running `python master.py`. If you get a bunch of numbers spit out to your terminal, then you're all set. 
+
+### Troubleshooting
+- Most likely, you will run into issues due to some dependency not being installed in your conda environment/virtual env. Check ClickUp and/or Slack for a full list of working dependencies.
+- If you get an error along the lines of `synthpops has no attribute 'validate'` in `population.py`, open up an editor and uncomment the first synthpops import, and comment the second one out. 
+
 ### Misc.
-- Please do not commit `venv` stuff
+- Please do not commit `venv` stuff.
 - If you `pip install ` anything, remember to  `pip freeze > requirements.txt` before committing any changes.
-## `Architecture Branch General`
+- You cannot commit to the `master` branch, remember to commit all changes to a new branch and open a PR when you're ready to merge.
 
-The architecture group is responsible for deploying the web application that will make Delineo's simulation available to the end users. This application is being built using the MERN stack. In addition, the architecture group is responsible for implementing the interface between the backend/database and the module & control group, and the interface between the backend/database and the visualizations group. 
+## `Important Folders/Files`
+All important files for running are in the /simulation folder
 
-## `Installation`
-[Node.js](https://nodejs.org/en/download) and [Python >=3.6](https://www.python.org/downloads/) are required.
-
-1. Install all dependencies: Navigate to **model_app**. In Terminal or CMD, enter
-	```
-	npm install
-	npm run server-install
-	npm run client-install
-	```
-
-2. Set up environment variables: Create two .env files, one in **model_app/frontend** and one in **model_app/backend**.
-
-The frontend .env file looks like
-```
-MAP_API=<your-map-api>
-```
-
-The backend .env file looks like
-```
-ATLAS_URI=<MongoDB-URI>
-PYTHON_PATH=<path-where-to-locate-the-"python"-executable>
-SCRIPT_PATH=<path-of-the-script-to-execute>
-```
-
-3. Activate the virtual environment for the synthpops simulation. Instructions for creating the virtual environment are found in **model_app/backend/synthpops**
-
-4. Begin website development: In **model_app**, enter `npm run dev` to start the client and server connections. When you make changes to any file, the servers will restart. You should see a message
-
-```
-MongoDB database connection established successfully.
-Development server is running on port: 5000
-```
-
-## `Structure`
-**model_app/backend/models**: contains all database schemas   
-**model_app/backend/routes**: contains all routing information for server  
-**model_app/backend/synthpops**: contains all Python scripts needed for simulations  
-**model_app/backend/server.js**: connects to the MongoDB database and links all routes to corresponding URI's
-
-**model_app/backend/frontend/src**: All the folders for implementing the Redux architecture are here.
+**simulation/diseasedata**: contains comorbidity data  
+**simulation/synthpops**: DO NOT TOUCH unless you really know what you're doing  
+**simulation/master.py**: runs the simulation- call this file on command line to get a result  

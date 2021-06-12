@@ -8,16 +8,17 @@ class Person:
 
     def __init__(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                  severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
-                 extendedhousehold=None):
+                 extendedhousehold=None, vaccinated=False):
         self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities,
                               demographicInfo, severityRisk, currentLocation, infectionState, incubation,
-                              infectionTimer, infectionTrack,extendedhousehold)
+                              infectionTimer, infectionTrack,extendedhousehold, vaccinated)
 
     # Sets all parameters.
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0,
                          householdContacts=None, comorbidities=0, demographicInfo=0,
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0,
-                         infectionTimer=-1, infectionTrack=None,extendedhousehold=None):
+                         infectionTimer=-1, infectionTrack=None,extendedhousehold=None, vaccinated=False):
+
         if extendedhousehold is None:
             self.extendedhousehold = set()
         if householdContacts is None: #python specific way of creating mutable defaults
@@ -34,6 +35,7 @@ class Person:
         self.demographicInfo = demographicInfo
         self.severityRisk = severityRisk
         self.currentLocation = currentLocation
+        self.vaccinated = vaccinated
 
         # -1: normal, 0: asymp, 1: mild, 2: severe, 3: critical, 4: recovered
         self.infectionState = infectionState
@@ -85,12 +87,16 @@ class Person:
 
     def setInfectionState(self, state):
         self.infectionState = state
+        return state
 
         return state
 
 
     def setIncubation(self, incubation):
         self.incubation = incubation
+
+    def setVaccinated(self, isVaccinated):
+        self.vaccinated = isVaccinated
 
     # getters for all variables
     def getAge(self):
@@ -136,8 +142,10 @@ class Person:
     def getConditions(self):
         return self.disease
 
+    def getVaccinatedStatus(self):
+        return self.vaccinated
 
-        # calculate severity risk based on demographic factors, as of now calculation is undefined.
+    # calculate severity risk based on demographic factors, as of now calculation is undefined.
 
     def calcSeverityRisk(self):
         # numComorbidities = len(self.comorbidities) if list
@@ -162,6 +170,10 @@ class Person:
         return srScore
 
     def calcInfectionState(self):
+
+        if self.vaccinated:
+            return 1
+            
         infectionStateByScore = {
             0: [0.7, 0.1, 0.05, 0.05],
             10: [0.6, 0.2, 0.1, 0.1],
@@ -268,33 +280,3 @@ class Person:
         for j in range(extraAsymptomatic):
             self.infectionTrack.append(0)
         self.infectionTrack.append(4)
-
-
-
-"""
-    def stateUp(self):
-        #once incubation period complete, being moving into next states
-        if self.incubation <= 0:
-        #maximum infection state variable created
-        #TODO check to see where implementation of severity risk matrix will be done and how we will get that info.
-            if self.infectionState < self.maximumInfectionState:
-                #increment infectionState by  1
-                self.infectionState += 1
-
-
-
-    def stateDown(self):
-        #once peakStateDays end, moving down each date
-        #Recovered by day 15
-
-        #patient has few more recoveryDays left in their current infectionState
-        if self.recoveryDays[self.infectionState] != 0:
-            self.recoveryDays[self.infectionState] -= 1
-
-        else:
-            #no more days left in the current infectionState
-            #move down one state
-            self.infectionState -= 1 # infection state becomes -1
-            self.recoveryDays[self.infectionState] -= 1 
-            """
-

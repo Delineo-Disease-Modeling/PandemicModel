@@ -175,7 +175,12 @@ class MasterController:
             for each in currentlywith:
                 if len(Pop[each].getInfectionTrack()) > 0:
                     continue
-                if (random.random() < (averageinfectionrate / (24 * (len(
+                if (Pop[each].getVaccinatedStatus()):
+                    householdRandomVariable = 20 * random.random()
+                else:
+                    householdRandomVariable = random.random()
+
+                if (householdRandomVariable < (averageinfectionrate / (24 * (len(
                         current.getInfectionTrack()) - current.getIncubation()))) and each in atHomeIDs):  # Probability of infection if in same house at the moment
                     Pop[each].assignTrajectory()
                     newlyinfectedathome.append(Pop[each])
@@ -190,7 +195,7 @@ class MasterController:
         # Module instantiated - holds the submodules(facilities), population
         if interventions is None:
             interventions = {"maskWearing": 0, "dailyTesting": 0, "roomCapacity": 100, "contactTracing": 0,
-                             "stayAtHome": False}
+                             "stayAtHome": False, "vaccinatedPercent": 0}
         if "dailyTesting" not in interventions:
             interventions["dailyTesting"] = 0
         if "maskWearing" not in interventions:
@@ -201,8 +206,10 @@ class MasterController:
             interventions["contactTracing"] = 0
         if "stayAtHome" not in interventions:
             interventions["stayAtHome"] = False
-        M = self.createModule()
+        if "vaccinatedPercent" not in interventions:
+            interventions["vaccinatedPercent"] = 0
 
+        M = self.createModule()
 
         # Population created and returned as array of People class objects
         Pop = M.createPopulation()
@@ -212,6 +219,9 @@ class MasterController:
         currentInfected = set()
         facilityinfections = 0
         houseinfections = 0
+
+        numVaccinated = math.floor( (len(Pop) * interventions["vaccinatedPercent"])/100)
+
         # Assign initial infection state status for each person
         initialInfected = 10  # Should be customizable in  the future
         notInfected = [*range(len(Pop))] # list from 1 to num in pop
@@ -222,6 +232,12 @@ class MasterController:
             currentInfected.add(Pop[nextInfected]) #adding to current infected
             Pop[nextInfected].assignTrajectory() #function which makes someone start sickness trajectory
             #Pop[nextInfected].setInfectionState()
+
+        vaccinatedIDs = random.sample(range(0, len(Pop)), numVaccinated) #randomly assigning vaccinated people
+
+        # Setting vaccinated people in population
+        for v in vaccinatedIDs:
+            Pop[v].setVaccinated(True)
 
         # TODO: to pull from actual data of Oklahoma/frontend map.
         # Currently assuming a fixed number of each, and using a range of 6
@@ -250,18 +266,6 @@ class MasterController:
         infectionInHouseholds = []
         infectionInHouseholdsDaily = [0 for day in range(num_days)]
 
-        # Instantiate households submodule and graph
-
-        """
-        # ____GRAPH STRATEGY______
-        households = Submodule(len(facilities), 'Household', len(Pop),
-                        range(24), ['M', 'T', 'W', 'Th', 'F', 'Sat', 'Sun'])
-        for person in Pop.values():
-            households.addPerson(person)
-        households.createGroupsHH()
-        G = households.createGraph()
-
-        """
         # ____SET HOUSEHOLDS + NETWORK STRATEGY____
         for person in Pop:
             for i in range(9):
@@ -389,10 +393,16 @@ class MasterController:
                 for person in facilities[i].getPeople():
                     # Don't re-infect
                     if len(person.getInfectionTrack()) > 0: # continue if already infected
-
                         continue
-
+                        
                     temp = random.uniform(0, 1)
+
+                    if person.getVaccinatedStatus():
+                        # effect of vaccination is 20-fold decrease in chance of infection. (95% decrease)
+                        # NOTE: Multiplying by 20 is the same as dividing prob by 20, we're not increasing the
+                        # chance of infection we're just getting temp into the same scale as prob
+                        temp = 20 * temp 
+
                     if temp < prob: # Infect
 
                         person.assignTrajectory()
@@ -442,7 +452,6 @@ class MasterController:
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
         # print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
 
-
         # f.close()
         totalinf = 0
         for id in range(len(infectionInFacilitiesHourly)):
@@ -465,7 +474,6 @@ class MasterController:
         self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
         self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
 
-
 if __name__ == '__main__':
 
     mc = MasterController()  # Instantiate a MasterController
@@ -476,6 +484,6 @@ if __name__ == '__main__':
 
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
-    # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
+    # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
 
