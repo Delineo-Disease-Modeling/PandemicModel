@@ -1,6 +1,7 @@
 from person import Person
 from module import Module
 from submodule import Submodule
+from phasePlan import PhasePlan
 import random
 import json
 import pickle
@@ -20,6 +21,12 @@ class MasterController:
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
+    
+    phasePlan = PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
+    currDay = 0
+    phaseNum = 0
+    phaseDay = 0
+    
 
     visitMatrices = None # Save matrices 
 
@@ -67,6 +74,8 @@ class MasterController:
                 G = facility.createGraph() # Graph created
                 facility.calcInfection(G)
             self.updateTime()
+            if self.timeOfDay == 23:
+                self.implementPhaseDay(self.currDay, self.phaseNum, self.phaseDay, self.phasePlan, population, facilities)
 
     def displayResult(self):
         print('Nothing to show yet')
@@ -474,6 +483,32 @@ class MasterController:
         self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
         self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
 
+    def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
+        #If a facility has an appointments on this day, administer appointments to each person.
+        for facility in facilities:
+            for i in facility.getAppointment(currDay):
+                facility.administerShot(i[0], i[1])
+                
+        currDay = currDay + 1
+        phaseDay = phaseDay + 1
+        
+        #if we are at the end of a phase, advance to next one, or if at last phase, stay on last phase.
+        if phaseDay > phasePlan.daysInPhase[phaseNum]:
+            phaseDay = 0
+            phaseNum = min(phaseNum + 1, phasePlan.maxPhaseNum)
+        
+        #each person, if vaccinated, adds another day to the nunmber of days after their last shot.
+        #they also schedule an appointment if they are eligible
+        for person in population.peopleArray:
+            if person.shotNumber == 0 or (person.shotNumber == 1 and person.vaccineName != "Johnson&Johnson" and person.daysAfterShot > 21):
+                person.incrementDaysAfterShot
+            if person.vaccinated != True and person.age >= phasePlan.minAge[phaseNum] and person.age >= phasePlan.maxAge[phaseNum]:
+                #schedule an appointment at a random facilities some time after day
+                random.randrange(0, facilities.size())
+                daysAfter = random.randint(1, 14)
+                facilities[i].scheduleAppointment(currDay + daysAfter)
+        
+        
 if __name__ == '__main__':
 
     mc = MasterController()  # Instantiate a MasterController

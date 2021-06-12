@@ -8,16 +8,19 @@ class Person:
 
     def __init__(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                  severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
-                 extendedhousehold=None, vaccinated=False):
+                 householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
+                 shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
         self.setAllParameters(ID, age, sex, householdLocation, householdMembers, comorbidities,
                               demographicInfo, severityRisk, currentLocation, infectionState, incubation,
-                              infectionTimer, infectionTrack,extendedhousehold, vaccinated)
+                              infectionTimer, infectionTrack, householdContacts, extendedhousehold, vaccinated, COVID_type,
+                              vaccineName, shotNumber, daysAfterShot, essentialWorker, madeVaccAppt, vaccApptDate)
 
     # Sets all parameters.
-    def setAllParameters(self, ID, age=0, sex=0, householdLocation=0,
-                         householdContacts=None, comorbidities=0, demographicInfo=0,
-                         severityRisk=0, currentLocation=0, infectionState=-1, incubation=0,
-                         infectionTimer=-1, infectionTrack=None,extendedhousehold=None, vaccinated=False):
+
+    def setAllParameters(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
+                         severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
+                         householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
+                         shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
 
         if extendedhousehold is None:
             self.extendedhousehold = set()
@@ -36,6 +39,13 @@ class Person:
         self.severityRisk = severityRisk
         self.currentLocation = currentLocation
         self.vaccinated = vaccinated
+        self.COVID_type = COVID_type
+        self.vaccineName = vaccineName
+        self.shotNumber = shotNumber
+        self.daysAfterShot = daysAfterShot
+        self.essentialWorker = essentialWorker
+        self.madeVaccAppt = madeVaccAppt
+        self.vaccApptDate = vaccApptDate
 
         # -1: normal, 0: asymp, 1: mild, 2: severe, 3: critical, 4: recovered
         self.infectionState = infectionState
@@ -173,7 +183,7 @@ class Person:
 
         if self.vaccinated:
             return 1
-            
+
         infectionStateByScore = {
             0: [0.7, 0.1, 0.05, 0.05],
             10: [0.6, 0.2, 0.1, 0.1],
@@ -279,4 +289,36 @@ class Person:
                 self.infectionTrack.append(i)
         for j in range(extraAsymptomatic):
             self.infectionTrack.append(0)
+
         self.infectionTrack.append(4)
+
+    def incrementDaysAfterShot(self):
+        self.daysAfterShot += 1
+        self.completeVaccinated()
+
+    def administerVaccine(self, name, shotNumberGiven):
+        # Set fields to simulate vaccination
+        self.vaccineName = name
+        self.shotNumber = shotNumberGiven
+        self.daysAfterShot = 0
+
+    def completeVaccinated(self):
+        if self.vaccineName == "Moderna" and self.shotNumber == 2 and self.daysAfterShot == 14:
+            self.vaccinated = True
+        elif self.vaccineName == "Pfizer" and self.shotNumber == 2 and self.daysAfterShot == 14:
+            self.vaccinated = True
+        elif self.vaccineName == "Johnson&Johnson" and self.shotNumber == 1 and self.daysAfterShot == 14:
+            self.vaccinated = True
+
+    def infectedAfterCompletelyVaccinated(self):
+        chance = 0
+        if self.vaccineName == 'Moderna':
+            chance = 0.941
+        elif self.vaccineName == 'Pfizer':
+            chance = 0.95
+
+        # -1 for not infected and 0 for infected (asymptomatic)
+        self.infectionState = -1 if random.random() < chance else 0
+
+        return self.infectionState
+
