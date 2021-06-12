@@ -18,7 +18,6 @@ class MasterController:
     population = 6000
     # Uncertain exactly what/how many interventions to expect
 
-
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
@@ -185,7 +184,6 @@ class MasterController:
             for each in currentlywith:
                 if len(Pop[each].getInfectionTrack()) > 0:
                     continue
-
                 if (Pop[each].getVaccinatedStatus()):
                     householdRandomVariable = 20 * random.random()
                 else:
@@ -199,7 +197,7 @@ class MasterController:
         return newlyinfectedathome
 
     # Wells-Riley
-    def WellsRiley(self, num_days=7, interventions=None):
+    def WellsRiley(self, print_infection_breakdown, num_days=7, interventions=None):
         '''
         This function calculates the disease progression by each person in the
         '''
@@ -219,8 +217,8 @@ class MasterController:
             interventions["stayAtHome"] = False
         if "vaccinatedPercent" not in interventions:
             interventions["vaccinatedPercent"] = 0
-        M = self.createModule()
 
+        M = self.createModule()
 
         # Population created and returned as array of People class objects
         Pop = M.createPopulation()
@@ -230,6 +228,7 @@ class MasterController:
         currentInfected = set()
         facilityinfections = 0
         houseinfections = 0
+
         numVaccinated = math.floor( (len(Pop) * interventions["vaccinatedPercent"])/100)
 
         # Assign initial infection state status for each person
@@ -433,15 +432,14 @@ class MasterController:
 
         for id in infectionInFacilities:
             facility = facilities[id]
-            print(facility.getID(), facility.getFacilityType(),
-                  infectionInFacilities[id])  # , file=f)
-        print()
-        print('Infection In Facilities Daily: ', infectionInFacilitiesDaily)
-        print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
-        print('Total number infected in facilities hourly is ',
-                totalInfectedInFacilities)
+            # print(facility.getID(), facility.getFacilityType(),   # not useful
+            #         infectionInFacilities[id])  # , file=f)
 
-        print('Total Infected In Households Hourly: ', infectionInHouseholds)
+        # print('Infection In Facilities Daily: ', infectionInFacilitiesDaily)     # none of this is useful
+        # print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
+        # print('Total number infected in facilities hourly is ',
+        #        totalInfectedInFacilities)
+        # print('Total Infected In Households Hourly: ', infectionInHouseholds)
 
         #Updated the formatting of the json file
         response = {'Buildings': [
@@ -461,7 +459,7 @@ class MasterController:
             if len(Pop[each].getInfectionTrack()) > 0:
                 num+=1
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
-        print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
+        # print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
 
         # f.close()
         totalinf = 0
@@ -473,8 +471,17 @@ class MasterController:
                 totalinf += infectionInFacilitiesHourly[id][i]
                 individual += infectionInFacilitiesHourly[id][i]
                 people += peopleInFacilitiesHourly[id][i]
-            print(id, individual, people)
-        print(totalinf)
+            # print(id, individual, people)    # not useful
+        if print_infection_breakdown:
+            print("Initial infections:", initialInfected)
+            print("Total infections in households:", houseinfections)
+            print("Total infections in facilities:", facilityinfections)
+        print("Total infections:", num)
+
+    # Function to run Anytown
+    def Anytown(self, print_infection_breakdown, num_days, intervention_list):
+        self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+        self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
 
     def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
         #If a facility has an appointments on this day, administer appointments to each person.
@@ -506,12 +513,12 @@ if __name__ == '__main__':
 
     mc = MasterController()  # Instantiate a MasterController
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
-    # TODO School and Work spread need to be implemented as well - either through Wells Reilly model or Graph approach.
+    # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
 
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    interventions = {"vaccinatedPercent": 50}
-    #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
-    mc.WellsRiley(61,interventions)  # Run Wells Reilly
+    interventions = {}
+    # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
 

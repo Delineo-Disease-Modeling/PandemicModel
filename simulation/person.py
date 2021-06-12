@@ -16,10 +16,12 @@ class Person:
                               vaccineName, shotNumber, daysAfterShot, essentialWorker, madeVaccAppt, vaccApptDate)
 
     # Sets all parameters.
+
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
                          householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
                          shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
+
         if extendedhousehold is None:
             self.extendedhousehold = set()
         if householdContacts is None: #python specific way of creating mutable defaults
@@ -96,6 +98,9 @@ class Person:
     def setInfectionState(self, state):
         self.infectionState = state
         return state
+
+        return state
+
 
     def setIncubation(self, incubation):
         self.incubation = incubation
@@ -175,6 +180,7 @@ class Person:
         return srScore
 
     def calcInfectionState(self):
+
         if self.vaccinated:
             return 1
 
@@ -283,6 +289,7 @@ class Person:
                 self.infectionTrack.append(i)
         for j in range(extraAsymptomatic):
             self.infectionTrack.append(0)
+
         self.infectionTrack.append(4)
 
     def incrementDaysAfterShot(self):
@@ -314,3 +321,4 @@ class Person:
         self.infectionState = -1 if random.random() < chance else 0
 
         return self.infectionState
+

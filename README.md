@@ -2,7 +2,7 @@
 Repository for Delineo Disease Modeling at the Johns Hopkins University. 
 
 ## Developer Notes
-
+Choose one of the below, either a local dev environment or a Conda environment.
 ### Setting up local dev environment
 1. Ensure you have `python3.8` installed and set up.
 2. Clone this repository.
