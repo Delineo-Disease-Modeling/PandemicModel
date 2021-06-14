@@ -30,7 +30,6 @@ class MasterController:
     infecFacilitiesTot = []
     infecHousesTot = []
     
-    
     visitMatrices = None # Save matrices 
 
     # getUserInput: This function will assign the state, county, and interventions as the user specifies
@@ -463,9 +462,6 @@ class MasterController:
                 num+=1
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
         # print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
-        
-        
-        
 
         # f.close()
         totalinf = 0
@@ -486,8 +482,7 @@ class MasterController:
         
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds
-       
-        
+
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')

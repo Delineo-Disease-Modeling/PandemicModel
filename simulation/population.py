@@ -7,14 +7,15 @@ import random
 
 class Population():
     # constructor
-
-    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0):
+    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0):
 
         self.state = state
         self.country = country
         self.population = population  # array of different person classes
         self.peopleArray = peopleArray
         self.populationSize = populationSize
+        self.phaseNum = phaseNum
+        self.currPhaseDayNum = currPhaseDayNum
 
     def get_dict(self):
         sp.validate()
@@ -45,7 +46,7 @@ class Population():
         return peopleArray
 
     # calls synthpops and generates population (dictionary)
-    def generatePopulation(populationSize):
+    def generatePopulation(self, populationSize):
         # call function from person class
         peopleArray = {}
         population = sp.generate_synthetic_population(populationSize)
@@ -271,3 +272,36 @@ class Population():
         self.addCysticFibrosis()
         self.addHypertension()
 
+    def generateVacinationPopulation(self):
+        peopleArray = self.generatePopulation(self.populationSize)
+        vaccinated = {} # create a dictionary of people and their vaccination status
+        for i in range(len(peopleArray)):
+            if (peopleArray[i].age > 60 or peopleArray[i].essentialWorker == True or peopleArray[i].comorbidities > 2):
+                peopleArray[i].vaccinated = True
+                vaccinated[peopleArray[i]] = True
+            else:
+                peopleArray[i].vaccinated = False
+                vaccinated[peopleArray[i]] = False
+        return vaccinated
+
+    def infectedPop(self):
+        vaccinated = self.generateVacinationPopulation()
+        infectedArray = {}
+        for i in vaccinated:
+            if (vaccinated[i]):
+                infectedArray[i] = i.infectedAfterCompletelyVaccinated()
+        return infectedArray
+
+    def incrementPhaseDayNum(self):
+        self.currPhaseDayNum += 1
+
+    def implementPhase(self, plan):
+        # maxPhaseNum will depend on how many phases there will be
+        while self.phaseNum < plan.maxPhaseNum:
+            # phaseNumber will depend on the phase that it is in
+            while self.currPhaseDayNum < plan.daysInPhase[self.phaseNum]:
+                # vaccinate function constantly while in the phase
+                self.incrementPhaseDayNum()
+
+            self.currPhaseDayNum = 0
+            self.phaseNum += 1
