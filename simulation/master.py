@@ -1,6 +1,7 @@
 from person import Person
 from module import Module
 from submodule import Submodule
+from phasePlan import PhasePlan
 import random
 import json
 import pickle
@@ -17,11 +18,19 @@ class MasterController:
     population = 6000
     # Uncertain exactly what/how many interventions to expect
 
-
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
-
+    
+    phasePlan = PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
+    currDay = 0
+    phaseNum = 0
+    phaseDay = 0
+    
+    infecFacilitiesTot = []
+    infecHousesTot = []
+    
+    
     visitMatrices = None # Save matrices 
 
     # getUserInput: This function will assign the state, county, and interventions as the user specifies
@@ -68,6 +77,8 @@ class MasterController:
                 G = facility.createGraph() # Graph created
                 facility.calcInfection(G)
             self.updateTime()
+            if self.timeOfDay == 23:
+                self.implementPhaseDay(self.currDay, self.phaseNum, self.phaseDay, self.phasePlan, population, facilities)
 
     def displayResult(self):
         print('Nothing to show yet')
@@ -176,7 +187,6 @@ class MasterController:
             for each in currentlywith:
                 if len(Pop[each].getInfectionTrack()) > 0:
                     continue
-
                 if (Pop[each].getVaccinatedStatus()):
                     householdRandomVariable = 20 * random.random()
                 else:
@@ -190,7 +200,7 @@ class MasterController:
         return newlyinfectedathome
 
     # Wells-Riley
-    def WellsRiley(self, num_days=7, interventions=None):
+    def WellsRiley(self, print_infection_breakdown, num_days=7, interventions=None):
         '''
         This function calculates the disease progression by each person in the
         '''
@@ -210,8 +220,8 @@ class MasterController:
             interventions["stayAtHome"] = False
         if "vaccinatedPercent" not in interventions:
             interventions["vaccinatedPercent"] = 0
-        M = self.createModule()
 
+        M = self.createModule()
 
         # Population created and returned as array of People class objects
         Pop = M.createPopulation()
@@ -221,6 +231,7 @@ class MasterController:
         currentInfected = set()
         facilityinfections = 0
         houseinfections = 0
+
         numVaccinated = math.floor( (len(Pop) * interventions["vaccinatedPercent"])/100)
 
         # Assign initial infection state status for each person
@@ -424,15 +435,14 @@ class MasterController:
 
         for id in infectionInFacilities:
             facility = facilities[id]
-            print(facility.getID(), facility.getFacilityType(),
-                  infectionInFacilities[id])  # , file=f)
-        print()
-        print('Infection In Facilities Daily: ', infectionInFacilitiesDaily)
-        print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
-        print('Total number infected in facilities hourly is ',
-                totalInfectedInFacilities)
+            # print(facility.getID(), facility.getFacilityType(),   # not useful
+            #         infectionInFacilities[id])  # , file=f)
 
-        print('Total Infected In Households Hourly: ', infectionInHouseholds)
+        # print('Infection In Facilities Daily: ', infectionInFacilitiesDaily)     # none of this is useful
+        # print('Infection In Facilities Hourly: ', infectionInFacilitiesHourly)
+        # print('Total number infected in facilities hourly is ',
+        #        totalInfectedInFacilities)
+        # print('Total Infected In Households Hourly: ', infectionInHouseholds)
 
         #Updated the formatting of the json file
         response = {'Buildings': [
@@ -452,7 +462,10 @@ class MasterController:
             if len(Pop[each].getInfectionTrack()) > 0:
                 num+=1
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
-        print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
+        # print("total:",num,"house:", houseinfections, "facilities:", facilityinfections)
+        
+        
+        
 
         # f.close()
         totalinf = 0
@@ -464,19 +477,57 @@ class MasterController:
                 totalinf += infectionInFacilitiesHourly[id][i]
                 individual += infectionInFacilitiesHourly[id][i]
                 people += peopleInFacilitiesHourly[id][i]
-            print(id, individual, people)
-        print(totalinf)
+            # print(id, individual, people)    # not useful
+        if print_infection_breakdown:
+            print("Initial infections:", initialInfected)
+            print("Total infections in households:", houseinfections)
+            print("Total infections in facilities:", facilityinfections)
+        print("Total infections:", num)
+        
+        self.infecFacilitiesTot= totalInfectedInFacilities
+        self.infecHousesTot= infectionInHouseholds
+       
+        
+    # Function to run Anytown
+    def Anytown(self, print_infection_breakdown, num_days, intervention_list):
+        self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+        self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
 
+    def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
+        #If a facility has an appointments on this day, administer appointments to each person.
+        for facility in facilities:
+            for i in facility.getAppointment(currDay):
+                facility.administerShot(i[0], i[1])
+                
+        currDay = currDay + 1
+        phaseDay = phaseDay + 1
+        
+        #if we are at the end of a phase, advance to next one, or if at last phase, stay on last phase.
+        if phaseDay > phasePlan.daysInPhase[phaseNum]:
+            phaseDay = 0
+            phaseNum = min(phaseNum + 1, phasePlan.maxPhaseNum)
+        
+        #each person, if vaccinated, adds another day to the nunmber of days after their last shot.
+        #they also schedule an appointment if they are eligible
+        for person in population.peopleArray:
+            if person.shotNumber == 0 or (person.shotNumber == 1 and person.vaccineName != "Johnson&Johnson" and person.daysAfterShot > 21):
+                person.incrementDaysAfterShot
+            if person.vaccinated != True and person.age >= phasePlan.minAge[phaseNum] and person.age >= phasePlan.maxAge[phaseNum]:
+                #schedule an appointment at a random facilities some time after day
+                random.randrange(0, facilities.size())
+                daysAfter = random.randint(1, 14)
+                facilities[i].scheduleAppointment(currDay + daysAfter)
+        
+        
 if __name__ == '__main__':
 
     mc = MasterController()  # Instantiate a MasterController
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
-    # TODO School and Work spread need to be implemented as well - either through Wells Reilly model or Graph approach.
+    # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
 
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    interventions = {"vaccinatedPercent": 50}
-    #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
-    mc.WellsRiley(61,interventions)  # Run Wells Reilly
-
+    interventions = {}
+    # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
