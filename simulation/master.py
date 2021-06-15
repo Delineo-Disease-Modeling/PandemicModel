@@ -27,7 +27,9 @@ class MasterController:
     phaseNum = 0
     phaseDay = 0
     
-
+    infecFacilitiesTot = []
+    infecHousesTot = []
+    
     visitMatrices = None # Save matrices 
 
     # getUserInput: This function will assign the state, county, and interventions as the user specifies
@@ -477,6 +479,9 @@ class MasterController:
             print("Total infections in households:", houseinfections)
             print("Total infections in facilities:", facilityinfections)
         print("Total infections:", num)
+        
+        self.infecFacilitiesTot= totalInfectedInFacilities
+        self.infecHousesTot= infectionInHouseholds
 
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
@@ -521,4 +526,3 @@ if __name__ == '__main__':
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
-
