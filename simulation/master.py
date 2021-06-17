@@ -346,8 +346,8 @@ class MasterController:
             intervention_list["contactTracing"] = 0
         if "stayAtHome" not in intervention_list:
             intervention_list["stayAtHome"] = False
-        if "vaccinatedPercent" not in interventions:
-            interventions["vaccinatedPercent"] = 0
+        if "vaccinatedPercent" not in intervention_list:
+            intervention_list["vaccinatedPercent"] = 0
         return intervention_list
 
     # Add people to households
