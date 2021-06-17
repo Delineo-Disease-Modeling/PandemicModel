@@ -12,7 +12,7 @@ for i in range(numRuns):
     currRun = mc()
     currRun.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
-    currRun.WellsRiley(True, 61, interventions)  
+    currRun.WellsRiley(False, 61, interventions)  
     
     for (i1, i2) in zip(currRun.infecFacilitiesTot, currRun.infecHousesTot):
         infecTotal.append(i1+i2+10)
