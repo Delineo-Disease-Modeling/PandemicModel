@@ -187,7 +187,7 @@ def test_get_school_enrollment_rates_path():
 
 def test_get_uids_in_school(location='seattle_metro', state_location='Washington',
                             country_location='usa'):
-    NPeople = 10000
+    Npeople = 100000
     uids_in_school, uids_in_school_by_age, ages_in_school_count = sp.get_uids_in_school(datadir, NPeople, location,
                                                                                         state_location,
                                                                                         country_location,
@@ -197,7 +197,7 @@ def test_get_uids_in_school(location='seattle_metro', state_location='Washington
 
 def test_send_students_to_school(location='seattle_metro', state_location='Washington',
                                  country_location='usa'):
-    NPeople = 10000
+    Npeople = 100000
 
     uids_in_school, uids_in_school_by_age, ages_in_school_count = sp.get_uids_in_school(datadir, NPeople, location,
                                                                                         state_location,
@@ -238,7 +238,7 @@ def test_get_uids_potential_workers(location='seattle_metro', state_location='Wa
 
 def test_generate_workplace_sizes(location='seattle_metro', state_location='Washington',
                                   country_location='usa'):
-    Npeople = 10000
+    Npeople = 100000
     uids_in_school, uids_in_school_by_age, uids_in_school_count = sp.get_uids_in_school(datadir, Npeople, location,
                                                                                         state_location,
                                                                                         country_location,
