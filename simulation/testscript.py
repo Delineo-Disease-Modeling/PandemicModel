@@ -7,6 +7,7 @@ numRuns = int(input("enter number of runs: "))
 runsTotal = []
 runsFacilities = []
 runsHouses = []
+runsPeople = []
 for i in range(numRuns):
     infecTotal = []
     currRun = mc()
@@ -19,8 +20,10 @@ for i in range(numRuns):
     runsTotal.append(list(infecTotal))
     runsFacilities.append(list(currRun.infecFacilitiesTot))
     runsHouses.append(list(currRun.infecHousesTot))
+    runsPeople.append(list(currRun.peopleInFacilities))
     currRun.infecFacilitiesTot = []
     currRun.infecHousesTot = []
+    currRun.peopleInFacilities = []
     
 #Total Infected Graph
 hours = []
@@ -50,8 +53,17 @@ plt.figure()
 for i in range(len(runsHouses)):
 	plt.plot(runsHouses[i],colors[i%4])
 plt.xlabel('hours')
-plt.ylabel('infected in facilities')
+plt.ylabel('infected in households')
 plt.title('Test Run for Infected in Households')
+plt.show()
+
+plt.figure()
+#People in Facilities Graph
+for i in range(len(runsPeople)):
+	plt.plot(runsPeople[i],colors[i%4])
+plt.xlabel('hours')
+plt.ylabel('People in facilities')
+plt.title('Test Run for people in facilities')
 plt.show()
 
 
