@@ -29,6 +29,7 @@ class MasterController:
     
     infecFacilitiesTot = []
     infecHousesTot = []
+    peopleInFacilities = []
     
     visitMatrices = None # Save matrices 
 
@@ -490,6 +491,7 @@ class MasterController:
         
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds
+        self.peopleInFacilities = peopleInFacilitiesHourly
 
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
