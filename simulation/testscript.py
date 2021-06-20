@@ -27,11 +27,10 @@ for i in range(numRuns):
 hours = []
 for i in range(len(runsTotal[0])):
     hours.append(i)
-#plt.figure()
-print(type(runsTotal))
+plt.figure()
 
 colors = ['r','b','g','m']
-'''
+
 for i in range(len(runsTotal)):
 	plt.plot(runsTotal[i],colors[i%4])
 plt.xlabel('hours')
@@ -57,7 +56,7 @@ plt.ylabel('infected in households')
 plt.title('Test Run for Infected in Households')
 plt.show()
 
-'''
+
 runsPeople = currRun.peopleInFacilities
 plt.figure()
 #People in Facilities Graph
