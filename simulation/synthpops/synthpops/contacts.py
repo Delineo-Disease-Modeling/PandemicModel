@@ -920,7 +920,6 @@ def make_contacts_from_microstructure_objects(age_by_uid_dic, homes_by_uids, sch
             popdict[uid]['wpid'] = nw
             if workplaces_by_industry_codes is not None:
                 popdict[uid]['wpindcode'] = int(workplaces_by_industry_codes[nw])
-
     return popdict
 
 

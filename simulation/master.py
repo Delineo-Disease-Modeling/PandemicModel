@@ -490,6 +490,7 @@ class MasterController:
         
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds
+        return
 
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):

@@ -1241,7 +1241,7 @@ def generate_synthetic_population(n, datadir, num_households, num_workplaces, lo
         write_homes_by_age_and_uid(datadir, location, state_location, country_location, homes_by_uids, age_by_uid_dic)
         write_schools_by_age_and_uid(datadir, location, state_location, country_location, n, gen_school_uids, age_by_uid_dic)
         write_workplaces_by_age_and_uid(datadir, location, state_location, country_location, n, gen_workplace_uids, age_by_uid_dic)
-
+        
     if return_popdict:
         popdict = spct.make_contacts_from_microstructure_objects(age_by_uid_dic, homes_by_uids, gen_school_uids, gen_workplace_uids)
         return popdict, homes_dic
