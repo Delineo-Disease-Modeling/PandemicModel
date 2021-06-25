@@ -10,7 +10,7 @@ import math
 class Submodule:
 
     def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0,
-                 Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0):
+                 Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0, latitude = 36.561002, longitude = -96.161577, categories = {}):
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
@@ -39,6 +39,9 @@ class Submodule:
         self.vaccineStock = vaccineStock
         self.appointments = appointments
         self.rate = rate
+        self.latitude = latitude
+        self.longitude = longitude
+        self.categories = categories
 
     def getID(self):
         return self.__id

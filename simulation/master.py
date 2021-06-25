@@ -522,17 +522,24 @@ class MasterController:
                 daysAfter = random.randint(1, 14)
                 facilities[i].scheduleAppointment(currDay + daysAfter)
         
+
+
+    def runFacilityTests(self, filename):
+        M = self.createModule()
+        facilities = M.createFacilitiesCSV(filename)
         
 if __name__ == '__main__':
 
+
     mc = MasterController()  # Instantiate a MasterController
+    mc.runFacilityTests('core_poi_OKCityTiny.csv')
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
     # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
 
-    mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    interventions = {}
+    # mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+    # interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
+    # mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
 

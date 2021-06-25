@@ -2,7 +2,8 @@ from population import Population
 from submodule import Submodule
 import json
 import random
-
+import pandas as pd
+import math
 
 class Module:
 
@@ -54,3 +55,24 @@ class Module:
             for h in hours:
                 openHours[h].add(nextFacility)
         return facilities, totalCapacities, openHours
+    
+    def createFacilitiesCSV(self, filename):
+        df = pd.read_csv(filename)
+        dfList = df.values.tolist()
+        facilities = dict()
+        for row in dfList:
+            categoryList = {}
+            if isinstance(row[18], str):
+                print(str(row[18]))
+                categoryList = str(row[18]).split(',')
+            hours = []
+            days = []
+            if isinstance(row[17], str):
+                hoursDict = json.loads(str(row[17]))
+                days = list(hoursDict.keys())
+                hours = list(hoursDict)
+            nextFacility = Submodule(row[0], facilitytype = row[6], latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
+            facilities[row[0]] = nextFacility
+        return facilities
+        # print(alist)
+        
