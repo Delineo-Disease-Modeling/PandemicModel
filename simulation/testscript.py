@@ -56,7 +56,7 @@ print('Standard deviation:', stdev_runsTotal)
 
 
 plt.figure()
-#Facilities graph
+#Facilities  graph
 for i in range(len(runsFacilities)):
 	plt.plot(runsFacilities[i],colors[i%4])
 plt.xlabel('hours')
