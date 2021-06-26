@@ -63,14 +63,12 @@ class Module:
         for row in dfList:
             categoryList = {}
             if isinstance(row[18], str):
-                print(str(row[18]))
                 categoryList = str(row[18]).split(',')
             hours = []
             days = []
             if isinstance(row[17], str):
-                hoursDict = json.loads(str(row[17]))
-                days = list(hoursDict.keys())
-                hours = list(hoursDict)
+                hours = json.loads(str(row[17]))
+                days = list(hours.keys())
             nextFacility = Submodule(row[0], facilitytype = row[6], latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
             facilities[row[0]] = nextFacility
         return facilities

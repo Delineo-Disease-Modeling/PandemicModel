@@ -54,6 +54,9 @@ class Submodule:
 
     def getDays(self):
         return set(self.__Days)
+    
+    def getHours(self):
+        return self.__Hours
 
     def getVisitors(self):
         return self.__Visitors

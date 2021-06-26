@@ -7,6 +7,8 @@ import json
 import pickle
 import pandas as pd
 import math
+from datetime import datetime
+import sciris as sc
 
 
 
@@ -527,12 +529,40 @@ class MasterController:
     def runFacilityTests(self, filename):
         M = self.createModule()
         facilities = M.createFacilitiesCSV(filename)
+        self.testFacilitiesByCategory(facilities, 'Donut Shop')
+        self.testDayTimeAvailability(facilities, 'Mon', '11:00')
+        
+    def testDayTimeAvailability(self, facilities, day, hour):
+        sc.heading("Testing facilities open on "+  day+  ", "+hour)
+        validFacilities = []
+        for facility in facilities.values():
+            if day in facility.getDays():
+                for timeInterval in facility.getHours()[day]:
+                    hourDT = datetime.strptime(hour, "%H:%M")
+                    start = datetime.strptime(timeInterval[0], "%H:%M")
+                    if timeInterval[1] == "24:00":
+                        if hourDT>= start:
+                             validFacilities.append(facility.getID())
+                    else:
+                        end = datetime.strptime(timeInterval[1], "%H:%M")
+                        if hourDT >= start and hourDT < end:
+                            validFacilities.append(facility.getID())
+        print(validFacilities)
+
+    def testFacilitiesByCategory(self, facilities, category):
+        sc.heading("Testing facilities with category " + category)
+        found = []
+        for facility in facilities.values():
+            if category in facility.categories:
+                found.append(facility.getID())
+        print(found)
+
         
 if __name__ == '__main__':
 
 
     mc = MasterController()  # Instantiate a MasterController
-    mc.runFacilityTests('core_poi_OKCityTiny.csv')
+    mc.runFacilityTests('core_poi_OKCity.csv')
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
     # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
