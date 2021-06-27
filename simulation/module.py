@@ -55,7 +55,7 @@ class Module:
             for h in hours:
                 openHours[h].add(nextFacility)
         return facilities, totalCapacities, openHours
-    
+
     def createFacilitiesCSV(self, filename):
         df = pd.read_csv(filename)
         dfList = df.values.tolist()
@@ -72,5 +72,3 @@ class Module:
             nextFacility = Submodule(row[0], facilitytype = row[6], latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
             facilities[row[0]] = nextFacility
         return facilities
-        # print(alist)
-        
