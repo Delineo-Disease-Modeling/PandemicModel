@@ -586,4 +586,4 @@ if __name__ == '__main__':
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
-    mc.excelToJson('Oklahoma County Data.xls', 'OKC data.json')
+    mc.excelToJson('Oklahoma County Data.xls', 'OKC data,json')
