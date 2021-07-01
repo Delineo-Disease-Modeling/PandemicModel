@@ -6,6 +6,7 @@ import json
 import pickle
 import pandas as pd
 import math
+import xlrd
 
 
 
@@ -95,6 +96,23 @@ class MasterController:
                 count += 1
         print(count)
     """
+    def excelToJson(self, excelfile, jsonfile):
+        #converts excel sheet to json format- to be used in function that returns file
+        workbook = xlrd.open_workbook(excelfile)
+        workbook = xlrd.open_workbook(excelfile, on_demand = True)
+        worksheet = workbook.sheet_by_index(0)
+        data = {'date' : [], 'newcases' : []}
+        for row in range(1, worksheet.nrows):
+            data['date'].append({'year' : worksheet.cell_value(row,0),
+                'month': worksheet.cell_value(row,1),
+                'day': worksheet.cell_value(row,2)})
+            data['newcases'].append(worksheet.cell_value(row,3))
+        
+        df = pd.DataFrame(data)
+        result = df.to_json(orient="records")
+        with open(jsonfile, 'w') as outfile:
+            json.dump(result, outfile)
+            
     def jsonRequest(self, request):
         """ Parse json_string and store values in MasterController members
         Key strings must be valid attribute names.
@@ -766,4 +784,4 @@ if __name__ == '__main__':
     interventions = {"vaccinatedPercent": 50}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
-
+    mc.excelToJson('Oklahoma County Data.xls', 'OKC data.json')
