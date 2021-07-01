@@ -9,7 +9,8 @@ import math
 
 class Submodule:
 
-    def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0, Density=0, Cleanliness=0, Infected=[]):
+    def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0,
+                 Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0):
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
@@ -35,6 +36,9 @@ class Submodule:
         self.__People = People
         self.__Infected = Infected
         self.__MedianRetentionHour = 1  # TODO: research and add
+        self.vaccineStock = vaccineStock
+        self.appointments = appointments
+        self.rate = rate
 
     def getID(self):
         return self.__id
@@ -106,7 +110,7 @@ class Submodule:
         self.__numGroups = len(groups)
         self.__Groups = groups
 
-        
+
     #create groups based on household network
     def createGroupsHH(self):
         groupsDict = {} # If we know total number households here, we can just use a list
@@ -150,9 +154,7 @@ class Submodule:
                 if j == i:
                     tmp_p[j] = .8  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
-                    tmp_p[
-
-                        j] = .001  # Likelihood of connections between groups, arbitrary formula - #TODO change to based on number of households
+                    tmp_p[j] = .001  # Likelihood of connections between groups, arbitrary formula - #TODO change to based on number of households
 
             p.append(tmp_p)
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
@@ -295,3 +297,51 @@ class Submodule:
         temporarytuningfactor = 90
         return 1 - math.exp(-(I*q*p*t)/(Q*temporarytuningfactor)) # This needs to be fixed so wells reilly is actually implemented with better numbers!
         #return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!
+
+    def restockVaccines(self, restock):
+        self.vaccineStock["Pfizer"] += restock["Pfizer"]
+        self.vaccineStock["Moderna"] += restock["Moderna"]
+        self.vaccineStock["Johnson&Johnson"] += restock["Johnson&Johnson"]
+
+    def scheduleAppointment(self, person, day, vaccine):
+        # Out of vaccines or person already has made an appointment
+        if self.vaccineStock[vaccine] == 0 or person.madeVaccAppt == True:
+            return
+
+        apptSlot = day
+        apptDetails = (person.ID, vaccine)
+
+        # Exceeds vaccination rate
+        if len(self.appointments[apptSlot]) >= self.rate:
+            return
+
+        if apptSlot not in self.appointments:
+            self.appointments[apptSlot] = []
+
+        self.appointments[apptSlot].append(apptDetails)
+        self.vaccineStock[vaccine] -= 1
+
+        # Set person's vaccine appt parameters
+        person.madeVaccAppt = True
+        person.vaccApptDate = apptSlot
+
+    def getAppointment(self, day):
+        apptSlot = day
+
+        # Return an empty list if apptSlot not found
+        if apptSlot not in self.appointments:
+            return []
+
+        return self.appointments[apptSlot]
+
+    def administerShot(self, person, vaccine):
+        # Administer vaccine using method in person.py
+        person.administerVaccine(vaccine, person.shotNumber + 1)
+
+        # Remove from appointment list
+        apptDetails = (person.ID, vaccine)
+        self.appointments[person.vaccApptDate].remove(apptDetails)
+
+        # Reset person's vaccination appointment details
+        person.madeVaccAppt = False
+        person.vaccApptDate = 0
