@@ -8,6 +8,7 @@ import pickle
 import pandas as pd
 import math
 import xlrd
+import urllib.parse
 
 
 
@@ -82,6 +83,7 @@ class MasterController:
 
     def displayResult(self):
         # TODO
+        return
 
     """
     def main(self):
@@ -107,7 +109,7 @@ class MasterController:
         print(count)
     """     
 
-        print('Nothing to show yet')
+        # print('Nothing to show yet')
    
     def excelToJson(self, excelfile, jsonfile):
         #converts excel sheet to json format- to be used in function that returns file
@@ -125,6 +127,13 @@ class MasterController:
         result = df.to_json(orient="records")
         with open(jsonfile, 'w') as outfile:
             json.dump(result, outfile)
+
+    def return_file(self, request):
+        filepath = request[0]
+        file_list = filepath.split("/")
+        filename = file_list[2] + ".json"
+        file = open(filename, "r")
+        return file
             
     def jsonRequest(self, request):
         """ Parse json_string and store values in MasterController members
@@ -577,4 +586,4 @@ if __name__ == '__main__':
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
-    mc.excelToJson('Oklahoma County Data.xls', 'OKC data,json')
+    mc.excelToJson('Oklahoma County Data.xls', 'OKC data.json')
