@@ -524,7 +524,7 @@ class MasterController:
 
         #Updated the formatting of the json file
         response = {'Buildings': [
-                    {"BuildingName": str(facilities[id].getFacilityType())+ str(id),
+                    {"BuildingName": str(facilities[id].getFacilityType()) + str(id),
                     "InfectedDaily": infectionInFacilitiesHourly[id],
                     "PeopleDaily": peopleInFacilitiesHourly[id]}
                     for id in range(len(facilities))]
