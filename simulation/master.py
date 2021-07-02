@@ -132,7 +132,7 @@ class MasterController:
 
     # Right now this file just returns the json file passed in
     # Needs to be modified to return a json based on the get request
-    def return_file(self, request, excel_file, json_file):
+    def return_json(self, request, excel_file, json_file):
         '''
         filepath = request[0]
         file_list = filepath.split("/")
