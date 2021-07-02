@@ -31,6 +31,8 @@ class MasterController:
     
     infecFacilitiesTot = []
     infecHousesTot = []
+
+    data_json = None
     
     visitMatrices = None # Save matrices 
 
@@ -128,11 +130,17 @@ class MasterController:
         with open(jsonfile, 'w') as outfile:
             json.dump(result, outfile)
 
-    def return_file(self, request):
+    # Right now this file just returns the json file passed in
+    # Needs to be modified to return a json based on the get request
+    def return_file(self, request, excel_file, json_file):
+        '''
         filepath = request[0]
         file_list = filepath.split("/")
         filename = file_list[2] + ".json"
         file = open(filename, "r")
+        '''
+        self.excelToJson(excel_file, json_file)
+        file = open(json_file, "r")
         return file
             
     def jsonRequest(self, request):
@@ -586,4 +594,4 @@ if __name__ == '__main__':
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
-    mc.excelToJson('Oklahoma County Data.xls', 'OKC data,json')
+    mc.excelToJson('Oklahoma County Data.xls', 'OKC data.json')
