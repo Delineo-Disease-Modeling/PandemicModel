@@ -131,8 +131,8 @@ class MasterController:
             json.dump(result, outfile)
 
     def return_json(self, location):
-        excel_file = location + " Data.xls"
-        json_file = location + ".json"
+        excel_file = location + ' Data.xls'
+        json_file = location + ' Data.json'
         self.excelToJson(excel_file, json_file)
         file = open(json_file, 'r')
         return file
@@ -588,4 +588,4 @@ if __name__ == '__main__':
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
-    mc.excelToJson('OKC Data.xls', 'OKC data.json')
+    mc.excelToJson('OKC Data.xls', 'OKC Data.json')
