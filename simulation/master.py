@@ -141,7 +141,6 @@ class MasterController:
         self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
         self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
 
-
     def calcInfectionsHomes(self, atHomeIDs, Pop, currentInfected):
         numperhour = 0
         newlyinfectedathome = []
@@ -556,19 +555,30 @@ class MasterController:
                 found.append(facility.getID())
         print(found)
 
+    # For each POI in the visit matrices, add together all the people in the CBGs
+    def sumVisitMatrices(self):
+        # Note: x-axis is CBGs, y-axis is POIs
+        hourVisitMatrix = self.poi_cbg_visit_matrix_history[14]  # Change this to test different hours
+        dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
+        dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Sum up all CBGs for each POI
+
+        # Sum of all POIs
+        sum = 0
+        for val in dfVisitMatrix.head(15):
+            sum += val
+        
+        print(sum)
 
 if __name__ == '__main__':
-
-
     mc = MasterController()  # Instantiate a MasterController
-    mc.runFacilityTests('core_poi_OKCity.csv')  # Run facility tests
+    # mc.runFacilityTests('core_poi_OKCity.csv')  # Run facility tests
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
     # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
 
-    # mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+    mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+    mc.sumVisitMatrices()
     # interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     # mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
-
