@@ -556,18 +556,21 @@ class MasterController:
         print(found)
 
     # For each POI in the visit matrices, add together all the people in the CBGs
+    # Notes: x-axis (cols) is CBGs, y-axis (rows) is POIs
+    #        dfVisitMatrix.sum(axis=0) for column-wise sum
+    #        dfVisitMatrix.sum(axis=1) for row-wise sum
     def sumVisitMatrices(self):
-        # Note: x-axis is CBGs, y-axis is POIs
-        hourVisitMatrix = self.poi_cbg_visit_matrix_history[14]  # Change this to test different hours
-        dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
-        dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Sum up all CBGs for each POI
+        totals = []
 
-        # Sum of all POIs
-        sum = 0
-        for val in dfVisitMatrix.head(15):
-            sum += val
-        
-        print(sum)
+        # Access each visit matrix for each hour in the week (total of 168 hours)
+        for hour in range(168):
+            hourVisitMatrix = self.poi_cbg_visit_matrix_history[hour]
+            dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
+            total_sum = dfVisitMatrix.to_numpy().sum()  # Sum up all the values in the visit matrix
+            totals.append(round(total_sum))  # Round the sum and append to the list
+
+        # Uncomment the line below to print out the list of sums
+        # print(totals)
 
 if __name__ == '__main__':
     mc = MasterController()  # Instantiate a MasterController
@@ -578,7 +581,7 @@ if __name__ == '__main__':
     # TODO Callibration to match realistic/standard data once above is completed.
 
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    mc.sumVisitMatrices()
-    # interventions = {}
-    # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    # mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
+    # mc.sumVisitMatrices()  # Verify correctness of visit matrices
+    interventions = {}
+    interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
