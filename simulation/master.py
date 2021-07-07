@@ -114,21 +114,23 @@ class MasterController:
         # print('Nothing to show yet')
    
     def excelToJson(self, excelfile, jsonfile):
-        #converts excel sheet to json format- to be used in function that returns file
+        # converts excel sheet to json format- to be used in function that returns file
         workbook = xlrd.open_workbook(excelfile)
-        workbook = xlrd.open_workbook(excelfile, on_demand = True)
+        workbook = xlrd.open_workbook(excelfile, on_demand=True)
         worksheet = workbook.sheet_by_index(0)
-        data = {'date' : [], 'newcases' : []}
+        data = {'date': [], 'newcases': []}
         for row in range(1, worksheet.nrows):
-            data['date'].append({'year' : worksheet.cell_value(row,0),
-                'month': worksheet.cell_value(row,1),
-                'day': worksheet.cell_value(row,2)})
-            data['newcases'].append(worksheet.cell_value(row,3))
-        
+            data['date'].append({'year': worksheet.cell_value(row, 0),
+                                 'month': worksheet.cell_value(row, 1),
+                                 'day': worksheet.cell_value(row, 2)})
+            data['newcases'].append(worksheet.cell_value(row, 3))
         df = pd.DataFrame(data)
         result = df.to_json(orient="records")
+        json_data = {'case distribution':
+                     {'school': '', 'restaurant': '', 'gym': '', 'bar': ''},
+                     'initial_cases': 0, 'data': result}
         with open(jsonfile, 'w') as outfile:
-            json.dump(result, outfile)
+            json.dump(json_data, outfile)
 
     def return_json(self, location):
         excel_file = location + ' Data.xls'
