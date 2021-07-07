@@ -4,6 +4,9 @@ import json
 import random
 import pandas as pd
 import math
+import pandas as pd
+import math
+from datetime import datetime
 
 class Module:
 
@@ -60,17 +63,60 @@ class Module:
         df = pd.read_csv(filename)
         dfList = df.values.tolist()
         facilities = dict()
+        totalCapacities = 0
+        openHours = {hour: set() for hour in range(24)}
+        capacities = {
+            "Full Service Restaurants": 20,
+            "Offices of Physicians (except Mental Health Specialists)": 60
+        }
+        key = 0
         for row in dfList:
             categoryList = {}
             if isinstance(row[18], str):
                 categoryList = str(row[18]).split(',')
             hours = []
             days = []
+            cap = 0
             if isinstance(row[17], str):
                 hours = json.loads(str(row[17]))
                 days = list(hours.keys())
-            nextFacility = Submodule(row[0], facilitytype = row[6], latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
-            facilities[row[0]] = nextFacility
-        return facilities
+            if isinstance(row[7], str):
+                if "Restaurant" in row[6]:
+                    cap = 20
+                elif "Physicians" in row[6]:
+                    cap = 60
+                elif "Grocery" in row[6]:
+                    cap = 50;
+                elif "Retail" in row[6]:
+                    cap = 20
+                elif "School" in row[6]:
+                    cap = 20
+                elif "Gym" in row[6]:
+                    cap = 30
+                totalCapacities += cap
+            nextFacility = Submodule(key, facilitytype = row[7], capacity=cap, latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
+            facilities[key] = nextFacility
+            if days:
+                for timeInterval in hours[days[0]]:
+                    start = int(timeInterval[0].split(':')[0])
+                    end = int(timeInterval[1].split(':')[0])
+                    for i in range(start, end):
+                        openHours[i].add(nextFacility)
+            key = key + 1
+       
+        return facilities, totalCapacities, openHours
         # print(alist)
         
+    def createFacilitiesUpdated(self, filename):
+        # current file format: [facility type(str), capacity(int), open hours per day(list(int)), open days(list(str)), latitude(float), longitude(float), people in it(list[Person])]
+        # TODO better format the .json file to make varying hours over the days of a week, and distribute permanant workers into people[]
+        file = open(filename, 'r')
+        lines = file.readlines()
+        facilities = dict()
+        totalCapacities = 0
+        key = 0
+        openHours = {hour: set() for hour in range(24)}
+        for index, line in enumerate(lines):
+            lineArr = line.strip().split(';')
+            
+            

@@ -27,9 +27,9 @@ class Population():
         level = 'county'
 
 
-        num_households = 2500 # 459
-        npop = 5000 #1132 #this is 6000 - but when increased synthpops does not work
-        num_workplaces = 240
+        num_households = 250000 # 459
+        npop = 500000 #1132 #this is 6000 - but when increased synthpops does not work
+        num_workplaces = 24000
 
         # TODO: default school sizes are still being used
         population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,

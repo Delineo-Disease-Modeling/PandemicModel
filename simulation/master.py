@@ -228,6 +228,7 @@ class MasterController:
                                                                                   "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now
                 if not notAssigned:
                     break
+                # print("ween")      
                 idindextoadd = random.randint(0, len(notAssigned) - 1)
                 traffic += 1
                 facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
@@ -410,8 +411,8 @@ class MasterController:
 
         # Instantiate submodules with
         # {id: submodule}, int, {hour: set of facilities open}
-        facilities, totalFacilityCapacities, openHours = M.createFacilities(
-            'submodules2.json')  
+        facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
+            'core_poi_OKCity.csv')
 
         # Fill with change in infections as [initial, final] per hour
         # for each facilityID, or "Not Open" if facility is closed
@@ -446,11 +447,11 @@ class MasterController:
         Pop = self.set_households(Pop)
         daysDict = {
             0: 'Sun',
-            1: 'M',
-            2: 'T',
-            3: 'W',
-            4: 'Th',
-            5: 'F',
+            1: 'Mon',
+            2: 'Tue',
+            3: 'Wed',
+            4: 'Thu',
+            5: 'Fri',
             6: 'Sat'
         }
         numFacilities = len(facilities)
@@ -528,25 +529,17 @@ class MasterController:
 
     def runFacilityTests(self, filename):
         M = self.createModule()
-        facilities = M.createFacilitiesCSV(filename)
-        self.testFacilitiesByCategory(facilities, 'Donut Shop')
-        self.testDayTimeAvailability(facilities, 'Mon', '11:00')
+        facilities, totalCapacities, openHours = M.createFacilitiesCSV(filename)
+        self.testFacilitiesByCategory(facilities, 'Lunch')
+        self.testDayTimeAvailability(openHours, 'Mon', 11)
+        self.testFacilitiesByType(facilities, 'Full-Service Restaurants')
         
-    def testDayTimeAvailability(self, facilities, day, hour):
-        sc.heading("Testing facilities open on "+  day+  ", "+hour)
+    def testDayTimeAvailability(self, openHours, day, hour):
+        sc.heading("Testing facilities open on "+  str(day)+  ", "+str(day))
         validFacilities = []
-        for facility in facilities.values():
+        for facility in openHours[hour]:
             if day in facility.getDays():
-                for timeInterval in facility.getHours()[day]:
-                    hourDT = datetime.strptime(hour, "%H:%M")
-                    start = datetime.strptime(timeInterval[0], "%H:%M")
-                    if timeInterval[1] == "24:00":
-                        if hourDT>= start:
-                             validFacilities.append(facility.getID())
-                    else:
-                        end = datetime.strptime(timeInterval[1], "%H:%M")
-                        if hourDT >= start and hourDT < end:
-                            validFacilities.append(facility.getID())
+               validFacilities.append(facility.getID())
         print(validFacilities)
 
     def testFacilitiesByCategory(self, facilities, category):
@@ -556,20 +549,29 @@ class MasterController:
             if category in facility.categories:
                 found.append(facility.getID())
         print(found)
+        
+    def testFacilitiesByType(self, facilities, facType):
+        sc.heading("Testing facilities with type: " + facType)
+        found = []
+        for facility in facilities.values():
+            if (facility.getFacilityType() == facType):
+                found.append(facility.getID())
+        print("Should find: 960")
+        print("Found: " + str(len(found)))
 
         
 if __name__ == '__main__':
 
 
     mc = MasterController()  # Instantiate a MasterController
-    mc.runFacilityTests('core_poi_OKCity.csv')
+    #mc.runFacilityTests('core_poi_OKCity.csv')
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
     # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
 
-    # mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    # interventions = {}
-    # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    # mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
+    mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+    interventions = {}
+    #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
 

@@ -270,6 +270,8 @@ class Submodule:
         for i in range(len(facilities)):
             if facility in facilities[i]:
                 return ventRate[i]
+            else:
+                return 2.5
 
     def quantaGen(self, facility):
         # 14 - 48 - wells reilly needs updating
