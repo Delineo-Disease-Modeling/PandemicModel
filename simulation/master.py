@@ -23,16 +23,16 @@ class MasterController:
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
-    
+
     phasePlan = PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
     currDay = 0
     phaseNum = 0
     phaseDay = 0
-    
+
     infecFacilitiesTot = []
     infecHousesTot = []
-    
-    visitMatrices = None # Save matrices 
+
+    visitMatrices = None # Save matrices
 
     # getUserInput: This function will assign the state, county, and interventions as the user specifies
     # params:
@@ -84,7 +84,7 @@ class MasterController:
     def displayResult(self):
         # TODO
         print('Nothing to show yet')
-   
+
     def jsonRequest(self, request):
         """ Parse json_string and store values in MasterController members
         Key strings must be valid attribute names.
@@ -98,7 +98,7 @@ class MasterController:
 
     def jsonResponse(self, response):
         """ Form json response
-        Usage: 
+        Usage:
         jsonResponse(infectionInFacilitiesHourly)
 
         Parameters:
@@ -130,7 +130,7 @@ class MasterController:
         filename (string): pickle file to read from
 
         Returns:
-        (obj): visit matrix with CBGs in x-axis and POIs in y-axis, 
+        (obj): visit matrix with CBGs in x-axis and POIs in y-axis,
         """
         file = open(filename, 'rb')
         self.visitMatrices = pickle.load(file)
@@ -140,7 +140,6 @@ class MasterController:
         self.cbgs_idxs_to_ids = self.visitMatrices['cbgs_idxs_to_ids']
         self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
         self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
-
 
     def calcInfectionsHomes(self, atHomeIDs, Pop, currentInfected):
         numperhour = 0
@@ -414,12 +413,13 @@ class MasterController:
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
             'core_poi_OKCity.csv')
 
+
         # Fill with change in infections as [initial, final] per hour
         # for each facilityID, or "Not Open" if facility is closed
         infectionInFacilities = {id: []
-                                for id in range(len(facilities.keys()))} 
+                                for id in range(len(facilities.keys()))}
 
-        # Statistics for each facility and the households 
+        # Statistics for each facility and the households
         totalInfectedInFacilities = [0]
         infectionInFacilitiesDaily = {id: [0 for day in range(num_days)]
                                     for id in range(len(facilities.keys()))}
@@ -472,7 +472,7 @@ class MasterController:
                     "PeopleDaily": peopleInFacilitiesHourly[id]}
                     for id in range(len(facilities))]
                     } #we should probably have households at least as one large "household"
-        
+
         #response = {f'({id}, {facilities[id].getFacilityType()})': array
                     #for id, array in infectionInFacilitiesHourly.items()}
         self.jsonResponseToFile(response, "output.txt")
@@ -484,13 +484,13 @@ class MasterController:
                 #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
 
         # f.close()
-      
+
         if print_infection_breakdown:
             print("Initial infections:", initialInfected)
             print("Total infections in households:", houseinfections)
             print("Total infections in facilities:", facilityinfections)
         print("Total infections:", num)
-        
+
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds
         return
@@ -505,15 +505,15 @@ class MasterController:
         for facility in facilities:
             for i in facility.getAppointment(currDay):
                 facility.administerShot(i[0], i[1])
-                
+
         currDay = currDay + 1
         phaseDay = phaseDay + 1
-        
+
         #if we are at the end of a phase, advance to next one, or if at last phase, stay on last phase.
         if phaseDay > phasePlan.daysInPhase[phaseNum]:
             phaseDay = 0
             phaseNum = min(phaseNum + 1, phasePlan.maxPhaseNum)
-        
+
         #each person, if vaccinated, adds another day to the nunmber of days after their last shot.
         #they also schedule an appointment if they are eligible
         for person in population.peopleArray:
@@ -524,11 +524,9 @@ class MasterController:
                 random.randrange(0, facilities.size())
                 daysAfter = random.randint(1, 14)
                 facilities[i].scheduleAppointment(currDay + daysAfter)
-        
 
-
+    # Test facilities
     def runFacilityTests(self, filename):
-        M = self.createModule()
         facilities, totalCapacities, openHours = M.createFacilitiesCSV(filename)
         self.testFacilitiesByCategory(facilities, 'Lunch')
         self.testDayTimeAvailability(openHours, 'Mon', 11)
@@ -559,18 +557,35 @@ class MasterController:
         print("Should find: 960")
         print("Found: " + str(len(found)))
 
-        
+    # For each POI in the visit matrices, add together all the people in the CBGs
+    # Notes: x-axis (cols) is CBGs, y-axis (rows) is POIs
+    #        dfVisitMatrix.sum(axis=0) for column-wise sum
+    #        dfVisitMatrix.sum(axis=1) for row-wise sum
+    def sumVisitMatrices(self):
+        totals = []
+
+        # Access each visit matrix for each hour in the week (total of 168 hours)
+        for hour in range(168):
+            hourVisitMatrix = self.poi_cbg_visit_matrix_history[hour]
+            dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
+            total_sum = dfVisitMatrix.to_numpy().sum()  # Sum up all the values in the visit matrix
+            totals.append(round(total_sum))  # Round the sum and append to the list
+
+        # Uncomment the line below to print out the list of sums
+        # print(totals)
+
 if __name__ == '__main__':
-
-
     mc = MasterController()  # Instantiate a MasterController
-    #mc.runFacilityTests('core_poi_OKCity.csv')
+
+    # mc.runFacilityTests('core_poi_OKCity.csv')  # Run facility tests
+
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
     # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
 
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+    # mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 

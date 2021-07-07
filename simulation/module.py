@@ -58,7 +58,7 @@ class Module:
             for h in hours:
                 openHours[h].add(nextFacility)
         return facilities, totalCapacities, openHours
-    
+
     def createFacilitiesCSV(self, filename):
         df = pd.read_csv(filename)
         dfList = df.values.tolist()
@@ -80,6 +80,7 @@ class Module:
             if isinstance(row[17], str):
                 hours = json.loads(str(row[17]))
                 days = list(hours.keys())
+
             if isinstance(row[7], str):
                 if "Restaurant" in row[6]:
                     cap = 20
@@ -106,17 +107,4 @@ class Module:
        
         return facilities, totalCapacities, openHours
         # print(alist)
-        
-    def createFacilitiesUpdated(self, filename):
-        # current file format: [facility type(str), capacity(int), open hours per day(list(int)), open days(list(str)), latitude(float), longitude(float), people in it(list[Person])]
-        # TODO better format the .json file to make varying hours over the days of a week, and distribute permanant workers into people[]
-        file = open(filename, 'r')
-        lines = file.readlines()
-        facilities = dict()
-        totalCapacities = 0
-        key = 0
-        openHours = {hour: set() for hour in range(24)}
-        for index, line in enumerate(lines):
-            lineArr = line.strip().split(';')
-            
-            
+
