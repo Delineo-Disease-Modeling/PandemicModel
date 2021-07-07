@@ -137,7 +137,7 @@ class MasterController:
         self.excelToJson(excel_file, json_file)
         file = open(json_file, 'r')
         return file
-            
+    
     def jsonRequest(self, request):
         """ Parse json_string and store values in MasterController members
         Key strings must be valid attribute names.
@@ -401,8 +401,8 @@ class MasterController:
             intervention_list["contactTracing"] = 0
         if "stayAtHome" not in intervention_list:
             intervention_list["stayAtHome"] = False
-        if "vaccinatedPercent" not in interventions:
-            interventions["vaccinatedPercent"] = 0
+        if "vaccinatedPercent" not in intervention_list:
+            intervention_list["vaccinatedPercent"] = 0
         return intervention_list
 
     # Add people to households
@@ -588,5 +588,5 @@ if __name__ == '__main__':
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')
