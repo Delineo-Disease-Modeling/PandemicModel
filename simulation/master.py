@@ -199,13 +199,14 @@ class MasterController:
     # Add people to facilities based on data in visit matrices
     def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h):
         # Array of facility submodules that are both open and not full
-
+        
         openFacilities = {id: facility for id, facility in facilities.items()
                           if daysDict[dayOfWeek] in facility.getDays()
                           and facility in openHours[hourOfDay]}
+        if openFacilities.get(0):
+            print(str(openFacilities))
         # list of IDs not yet assigned to a facility
         notAssigned = [*range(len(Pop))]  # about 1200 right now
-
         # Assign people to facilities based on visit matrices
         hourVisitMatrix = self.poi_cbg_visit_matrix_history[
             h % 168]  # mod resets h to be the hour in current week ie all mondays at midnight will be 0
@@ -213,12 +214,13 @@ class MasterController:
         dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Just sum all cbgs for now
 
         scale = len(Pop) / 600000.0  # Scale down number of visitors by percentage of OKC population
+        
         for poiID, numPeople in dfVisitMatrix.iteritems():
             facility = openFacilities.get(poiID)
             if not facility:
-                break
+                continue
             if facility.getCapacity() == facility.getVisitors():
-                break
+                continue
             r = 1
             if interventions["stayAtHome"]:
                 r = 2  # Reduce number of people at facilities by factor of 2 if stay at home orders.
@@ -230,6 +232,7 @@ class MasterController:
                 # print("ween")      
                 idindextoadd = random.randint(0, len(notAssigned) - 1)
                 traffic += 1
+            
                 facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
         return (facilities, notAssigned)
 
@@ -412,6 +415,8 @@ class MasterController:
         # {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
             'core_poi_OKCity.csv')
+        # facilities, totalFacilityCapacities, openHours = M.createFacilities(
+        #     'submodules2.json')
 
 
         # Fill with change in infections as [initial, final] per hour

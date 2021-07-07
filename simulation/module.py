@@ -95,8 +95,8 @@ class Module:
                 elif "Gym" in row[6]:
                     cap = 30
                 totalCapacities += cap
-            nextFacility = Submodule(key, facilitytype = row[7], capacity=cap, latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
-            facilities[key] = nextFacility
+            nextFacility = Submodule(id = int(key), facilitytype = row[7], capacity=cap, latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
+            facilities[int(key)] = nextFacility
             if days:
                 for timeInterval in hours[days[0]]:
                     start = int(timeInterval[0].split(':')[0])
