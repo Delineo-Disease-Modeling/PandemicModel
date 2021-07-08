@@ -7,6 +7,7 @@ import json
 import pickle
 import pandas as pd
 import math
+import xlrd
 
 
 
@@ -29,6 +30,8 @@ class MasterController:
     
     infecFacilitiesTot = []
     infecHousesTot = []
+
+    data_json = None
     
     visitMatrices = None # Save matrices 
 
@@ -81,8 +84,60 @@ class MasterController:
 
     def displayResult(self):
         # TODO
-        print('Nothing to show yet')
+        return
+
+    """
+    def main(self):
+
+        print("Hello")
+
+        # TODO Integrate Graph approach with current spread model
+        M = self.createModule()  # Module instantiated - holds the submodules(facilities), population
+        Pop = M.createPopulation()  # Population created and returned as array of People class objects
+
+        # Initialize 5 current infections - This will eventually be customizable. Consider - if we have 20 initial
+        # infections how should we spread them through the population?
+        for i in range(5):
+            ran = random.randint(0, len(Pop) - 1)
+            Pop[ran].setInfectionState(True)
+        Facilities = M.createSubmodules() # Submodules returned as list of submodule objects.
+        interval = 2
+        self.runSim(interval, Pop, Facilities, M)
+        count = 0
+        for each in Pop:
+            if Pop[each].getInfectionState():
+                count += 1
+        print(count)
+    """     
+
+        # print('Nothing to show yet')
    
+    def excelToJson(self, excelfile, jsonfile):
+        # converts excel sheet to json format- to be used in function that returns file
+        workbook = xlrd.open_workbook(excelfile)
+        workbook = xlrd.open_workbook(excelfile, on_demand=True)
+        worksheet = workbook.sheet_by_index(0)
+        data = {'date': [], 'newcases': []}
+        for row in range(1, worksheet.nrows):
+            data['date'].append({'year': worksheet.cell_value(row, 0),
+                                 'month': worksheet.cell_value(row, 1),
+                                 'day': worksheet.cell_value(row, 2)})
+            data['newcases'].append(worksheet.cell_value(row, 3))
+        df = pd.DataFrame(data)
+        result = df.to_json(orient="records")
+        json_data = {'case distribution':
+                     {'school': '', 'restaurant': '', 'gym': '', 'bar': ''},
+                     'initial_cases': 0, 'data': result}
+        with open(jsonfile, 'w') as outfile:
+            json.dump(json_data, outfile)
+
+    def return_json(self, location):
+        excel_file = location + ' Data.xls'
+        json_file = location + ' Data.json'
+        self.excelToJson(excel_file, json_file)
+        file = open(json_file, 'r')
+        return file
+    
     def jsonRequest(self, request):
         """ Parse json_string and store values in MasterController members
         Key strings must be valid attribute names.
@@ -464,7 +519,7 @@ class MasterController:
 
         #Updated the formatting of the json file
         response = {'Buildings': [
-                    {"BuildingName": str(facilities[id].getFacilityType())+ str(id),
+                    {"BuildingName": str(facilities[id].getFacilityType()) + str(id),
                     "InfectedDaily": infectionInFacilitiesHourly[id],
                     "PeopleDaily": peopleInFacilitiesHourly[id]}
                     for id in range(len(facilities))]
@@ -533,5 +588,5 @@ if __name__ == '__main__':
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
-
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
+    mc.excelToJson('OKC Data.xls', 'OKC Data.json')
