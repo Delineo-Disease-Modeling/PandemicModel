@@ -125,8 +125,9 @@ class MasterController:
             data['newcases'].append(worksheet.cell_value(row, 3))
         df = pd.DataFrame(data)
         result = df.to_json(orient="records")
+        type_dict = {'school': 23, 'restaurant': 10, 'gym': 38, 'bar': 29}
         json_data = {'case distribution':
-                     {'school': '', 'restaurant': '', 'gym': '', 'bar': ''},
+                         [{'label': label, 'value': value} for label, value in type_dict.items()],
                      'initial_cases': 0, 'data': result}
         with open(jsonfile, 'w') as outfile:
             json.dump(json_data, outfile)
@@ -588,5 +589,5 @@ if __name__ == '__main__':
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
+    #mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')
