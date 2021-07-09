@@ -589,5 +589,5 @@ if __name__ == '__main__':
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    #mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')
