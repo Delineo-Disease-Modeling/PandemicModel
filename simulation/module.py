@@ -74,28 +74,52 @@ class Module:
             categoryList = {}
             if isinstance(row[18], str):
                 categoryList = str(row[18]).split(',')
+
             hours = []
             days = []
             cap = 0
             if isinstance(row[17], str):
                 hours = json.loads(str(row[17]))
                 days = list(hours.keys())
-
+            else:
+                hours = {"Mon": [["9:00", "17:00"]], "Tue": [["9:00", "17:00"]],
+                         "Wed": [["9:00", "17:00"]], "Thu": [["9:00", "17:00"]],
+                         "Fri": [["9:00", "17:00"]], "Sat": [["9:00", "17:00"]],
+                         "Sun": [["9:00", "17:00"]]}
+                days = list(hours.keys())
+            
+            
+            facilityName = ""
             if isinstance(row[7], str):
                 if "Restaurant" in row[6]:
                     cap = 20
-                elif "Physicians" in row[6]:
+                    facilityName = 'Restaurant'
+                elif "Physicians" in row[6] or "Hospitals" in row[6]:
                     cap = 60
+                    facilityName = 'Hospital'
                 elif "Grocery" in row[6]:
                     cap = 50;
+                    facilityName = 'Supermarket'
                 elif "Retail" in row[6]:
                     cap = 20
+                    facilityName = 'Retail'
                 elif "School" in row[6]:
                     cap = 20
+                    facilityName = 'School'
                 elif "Gym" in row[6]:
                     cap = 30
-                totalCapacities += cap
-            nextFacility = Submodule(id = int(key), facilitytype = row[7], capacity=cap, latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
+                    facilityName = 'Gym'
+                #default for facilities with no categories in submodule.py 
+                else:
+                    cap = 20
+                    facilityName = 'Other'
+            #default for facilities with no categories in csv file 
+            else:
+                cap = 20
+                facilityName = 'Other'
+            totalCapacities += cap
+
+            nextFacility = Submodule(id = int(key), facilitytype = facilityName, capacity=cap, latitude = row[9], longitude = row[10], categories = categoryList, hours = hours, days = days)
             facilities[int(key)] = nextFacility
             if days:
                 for timeInterval in hours[days[0]]:
@@ -104,7 +128,8 @@ class Module:
                     for i in range(start, end):
                         openHours[i].add(nextFacility)
             key = key + 1
-       
+        
+        #print(len(facilities))
         return facilities, totalCapacities, openHours
-        # print(alist)
+        #print(alist)
 

@@ -28,7 +28,7 @@ class Population():
 
 
         num_households = 250000 # 459
-        npop = 500000 #1132 #this is 6000 - but when increased synthpops does not work
+        npop = 650000 #1132 #this is 6000 - but when increased synthpops does not work
         num_workplaces = 24000
 
         # TODO: default school sizes are still being used

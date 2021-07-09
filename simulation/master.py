@@ -1,3 +1,4 @@
+
 from person import Person
 from module import Module
 from submodule import Submodule
@@ -100,10 +101,8 @@ class MasterController:
         """ Form json response
         Usage:
         jsonResponse(infectionInFacilitiesHourly)
-
         Parameters:
         response (obj): Data to load into response. May be of any form accepted by the json.dumps() function
-
         Returns:
         string: string containing json response of the form {"Response": data}
         """
@@ -113,7 +112,6 @@ class MasterController:
         """ Form json response and write to a file
         Usage:
         jsonResponse(infectionInFacilitiesHourly, file)
-
         Parameters:
         response (obj): Data to load into response. May be of any form accepted by the json.dumps() function
         filename (string): filename to write to
@@ -125,10 +123,8 @@ class MasterController:
 
     def loadVisitMatrix(self, filename):
         """Load full visit matrix from a pickle file
-
         Parameters:
         filename (string): pickle file to read from
-
         Returns:
         (obj): visit matrix with CBGs in x-axis and POIs in y-axis,
         """
@@ -139,7 +135,7 @@ class MasterController:
         self.poi_cbg_visit_matrix_history = self.visitMatrices['poi_cbg_visit_matrix_history']
         self.cbgs_idxs_to_ids = self.visitMatrices['cbgs_idxs_to_ids']
         self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
-        self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
+        #self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
 
     def calcInfectionsHomes(self, atHomeIDs, Pop, currentInfected):
         numperhour = 0
@@ -391,7 +387,7 @@ class MasterController:
         numVaccinated = math.floor( (len(Pop) * interventions["vaccinatedPercent"])/100)
 
         # Assign initial infection state status for each person
-        initialInfected = 10  # Should be customizable in  the future
+        initialInfected = 1000  # Should be customizable in  the future
         notInfected = [*range(len(Pop))] # list from 1 to num in pop
         for i in range(initialInfected):
             nextInfected = notInfected.pop(random.randint(0,
@@ -589,9 +585,8 @@ if __name__ == '__main__':
     # TODO MasterController() should take in json file - load information such as population, interventions, etc
     # TODO Callibration to match realistic/standard data once above is completed.
 
-    mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    # mc.sumVisitMatrices()  # Verify correctness of visit matrices
+    mc.loadVisitMatrix('Oklahoma_Jan06_fullweek_dict.pkl')
+    #mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
-

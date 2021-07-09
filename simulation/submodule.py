@@ -20,7 +20,9 @@ class Submodule:
             "Retail": 20, #TODO: there is so much variablity in retail/restaraunt capacities and airflow etc. How can we model them all with one factor?
             "School": 20,
             "Hospital": 60,
-            "Gym": 30
+            "Gym": 30,
+            "Other": 20
+
         }
         self.__Capacity = capacities[facilitytype] if facilitytype in capacities else 20
         self.__Visitors = 0  # the current number of customers in the facility
@@ -263,9 +265,10 @@ class Submodule:
                       set(['Movie theater']),
                       set(['Community center', 'Gym', 'Spa']),
                       set(['Nursing home', 'Hospital']),
-                      set(['Gas station', 'Park', 'Zoo'])]
+                      set(['Gas station', 'Park', 'Zoo']),
+                      set(['Other'])]
         # 50 is placeholder for outdoor facilities. todo: find actual air flow rate
-        ventRate = [2.5, 3.5, 3.8, 5, 10, 13, 50]
+        ventRate = [2.5, 3.5, 3.8, 5, 10, 13, 50, 10]
         # todo add more types of facilities
         for i in range(len(facilities)):
             if facility in facilities[i]:
@@ -285,6 +288,8 @@ class Submodule:
             return 25
         if facility == 'Gym' or facility =='Community center' or facility =='Church' or facility == 'School':
             return 48
+        if facility == 'Other':
+            return 20 
         return 14 # catch case
 
 
