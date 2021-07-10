@@ -59,6 +59,81 @@ class Module:
                 openHours[h].add(nextFacility)
         return facilities, totalCapacities, openHours
 
+    def createFacilitiesTXT(self, filename):
+        #Read in the information from the facilities txt file
+        with open('facilites_info.txt') as f:
+            lines = f.readlines()
+            lines = lines[:-1]
+        totalCapacities = 0
+        openHours = {hour: set() for hour in range(24)}
+        category = []
+        category_num = []
+        for row in lines:
+            split_row = row.split("  ")
+            category.append(split_row[0])
+            category_num.append(int(split_row[len(split_row) - 1].strip("\n")))
+
+        facilities = dict()
+        hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+        days = ["M", "T", "W", "Th", "F", "Sat", "Sun"]
+        index = 0
+        counter = 0 
+        facilities_ID = 0
+        facility_type = ''
+
+        #create facilities of each category
+        while (index < len(category)):
+            counter = 0 
+            #create n facilities depending on the value in category_num
+            while (counter < category_num[index]):
+                if "Restaurant" in category[index] or "Bars" in category[index] or "Drinking Places" in category[index]: 
+                    facility_type = 'Restaurant'
+                    cap = 20 
+                elif "Physicians" in category[index] or "Hospitals" in category[index] or "Health" in category[index] or "Ambulatory Surgical and Emergency" in category[index] or "Kidney Dialysis Centers" in category[index]:
+                    facility_type = 'Hospital'
+                    cap = 60
+                elif "Grocery" in category[index] or "Markets" in category[index]:
+                    facility_type = 'Supermarket'
+                    cap = 50
+                elif "Retail" in category[index] or "Stores" in category[index] or "Wholesalers" in category[index] or "Carriers" in category[index] or "Florists" in category[index]:
+                    facility_type = 'Retail'
+                    cap = 20
+                elif "School" in category[index] or "Child" in category[index] or "Colleges" in category[index]:
+                    facility_type = 'School'
+                    cap = 20
+                elif "Religious" in category[index]:
+                    facility_type = 'Church' 
+                    cap = 30
+                elif "Gym" in category[index]:
+                    facility_type = 'Gym' 
+                    cap = 30
+                elif "Weight Reducing Centers" in category[index] or "Sports Centers" in category[index] or "Family Planning Centers" in category[index]:
+                    facility_type = 'Community center' 
+                    cap = 30
+                elif "Casinos" in category[index]:
+                    facility_type = 'Casino' 
+                    cap = 50
+                elif "Theaters" in category[index]:
+                    facility_type = 'Movie theater' 
+                    cap = 50
+                #default for facilities with categories not represented in submodule.py 
+                else:
+                    facility_type = 'Other'
+                    cap = 20
+                
+                totalCapacities += cap
+                nextFacility = Submodule(id = facilities_ID, facilitytype = facility_type, capacity=cap, categories = category[index], hours = hours, days = days)
+                facilities[facilities_ID] = nextFacility
+                for h in hours:
+                    openHours[h].add(nextFacility)
+                facilities_ID += 1
+                counter += 1 
+            index += 1
+
+        #There are 10956 total facilities.  
+        return facilities, totalCapacities, openHours
+
+   
     def createFacilitiesCSV(self, filename):
         df = pd.read_csv(filename)
         dfList = df.values.tolist()

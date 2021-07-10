@@ -199,8 +199,8 @@ class MasterController:
         openFacilities = {id: facility for id, facility in facilities.items()
                           if daysDict[dayOfWeek] in facility.getDays()
                           and facility in openHours[hourOfDay]}
-        if openFacilities.get(0):
-            print(str(openFacilities))
+        #if openFacilities.get(0):
+            #print(str(openFacilities))
         # list of IDs not yet assigned to a facility
         notAssigned = [*range(len(Pop))]  # about 1200 right now
         # Assign people to facilities based on visit matrices
@@ -387,7 +387,7 @@ class MasterController:
         numVaccinated = math.floor( (len(Pop) * interventions["vaccinatedPercent"])/100)
 
         # Assign initial infection state status for each person
-        initialInfected = 1000  # Should be customizable in  the future
+        initialInfected = 100  # Should be customizable in  the future
         notInfected = [*range(len(Pop))] # list from 1 to num in pop
         for i in range(initialInfected):
             nextInfected = notInfected.pop(random.randint(0,
@@ -409,8 +409,10 @@ class MasterController:
 
         # Instantiate submodules with
         # {id: submodule}, int, {hour: set of facilities open}
-        facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
-            'core_poi_OKCity.csv')
+
+        facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV('core_poi_OKCity.csv')
+
+        #facilities, totalFacilityCapacities, openHours = M.createFacilitiesTXT('facilites_info.txt')
         # facilities, totalFacilityCapacities, openHours = M.createFacilities(
         #     'submodules2.json')
 
@@ -448,11 +450,11 @@ class MasterController:
         Pop = self.set_households(Pop)
         daysDict = {
             0: 'Sun',
-            1: 'Mon',
-            2: 'Tue',
-            3: 'Wed',
-            4: 'Thu',
-            5: 'Fri',
+            1: 'M',
+            2: 'T',
+            3: 'W',
+            4: 'Th',
+            5: 'F',
             6: 'Sat'
         }
         numFacilities = len(facilities)
@@ -528,10 +530,12 @@ class MasterController:
 
     # Test facilities
     def runFacilityTests(self, filename):
-        facilities, totalCapacities, openHours = M.createFacilitiesCSV(filename)
-        self.testFacilitiesByCategory(facilities, 'Lunch')
-        self.testDayTimeAvailability(openHours, 'Mon', 11)
-        self.testFacilitiesByType(facilities, 'Full-Service Restaurants')
+        M = self.createModule()
+
+        facilities, totalCapacities, openHours = M.createFacilitiesTXT(filename)
+        self.testFacilitiesByCategory(facilities, 'Full-Service Restaurants')
+        self.testDayTimeAvailability(openHours, 'T', 11)
+        self.testFacilitiesByType(facilities, 'Church')
         
     def testDayTimeAvailability(self, openHours, day, hour):
         sc.heading("Testing facilities open on "+  str(day)+  ", "+str(day))
@@ -539,7 +543,7 @@ class MasterController:
         for facility in openHours[hour]:
             if day in facility.getDays():
                validFacilities.append(facility.getID())
-        print(validFacilities)
+        print(len(validFacilities))
 
     def testFacilitiesByCategory(self, facilities, category):
         sc.heading("Testing facilities with category " + category)
@@ -547,7 +551,7 @@ class MasterController:
         for facility in facilities.values():
             if category in facility.categories:
                 found.append(facility.getID())
-        print(found)
+        print(len(found))
         
     def testFacilitiesByType(self, facilities, facType):
         sc.heading("Testing facilities with type: " + facType)
@@ -555,7 +559,7 @@ class MasterController:
         for facility in facilities.values():
             if (facility.getFacilityType() == facType):
                 found.append(facility.getID())
-        print("Should find: 960")
+        print("Should find: 495")
         print("Found: " + str(len(found)))
 
     # For each POI in the visit matrices, add together all the people in the CBGs
@@ -578,7 +582,7 @@ class MasterController:
 if __name__ == '__main__':
     mc = MasterController()  # Instantiate a MasterController
 
-    # mc.runFacilityTests('core_poi_OKCity.csv')  # Run facility tests
+    #mc.runFacilityTests('facilites_info.txt')  # Run facility tests
 
     # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
     # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
