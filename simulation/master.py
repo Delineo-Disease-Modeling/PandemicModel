@@ -31,6 +31,9 @@ class MasterController:
     infecFacilitiesTot = []
     infecHousesTot = []
 
+    dailyInfectionList = []
+    totalInfectionList = []
+
     data_json = None
     
     visitMatrices = None # Save matrices 
@@ -125,8 +128,9 @@ class MasterController:
             data['newcases'].append(worksheet.cell_value(row, 3))
         df = pd.DataFrame(data)
         result = df.to_json(orient="records")
+        type_dict = {'school': 23, 'restaurant': 10, 'gym': 38, 'bar': 29}
         json_data = {'case distribution':
-                     {'school': '', 'restaurant': '', 'gym': '', 'bar': ''},
+                     [{'label': label, 'value': value} for label, value in type_dict.items()],
                      'initial_cases': 0, 'data': result}
         with open(jsonfile, 'w') as outfile:
             json.dump(json_data, outfile)
@@ -137,6 +141,12 @@ class MasterController:
         self.excelToJson(excel_file, json_file)
         file = open(json_file, 'r')
         return file
+
+    def json_data(self, json_file, num_days):
+        data = [{'day': i+1, 'data': {'daily_cases': self.dailyInfectionList[i],
+                'total_cases': self.totalInfectionList[i]}} for i in range(num_days)]
+        with open(json_file, 'w') as outfile:
+            json.dump(data, outfile)
     
     def jsonRequest(self, request):
         """ Parse json_string and store values in MasterController members
@@ -418,9 +428,7 @@ class MasterController:
                     #   Pop[each].addtoextendedhousehold(person)
         return Pop
 
-
     # Wells-Riley
-
     # Modularized: contents can be found in simulation, set_households, set interventions,
     # move_people, update_status
     def WellsRiley(self, print_infection_breakdown, num_days=7, interventions=None):
@@ -543,8 +551,21 @@ class MasterController:
             print("Total infections in facilities:", facilityinfections)
         print("Total infections:", num)
         
-        self.infecFacilitiesTot= totalInfectedInFacilities
-        self.infecHousesTot= infectionInHouseholds
+        self.infecFacilitiesTot = totalInfectedInFacilities
+        self.infecHousesTot = infectionInHouseholds
+
+        for i in range(num_days):
+            totalFacilityInfection = totalInfectedInFacilities[(i+1) * 24 - 1]
+            totalHouseholdInfection = infectionInHouseholds[(i+1) * 24 - 1]
+            self.totalInfectionList.append(totalFacilityInfection + totalHouseholdInfection + initialInfected)
+            if i == 0:
+                self.dailyInfectionList.append(self.totalInfectionList[0] - initialInfected)
+            else:
+                self.dailyInfectionList.append(self.totalInfectionList[i] - self.totalInfectionList[i - 1])
+        # print(self.dailyInfectionList)
+        # print(self.totalInfectionList)
+
+        self.json_data('Infection_Data.json', num_days)
 
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
@@ -588,5 +609,5 @@ if __name__ == '__main__':
     mc.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
     interventions = {}
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
+    mc.WellsRiley(True, 61, interventions)  # Run Wells-Riley
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')
