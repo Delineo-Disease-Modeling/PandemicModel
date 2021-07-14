@@ -59,7 +59,7 @@ class Module:
                 openHours[h].add(nextFacility)
         return facilities, totalCapacities, openHours
 
-    def createFacilitiesTXT(self, filename):
+    def createFacilitiesTXT(self, filename, verbose):
         #Read in the information from the facilities txt file
         with open('facilites_info.txt') as f:
             lines = f.readlines()
@@ -104,22 +104,15 @@ class Module:
                 elif "Religious" in category[index]:
                     facility_type = 'Church' 
                     cap = 30
-                elif "Gym" in category[index]:
+                elif "Gym" in category[index] or "Weight Reducing Centers" in category[index]:
                     facility_type = 'Gym' 
                     cap = 30
-                elif "Weight Reducing Centers" in category[index] or "Sports Centers" in category[index] or "Family Planning Centers" in category[index]:
-                    facility_type = 'Community center' 
-                    cap = 30
-                elif "Casinos" in category[index]:
-                    facility_type = 'Casino' 
-                    cap = 50
-                elif "Theaters" in category[index]:
-                    facility_type = 'Movie theater' 
-                    cap = 50
-                #default for facilities with categories not represented in submodule.py 
+                #default for facilities with categories not represented in submodule.py # UPDATE NOT DOING THIS #
                 else:
-                    facility_type = 'Other'
-                    cap = 20
+                    # If facility type does not appear in submodule.py we should skip it #
+                    break
+                    #facility_type = 'Other'
+                    #cap = 20
                 
                 totalCapacities += cap
                 nextFacility = Submodule(id = facilities_ID, facilitytype = facility_type, capacity=cap, categories = category[index], hours = hours, days = days)
@@ -130,7 +123,10 @@ class Module:
                 counter += 1 
             index += 1
 
-        #There are 10956 total facilities.  
+        if verbose:
+            print(len(facilities))
+
+        #There are 10956 total facilities. <- there shouldn't be  
         return facilities, totalCapacities, openHours
 
    

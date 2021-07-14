@@ -35,6 +35,17 @@ class MasterController:
 
     visitMatrices = None # Save matrices
 
+    #####
+    # The below booleans turn on a whole bunch of print statements, at some point this should be redesigned to so we can better target specific functions
+    # loopDebugMode: targets the ridiculous amount of for-each loops we have, and should be used for seeing if the program is looping through the lists we use
+    #                for looking at who's infected, not infected, etc.
+    loopDebugMode = True
+
+    # generalDebugMode: targets areas of the codebase responsible for progressing through the simulation at a high level, like going through days, facilities, etc.
+    #                   Basically use this for print statements in places that won't immediately clog the terminal with thousands of lines of output
+    generalDebugMode = True
+    #####
+
     # getUserInput: This function will assign the state, county, and interventions as the user specifies
     # params:
     #   state - the state passed by the user
@@ -145,6 +156,10 @@ class MasterController:
         # note this math may need to be worked out more, along with correct, scientific numbers
         infectedAndHome = set()
         for each in currentInfected:
+            ##### loopDebugMode #####
+            if self.loopDebugMode:
+                print('===master.py/calcInfectionsHomes: looping currentInfected===')
+            ##### loopDebugMode #####
             if each.getID() in atHomeIDs and 0 <= each.getInfectionState() <= 3:
                 infectedAndHome.add(each)
 
@@ -221,15 +236,21 @@ class MasterController:
             if interventions["stayAtHome"]:
                 r = 2  # Reduce number of people at facilities by factor of 2 if stay at home orders.
             traffic = 0
-            for i in range(min((math.ceil(numPeople * scale / r)), math.ceil((interventions[
-                                                                                  "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now
+            for i in range(min((math.ceil(numPeople / r)), math.ceil((interventions[ #REMOVED scale, used to be numPeople * scale 7/13
+                                                                                  "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now # NOT ANYMORE 7/13
                 if not notAssigned:
-                    break
-                # print("ween")      
+                    # what is this? 7/13
+                    break    
                 idindextoadd = random.randint(0, len(notAssigned) - 1)
                 traffic += 1
             
                 facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
+
+                ##### loopDebugMode #####
+                if self.loopDebugMode:
+                    print('=== master.py/move_people: looping to add people to POI')
+                
+
         return (facilities, notAssigned)
 
     # Main simulation
@@ -242,6 +263,11 @@ class MasterController:
         # Assume movements to facilities in the day only (10:00 - 18:00)
         tested = set()
         for h in range(num_days * 24):
+
+            ### generalDebugMode ###
+            if self.generalDebugMode:
+                print('master.py/simulation: Hour ', h)
+
             if h % 24 == 0:
                 currentInfected, tested = self.update_status(interventions, currentInfected, tested)
 
@@ -259,6 +285,9 @@ class MasterController:
             # TODO: retention rate within the same facility. currently no one is retained - Retention rate eventually covered by ML team
 
             for id in facilities:
+                ##### loopDebugMode #####
+                if self.loopDebugMode:
+                    print('===master.py/simulation: looping facilities 1/2===')
                 facility = facilities[id]
                 facility.setVisitors(0)
                 facility.clearPeople()
@@ -274,6 +303,9 @@ class MasterController:
             # ____SETHOUSEHOLDS_____
             infectedathome = self.calcInfectionsHomes(notAssigned, Pop, currentInfected)
             for each in infectedathome:
+                ##### loopDebugMode #####
+                if self.loopDebugMode:
+                    print('===master.py/simulation: looping infectedathome===')
                 currentInfected.add(each)
             numinfectedathome = len(infectedathome)
             houseinfections += numinfectedathome
@@ -283,6 +315,11 @@ class MasterController:
                 infectionInHouseholds.append(numinfectedathome + infectionInHouseholds[h - 1])
 
             for i in range(len(facilities)):
+
+                ##### loopDebugMode #####
+                if self.loopDebugMode:
+                    print('===master.py/simulation: looping facilities 2/2===')
+
                 if daysDict[dayOfWeek] not in facilities[i].getDays():
                     infectionInFacilities[i].append('Not open')
                     continue
@@ -299,6 +336,9 @@ class MasterController:
                 # get number of people in facilities
                 peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
                 for person in facilities[i].getPeople():
+                    ##### loopDebugMode #####
+                    if self.loopDebugMode:
+                        print('===master.py/simulation: looping person in facilities')
                     # Don't re-infect
                     if len(person.getInfectionTrack()) > 0:  # continue if already infected
 
@@ -410,7 +450,7 @@ class MasterController:
         # Instantiate submodules with
         # {id: submodule}, int, {hour: set of facilities open}
 
-        facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV('core_poi_OKCity.csv')
+        facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV('core_poi_OKCity.csv') # wasn't this changed to load the .txt? 7/13
 
         #facilities, totalFacilityCapacities, openHours = M.createFacilitiesTXT('facilites_info.txt')
         # facilities, totalFacilityCapacities, openHours = M.createFacilities(
@@ -532,13 +572,13 @@ class MasterController:
     def runFacilityTests(self, filename):
         M = self.createModule()
 
-        facilities, totalCapacities, openHours = M.createFacilitiesTXT(filename)
+        facilities, totalCapacities, openHours = M.createFacilitiesTXT(filename, False)
         self.testFacilitiesByCategory(facilities, 'Full-Service Restaurants')
         self.testDayTimeAvailability(openHours, 'T', 11)
         self.testFacilitiesByType(facilities, 'Church')
         
     def testDayTimeAvailability(self, openHours, day, hour):
-        sc.heading("Testing facilities open on "+  str(day)+  ", "+str(day))
+        sc.heading("Testing facilities open on "+  str(day)+  ", "+str(hour))
         validFacilities = []
         for facility in openHours[hour]:
             if day in facility.getDays():
@@ -593,4 +633,5 @@ if __name__ == '__main__':
     #mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
+    mc.runFacilityTests('facilities_info.txt')
     mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
