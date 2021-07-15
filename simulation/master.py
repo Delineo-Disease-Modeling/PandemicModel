@@ -39,7 +39,7 @@ class MasterController:
     # The below booleans turn on a whole bunch of print statements, at some point this should be redesigned to so we can better target specific functions
     # loopDebugMode: targets the ridiculous amount of for-each loops we have, and should be used for seeing if the program is looping through the lists we use
     #                for looking at who's infected, not infected, etc.
-    loopDebugMode = True
+    loopDebugMode = False
 
     # generalDebugMode: targets areas of the codebase responsible for progressing through the simulation at a high level, like going through days, facilities, etc.
     #                   Basically use this for print statements in places that won't immediately clog the terminal with thousands of lines of output
@@ -155,6 +155,12 @@ class MasterController:
         averageinfectionrate = .2  # total odds of infecting someone whom they are connected to in a household with
         # note this math may need to be worked out more, along with correct, scientific numbers
         infectedAndHome = set()
+
+        ##### generalDebugMode #####
+        if self.generalDebugMode:
+            print('===master.py/calcInfectionsHomes: currentInfected length is ', len(currentInfected),'===')
+        ##### generalDebugMode #####
+
         for each in currentInfected:
             ##### loopDebugMode #####
             if self.loopDebugMode:
@@ -163,9 +169,14 @@ class MasterController:
             if each.getID() in atHomeIDs and 0 <= each.getInfectionState() <= 3:
                 infectedAndHome.add(each)
 
+        ##### generalDebugMode #####
+        if self.generalDebugMode:
+             print('===master.py/calcInfectionsHomes: infectedAndHome length is ', len(infectedAndHome),'===')
+        ##### generalDebugMode #####
+
         while infectedAndHome:
             current = infectedAndHome.pop()
-            currentlywith = list(current.getHouseholdMembers()) #id's
+            currentlywith = list(current.getHouseholdMembers()) #id's #someone should check that this list is behaving 7/14
             r = random.randint(1,24)
             if r <= 2:
                 neighborhouse = list(current.getextendedhousehold())[random.randint(0, len(current.getextendedhousehold())-1)]
@@ -174,6 +185,10 @@ class MasterController:
                     currentlywith.append(each)
 
             for each in currentlywith:
+                ##### loopDebugMode #####
+                if self.loopDebugMode:
+                    print('===master.py/calcInfectionsHomes: looping currentlywith===')
+                ##### loopDebugMode #####
                 if len(Pop[each].getInfectionTrack()) > 0:
                     continue
                 if (Pop[each].getVaccinatedStatus()):
@@ -191,7 +206,17 @@ class MasterController:
     # Update everyone's infection status at the beginning of each day
     def update_status(self, interventions, currentInfected, tested):
         toremove = set()
+
+        ##### Debug added 7/14 ####
+        if self.generalDebugMode:
+            print('===master.py/update_status: length of currentInfected', len(currentInfected), '===')
+
         for each in currentInfected:
+
+            ### Debug added 7/14 ####
+            if self.loopDebugMode:
+                 print('===master.py/update_status: looping currentInfected===')
+
             timer = each.incrementInfectionTimer()
             state = each.setInfectionState(each.getInfectionTrack()[timer])
             r = random.random()
@@ -202,6 +227,11 @@ class MasterController:
             if state == 4:
                 toremove.add(each)  # if recovered remove from infected list
         for each in toremove:
+
+            ### Debug added 7/14 ####
+            if self.loopDebugMode:
+                 print('===master.py/update_status: looping toremove===')
+
             currentInfected.remove(each)
             if each in tested:
                 tested.remove(each)

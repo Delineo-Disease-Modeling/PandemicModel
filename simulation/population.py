@@ -17,6 +17,9 @@ class Population():
         self.phaseNum = phaseNum
         self.currPhaseDayNum = currPhaseDayNum
 
+        ##### Debug flag #####
+        self.debugMode = True
+
     def get_dict(self):
         sp.validate()
         datadir = sp.datadir
@@ -43,6 +46,8 @@ class Population():
             peopleArray[i] = person
         self.peopleArray = peopleArray
 
+        if self.debugMode:
+            print('=population.py/get_dict: peopleArray length is', len(peopleArray),' =')
         return peopleArray
 
     # calls synthpops and generates population (dictionary)

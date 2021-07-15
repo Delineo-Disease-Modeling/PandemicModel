@@ -45,6 +45,9 @@ class Submodule:
         self.longitude = longitude
         self.categories = categories
 
+        ##### Debug added 7/14 #####
+        self.debugMode = True
+
     def getID(self):
         return self.__id
 
@@ -220,8 +223,13 @@ class Submodule:
         peopleDict = {person.getID(): person for person in self.__People}
         infectedAndHome = [person for person in self.__People if
                            0 <= person.getInfectionState() <= 3 and person.getID() in atHomeIDs]
+        
+        ##### Debug #####
+        if self.debugMode:
+                print('=== submodule.py/calcInfection: length of infectedAndHome',len(infectedAndHome), ' ===')
 
         for person in infectedAndHome:
+
             neighborIDs = list(stochGraph.neighbors(person.getID()))
             for neighborID in neighborIDs:
                 neighbor = peopleDict[neighborID]

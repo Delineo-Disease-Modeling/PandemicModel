@@ -169,7 +169,7 @@ class Module:
                     cap = 60
                     facilityName = 'Hospital'
                 elif "Grocery" in row[6]:
-                    cap = 50;
+                    cap = 50
                     facilityName = 'Supermarket'
                 elif "Retail" in row[6]:
                     cap = 20
@@ -199,8 +199,13 @@ class Module:
                     for i in range(start, end):
                         openHours[i].add(nextFacility)
             key = key + 1
+
+        ##### Debug Added 7/14 #####
+        debugMode = True
+
+        if debugMode:
+            print(len(facilities))
+        ##### Debug Added 7/14 #####
         
-        #print(len(facilities))
         return facilities, totalCapacities, openHours
-        #print(alist)
 
