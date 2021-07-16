@@ -154,53 +154,52 @@ class MasterController:
         averageinfectiouslength = 24 * 3  # number of days an individual is infectious
         averageinfectionrate = .2  # total odds of infecting someone whom they are connected to in a household with
         # note this math may need to be worked out more, along with correct, scientific numbers
-        infectedAndHome = set()
+        # infectedAndHome = set()
 
         ##### generalDebugMode #####
         if self.generalDebugMode:
             print('===master.py/calcInfectionsHomes: currentInfected length is ', len(currentInfected),'===')
         ##### generalDebugMode #####
 
-        for each in currentInfected:
+        '''
+        ##### generalDebugMode #####
+        if self.generalDebugMode:
+          print('===master.py/calcInfectionsHomes: infectedAndHome length is ', len(infectedAndHome),'===')
+        ##### generalDebugMode #####
+        '''
+
+        for current in currentInfected:
+            '''
             ##### loopDebugMode #####
             if self.loopDebugMode:
                 print('===master.py/calcInfectionsHomes: looping currentInfected===')
             ##### loopDebugMode #####
-            if each.getID() in atHomeIDs and 0 <= each.getInfectionState() <= 3:
-                infectedAndHome.add(each)
+            '''
+            if current.getID() in atHomeIDs and 0 <= current.getInfectionState() <= 3:
+                currentlywith = list(current.getHouseholdMembers()) #id's #someone should check that this list is behaving 7/14
+                r = random.randint(1,24)
+                if r <= 2:
+                    neighborhouse = list(current.getextendedhousehold())[random.randint(0, len(current.getextendedhousehold())-1)]
+                    currentlywith.append(neighborhouse)
+                    for each in Pop[neighborhouse].getHouseholdMembers():
+                        currentlywith.append(each)
+                for each in currentlywith:
+                    ##### loopDebugMode #####
+                    if self.loopDebugMode:
+                        print('===master.py/calcInfectionsHomes: looping currentlywith===')
+                    ##### loopDebugMode #####
+                    if len(Pop[each].getInfectionTrack()) > 0:
+                        continue
+                    if (Pop[each].getVaccinatedStatus()):
+                        householdRandomVariable = 20 * random.random()
+                    else:
+                        householdRandomVariable = random.random()
 
-        ##### generalDebugMode #####
-        if self.generalDebugMode:
-             print('===master.py/calcInfectionsHomes: infectedAndHome length is ', len(infectedAndHome),'===')
-        ##### generalDebugMode #####
-
-        while infectedAndHome:
-            current = infectedAndHome.pop()
-            currentlywith = list(current.getHouseholdMembers()) #id's #someone should check that this list is behaving 7/14
-            r = random.randint(1,24)
-            if r <= 2:
-                neighborhouse = list(current.getextendedhousehold())[random.randint(0, len(current.getextendedhousehold())-1)]
-                currentlywith.append(neighborhouse)
-                for each in Pop[neighborhouse].getHouseholdMembers():
-                    currentlywith.append(each)
-
-            for each in currentlywith:
-                ##### loopDebugMode #####
-                if self.loopDebugMode:
-                    print('===master.py/calcInfectionsHomes: looping currentlywith===')
-                ##### loopDebugMode #####
-                if len(Pop[each].getInfectionTrack()) > 0:
-                    continue
-                if (Pop[each].getVaccinatedStatus()):
-                    householdRandomVariable = 20 * random.random()
-                else:
-                    householdRandomVariable = random.random()
-
-                if (householdRandomVariable < (averageinfectionrate / (24 * (len(
-                        current.getInfectionTrack()) - current.getIncubation()))) and each in atHomeIDs):  # Probability of infection if in same house at the moment
-                    Pop[each].assignTrajectory()
-                    newlyinfectedathome.append(Pop[each])
-                    numperhour += 1
+                    if (householdRandomVariable < (averageinfectionrate / (24 * (len(
+                            current.getInfectionTrack()) - current.getIncubation()))) and each in atHomeIDs):  # Probability of infection if in same house at the moment
+                        Pop[each].assignTrajectory()
+                        newlyinfectedathome.append(Pop[each])
+                        numperhour += 1
         return newlyinfectedathome
 
     # Update everyone's infection status at the beginning of each day
@@ -255,6 +254,8 @@ class MasterController:
         dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Just sum all cbgs for now
 
         scale = len(Pop) / 600000.0  # Scale down number of visitors by percentage of OKC population
+
+        print("breakpoint one")
         
         for poiID, numPeople in dfVisitMatrix.iteritems():
             facility = openFacilities.get(poiID)
@@ -322,8 +323,11 @@ class MasterController:
                 facility.setVisitors(0)
                 facility.clearPeople()
 
+            print("breakpoint zero")
+
             facilities, notAssigned = self.move_people(facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h)
 
+            print("breakpoint three")
             # Calculate infections for those still not assigned (assume all
             # not in a facility are at home)
             """
@@ -479,6 +483,7 @@ class MasterController:
 
         # Instantiate submodules with
         # {id: submodule}, int, {hour: set of facilities open}
+
 
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV('core_poi_OKCity.csv') # wasn't this changed to load the .txt? 7/13
 
