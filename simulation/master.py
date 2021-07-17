@@ -10,6 +10,7 @@ import pandas as pd
 import math
 from datetime import datetime
 import sciris as sc
+from bisect import bisect_left
 
 
 
@@ -18,7 +19,7 @@ class MasterController:
 
     state = 'Oklahoma'
     county = 'Barnsdall'
-    population = 6000
+    population = 650000
     # Uncertain exactly what/how many interventions to expect
 
     interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
@@ -148,6 +149,16 @@ class MasterController:
         self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
         #self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
 
+    def BinSearch(self, a, x):
+        i = bisect_left(a, x)
+        if i != len(a) and a[i] == x:
+            return i
+        else:
+            return -1
+
+    def in_list(self, item_list, item):
+        return self.BinSearch(item_list, item) != -1
+
     def calcInfectionsHomes(self, atHomeIDs, Pop, currentInfected):
         numperhour = 0
         newlyinfectedathome = []
@@ -168,6 +179,7 @@ class MasterController:
         ##### generalDebugMode #####
         '''
 
+
         for current in currentInfected:
             '''
             ##### loopDebugMode #####
@@ -175,12 +187,12 @@ class MasterController:
                 print('===master.py/calcInfectionsHomes: looping currentInfected===')
             ##### loopDebugMode #####
             '''
-            if current.getID() in atHomeIDs and 0 <= current.getInfectionState() <= 3:
+            if self.in_list(atHomeIDs, current.getID()) and 0 <= current.getInfectionState() <= 3:
                 currentlywith = list(current.getHouseholdMembers()) #id's #someone should check that this list is behaving 7/14
                 r = random.randint(1,24)
                 if r <= 2:
                     neighborhouse = list(current.getextendedhousehold())[random.randint(0, len(current.getextendedhousehold())-1)]
-                    currentlywith.append(neighborhouse)
+                    # currentlywith.append(neighborhouse)
                     for each in Pop[neighborhouse].getHouseholdMembers():
                         currentlywith.append(each)
                 for each in currentlywith:
@@ -196,7 +208,7 @@ class MasterController:
                         householdRandomVariable = random.random()
 
                     if (householdRandomVariable < (averageinfectionrate / (24 * (len(
-                            current.getInfectionTrack()) - current.getIncubation()))) and each in atHomeIDs):  # Probability of infection if in same house at the moment
+                            current.getInfectionTrack()) - current.getIncubation()))) and self.in_list(atHomeIDs, each)):  # Probability of infection if in same house at the moment
                         Pop[each].assignTrajectory()
                         newlyinfectedathome.append(Pop[each])
                         numperhour += 1
@@ -255,7 +267,7 @@ class MasterController:
 
         scale = len(Pop) / 600000.0  # Scale down number of visitors by percentage of OKC population
 
-        print("breakpoint one")
+        #print("breakpoint one")
         
         for poiID, numPeople in dfVisitMatrix.iteritems():
             facility = openFacilities.get(poiID)
@@ -323,11 +335,13 @@ class MasterController:
                 facility.setVisitors(0)
                 facility.clearPeople()
 
-            print("breakpoint zero")
+            #print("breakpoint zero")
 
             facilities, notAssigned = self.move_people(facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h)
 
-            print("breakpoint three")
+            # print(notAssigned)
+
+            #print("breakpoint three")
             # Calculate infections for those still not assigned (assume all
             # not in a facility are at home)
             """
