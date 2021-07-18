@@ -216,14 +216,13 @@ class MasterController:
 
     # Update everyone's infection status at the beginning of each day
     def update_status(self, interventions, currentInfected, tested):
-        toremove = set()
+        toremove = []
 
         ##### Debug added 7/14 ####
         if self.generalDebugMode:
             print('===master.py/update_status: length of currentInfected', len(currentInfected), '===')
 
         for each in currentInfected:
-
             ### Debug added 7/14 ####
             if self.loopDebugMode:
                  print('===master.py/update_status: looping currentInfected===')
@@ -234,11 +233,10 @@ class MasterController:
             if r <= interventions["dailyTesting"] / 100 * .1 + (interventions["dailyTesting"] / 100) * (
                     interventions["contactTracing"] / 100) * .1:
                 tested.add(each)
-                rt = random.random()
             if state == 4:
-                toremove.add(each)  # if recovered remove from infected list
-        for each in toremove:
+                toremove.append(each)  # if recovered remove from infected list
 
+        for each in toremove:
             ### Debug added 7/14 ####
             if self.loopDebugMode:
                  print('===master.py/update_status: looping toremove===')
@@ -246,12 +244,13 @@ class MasterController:
             currentInfected.remove(each)
             if each in tested:
                 tested.remove(each)
+
         return (currentInfected, tested)
 
     # Add people to facilities based on data in visit matrices
     def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h):
         # Array of facility submodules that are both open and not full
-        
+
         openFacilities = {id: facility for id, facility in facilities.items()
                           if daysDict[dayOfWeek] in facility.getDays()
                           and facility in openHours[hourOfDay]}
@@ -268,7 +267,7 @@ class MasterController:
         scale = len(Pop) / 600000.0  # Scale down number of visitors by percentage of OKC population
 
         #print("breakpoint one")
-        
+
         for poiID, numPeople in dfVisitMatrix.iteritems():
             facility = openFacilities.get(poiID)
             if not facility:
@@ -283,16 +282,16 @@ class MasterController:
                                                                                   "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now # NOT ANYMORE 7/13
                 if not notAssigned:
                     # what is this? 7/13
-                    break    
+                    break
                 idindextoadd = random.randint(0, len(notAssigned) - 1)
                 traffic += 1
-            
+
                 facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
 
                 ##### loopDebugMode #####
                 if self.loopDebugMode:
                     print('=== master.py/move_people: looping to add people to POI')
-                
+
 
         return (facilities, notAssigned)
 
@@ -625,7 +624,7 @@ class MasterController:
         self.testFacilitiesByCategory(facilities, 'Full-Service Restaurants')
         self.testDayTimeAvailability(openHours, 'T', 11)
         self.testFacilitiesByType(facilities, 'Church')
-        
+
     def testDayTimeAvailability(self, openHours, day, hour):
         sc.heading("Testing facilities open on "+  str(day)+  ", "+str(hour))
         validFacilities = []
@@ -641,7 +640,7 @@ class MasterController:
             if category in facility.categories:
                 found.append(facility.getID())
         print(len(found))
-        
+
     def testFacilitiesByType(self, facilities, facType):
         sc.heading("Testing facilities with type: " + facType)
         found = []
@@ -683,4 +682,4 @@ if __name__ == '__main__':
     interventions = {}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.runFacilityTests('facilities_info.txt')
-    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley 
+    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
