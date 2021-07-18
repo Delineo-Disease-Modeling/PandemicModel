@@ -270,6 +270,10 @@ class MasterController:
 
         for poiID, numPeople in dfVisitMatrix.iteritems():
             facility = openFacilities.get(poiID)
+            if not notAssigned:
+                # what is this? 7/13
+                # should check if notAssigned is empty, aka no more people to move. should end loop.
+                break
             if not facility:
                 continue
             if facility.getCapacity() == facility.getVisitors():
