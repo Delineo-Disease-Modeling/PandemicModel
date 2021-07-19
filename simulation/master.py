@@ -12,7 +12,7 @@ from datetime import datetime
 import sciris as sc
 from bisect import bisect_left
 
-
+poiID = 0
 
 class MasterController:
     # MasterController class, this runs the simulation by instantiating module
@@ -250,54 +250,73 @@ class MasterController:
     # Add people to facilities based on data in visit matrices
     def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h):
         # Array of facility submodules that are both open and not full
-
         openFacilities = {id: facility for id, facility in facilities.items()
                           if daysDict[dayOfWeek] in facility.getDays()
                           and facility in openHours[hourOfDay]}
-        #if openFacilities.get(0):
-            #print(str(openFacilities))
-        # list of IDs not yet assigned to a facility
-        notAssigned = [*range(len(Pop))]  # about 1200 right now
+
+        # if openFacilities.get(0):
+        #     print(str(openFacilities))
+
+        # A list of IDs not yet assigned to a facility
+        notAssigned = [*range(len(Pop))]
+
         # Assign people to facilities based on visit matrices
-        hourVisitMatrix = self.poi_cbg_visit_matrix_history[
-            h % 168]  # mod resets h to be the hour in current week ie all mondays at midnight will be 0
+        hourVisitMatrix = self.poi_cbg_visit_matrix_history[h % 168]  # mod resets h to be the hour in current week ie all mondays at midnight will be 0
         dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
-        dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Just sum all cbgs for now
+        dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Sum all CBGs (converts dataframe to series)
 
-        scale = len(Pop) / 600000.0  # Scale down number of visitors by percentage of OKC population
+        # print("breakpoint one")
 
-        #print("breakpoint one")
+        # for poiID, numPeople in dfVisitMatrix.iteritems():
+        #     facility = openFacilities.get(poiID)
+        #     if not notAssigned:
+        #         # what is this? 7/13
+        #         # should check if notAssigned is empty, aka no more people to move. should end loop.
+        #         break
+        #     if not facility:
+        #         continue
+        #     if facility.getCapacity() == facility.getVisitors():
+        #         continue
+        #     r = 1
+        #     if interventions["stayAtHome"]:
+        #         r = 2  # Reduce number of people at facilities by factor of 2 if stay at home orders.
+        #     traffic = 0
+        #     for i in range(min((math.ceil(numPeople / r)), math.ceil((interventions[ #REMOVED scale, used to be numPeople * scale 7/13
+        #                                                                           "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now # NOT ANYMORE 7/13
+        #         if not notAssigned:
+        #             # what is this? 7/13
+        #             break
+        #         idindextoadd = random.randint(0, len(notAssigned) - 1)
+        #         traffic += 1
 
-        for poiID, numPeople in dfVisitMatrix.iteritems():
-            facility = openFacilities.get(poiID)
-            if not notAssigned:
-                # what is this? 7/13
-                # should check if notAssigned is empty, aka no more people to move. should end loop.
-                break
-            if not facility:
-                continue
-            if facility.getCapacity() == facility.getVisitors():
-                continue
-            r = 1
-            if interventions["stayAtHome"]:
-                r = 2  # Reduce number of people at facilities by factor of 2 if stay at home orders.
-            traffic = 0
-            for i in range(min((math.ceil(numPeople / r)), math.ceil((interventions[ #REMOVED scale, used to be numPeople * scale 7/13
-                                                                                  "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now # NOT ANYMORE 7/13
-                if not notAssigned:
-                    # what is this? 7/13
-                    break
-                idindextoadd = random.randint(0, len(notAssigned) - 1)
-                traffic += 1
+        #         facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
 
-                facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
+        #         ##### loopDebugMode #####
+        #         if self.loopDebugMode:
+        #             print('=== master.py/move_people: looping to add people to POI')
 
-                ##### loopDebugMode #####
-                if self.loopDebugMode:
-                    print('=== master.py/move_people: looping to add people to POI')
-
+        # Rather than use a loop, use the apply function to move people for each facilitiy
+        dfVisitMatrix.to_frame().apply(lambda row: self.move_people_in_facility(facilities, notAssigned, interventions, row, Pop, openFacilities), axis = 1)
 
         return (facilities, notAssigned)
+
+    def move_people_in_facility(self, facilities, notAssigned, interventions, row, Pop, openFacilities):
+        poiID = row.name  # Get the POI's ID from the dataframe
+        numPeople = row[0]  # Get numPeople from the dataframe
+        facility = openFacilities.get(poiID)  # Get the correct facility based on the poiID
+
+        # Nothing to do if any of these conditions are met
+        if not notAssigned or not facility or facility.getCapacity() == facility.getVisitors():
+            return
+
+        # Reduce number of people at facilities by factor of 2 if stay at home orders.
+        r = 2 if interventions["stayAtHome"] else 1
+
+        for _ in range(min((math.ceil(numPeople / r)), math.ceil((interventions["roomCapacity"] / 100) * facility.getCapacity()))):
+            if not notAssigned:
+                break
+            idindextoadd = random.randint(0, len(notAssigned) - 1)
+            facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
 
     # Main simulation
     def simulation(self, num_days, currentInfected, interventions, totalInfectedInFacilities,
