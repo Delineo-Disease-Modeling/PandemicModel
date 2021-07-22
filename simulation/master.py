@@ -229,21 +229,20 @@ class MasterController:
 
             timer = each.incrementInfectionTimer()
             state = each.setInfectionState(each.getInfectionTrack()[timer])
-            r = random.random()
-            if r <= interventions["dailyTesting"] / 100 * .1 + (interventions["dailyTesting"] / 100) * (
-                    interventions["contactTracing"] / 100) * .1:
-                tested.add(each)
             if state == 4:
                 toremove.append(each)  # if recovered remove from infected list
-
+            else:
+                r = random.random()
+                if r <= interventions["dailyTesting"] / 100 * .1 + (interventions["dailyTesting"] / 100) * (
+                        interventions["contactTracing"] / 100) * .1:
+                    tested.add(each)
+            
         for each in toremove:
             ### Debug added 7/14 ####
             if self.loopDebugMode:
                  print('===master.py/update_status: looping toremove===')
 
             currentInfected.remove(each)
-            if each in tested:
-                tested.remove(each)
 
         return (currentInfected, tested)
 
@@ -314,7 +313,7 @@ class MasterController:
 
         for _ in range(min((math.ceil(numPeople / r)), math.ceil((interventions["roomCapacity"] / 100) * facility.getCapacity()))):
             if not notAssigned:
-                break
+                return
             idindextoadd = random.randint(0, len(notAssigned) - 1)
             facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
 
@@ -422,7 +421,7 @@ class MasterController:
                         # chance of infection we're just getting temp into the same scale as prob
                         temp = 20 * temp
 
-                    temp = random.uniform(0, 1)
+                    # temp = random.uniform(0, 1)
                     if temp < prob:  # Infect
 
                         person.assignTrajectory()
