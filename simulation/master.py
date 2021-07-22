@@ -222,27 +222,27 @@ class MasterController:
         if self.generalDebugMode:
             print('===master.py/update_status: length of currentInfected', len(currentInfected), '===')
 
-        for each in currentInfected:
+        for person in currentInfected:
             ### Debug added 7/14 ####
             if self.loopDebugMode:
                  print('===master.py/update_status: looping currentInfected===')
 
-            timer = each.incrementInfectionTimer()
-            state = each.setInfectionState(each.getInfectionTrack()[timer])
+            timer = person.incrementInfectionTimer()
+            state = person.setInfectionState(person.getInfectionTrack()[timer])
             if state == 4:
-                toremove.append(each)  # if recovered remove from infected list
+                toremove.append(person)  # If recovered, remove from infected list
             else:
                 r = random.random()
                 if r <= interventions["dailyTesting"] / 100 * .1 + (interventions["dailyTesting"] / 100) * (
                         interventions["contactTracing"] / 100) * .1:
-                    tested.add(each)
+                    tested.add(person)
             
-        for each in toremove:
+        for person in toremove:
             ### Debug added 7/14 ####
             if self.loopDebugMode:
                  print('===master.py/update_status: looping toremove===')
 
-            currentInfected.remove(each)
+            currentInfected.remove(person)
 
         return (currentInfected, tested)
 
@@ -253,9 +253,6 @@ class MasterController:
                           if daysDict[dayOfWeek] in facility.getDays()
                           and facility in openHours[hourOfDay]}
 
-        # if openFacilities.get(0):
-        #     print(str(openFacilities))
-
         # A list of IDs not yet assigned to a facility
         notAssigned = [*range(len(Pop))]
 
@@ -264,58 +261,31 @@ class MasterController:
         dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
         dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Sum all CBGs (converts dataframe to series)
 
-        # print("breakpoint one")
-
-        # for poiID, numPeople in dfVisitMatrix.iteritems():
-        #     facility = openFacilities.get(poiID)
-        #     if not notAssigned:
-        #         # what is this? 7/13
-        #         # should check if notAssigned is empty, aka no more people to move. should end loop.
-        #         break
-        #     if not facility:
-        #         continue
-        #     if facility.getCapacity() == facility.getVisitors():
-        #         continue
-        #     r = 1
-        #     if interventions["stayAtHome"]:
-        #         r = 2  # Reduce number of people at facilities by factor of 2 if stay at home orders.
-        #     traffic = 0
-        #     for i in range(min((math.ceil(numPeople / r)), math.ceil((interventions[ #REMOVED scale, used to be numPeople * scale 7/13
-        #                                                                           "roomCapacity"] / 100) * facility.getCapacity()))):  # Scale by population of OKC for now # NOT ANYMORE 7/13
-        #         if not notAssigned:
-        #             # what is this? 7/13
-        #             break
-        #         idindextoadd = random.randint(0, len(notAssigned) - 1)
-        #         traffic += 1
-
-        #         facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
-
-        #         ##### loopDebugMode #####
-        #         if self.loopDebugMode:
-        #             print('=== master.py/move_people: looping to add people to POI')
-
-        # Rather than use a loop, use the apply function to move people for each facilitiy
-        dfVisitMatrix.to_frame().apply(lambda row: self.move_people_in_facility(facilities, notAssigned, interventions, row, Pop, openFacilities), axis = 1)
+        # Use the apply function on the dataframe to move people for each facilitiy
+        dfVisitMatrix.to_frame().apply(lambda row: self.move_people_in_facility(facilities, notAssigned, interventions, row, Pop, openFacilities), axis=1)
 
         return (facilities, notAssigned)
 
     def move_people_in_facility(self, facilities, notAssigned, interventions, row, Pop, openFacilities):
         poiID = row.name  # Get the POI's ID from the dataframe
-        numPeople = row[0]  # Get numPeople from the dataframe
+        numPeople = row[0]  # Get the number of people at the facility from the dataframe
         facility = openFacilities.get(poiID)  # Get the correct facility based on the poiID
 
         # Nothing to do if any of these conditions are met
         if not notAssigned or not facility or facility.getCapacity() == facility.getVisitors():
             return
 
-        # Reduce number of people at facilities by factor of 2 if stay at home orders.
+        # Reduce number of people at facilities by factor of 2 if stay at home orders are in place
         r = 2 if interventions["stayAtHome"] else 1
 
-        for _ in range(min((math.ceil(numPeople / r)), math.ceil((interventions["roomCapacity"] / 100) * facility.getCapacity()))):
-            if not notAssigned:
+        num_people_at_facility = math.ceil(numPeople / r)
+        facility_capacity = math.ceil((interventions["roomCapacity"] / 100) * facility.getCapacity())
+
+        for _ in range(min(num_people_at_facility, facility_capacity)):
+            if not notAssigned:  # Nothing to do if everyone has been assigned
                 return
-            idindextoadd = random.randint(0, len(notAssigned) - 1)
-            facilities[poiID].addPerson(Pop[notAssigned.pop(idindextoadd)])  # Add random person to POI for now
+            id_index_to_add = random.randint(0, len(notAssigned) - 1)
+            facilities[poiID].addPerson(Pop[notAssigned.pop(id_index_to_add)])  # Add random person to POI
 
     # Main simulation
     def simulation(self, num_days, currentInfected, interventions, totalInfectedInFacilities,
