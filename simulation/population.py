@@ -7,7 +7,7 @@ import random
 
 class Population():
     # constructor
-    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0):
+    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0, num_households = 2400, npop = 6000, num_workplaces = 200):
 
         self.state = state
         self.country = country
@@ -16,6 +16,10 @@ class Population():
         self.populationSize = populationSize
         self.phaseNum = phaseNum
         self.currPhaseDayNum = currPhaseDayNum
+
+        self.num_households = num_households
+        self.npop = npop
+        self.num_workplaces = num_workplaces
 
         ##### Debug flag #####
         self.debugMode = True
@@ -30,9 +34,9 @@ class Population():
         level = 'county'
 
 
-        num_households = 250000 # 459
-        npop = 650000 #1132 #this is 6000 - but when increased synthpops does not work
-        num_workplaces = 24000
+        num_households = self.num_households # 459
+        npop = self.npop #1132 #this is 6000 - but when increased synthpops does not work
+        num_workplaces = self.num_workplaces
 
         # TODO: default school sizes are still being used
         population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,

@@ -19,9 +19,12 @@ class Module:
         return Pop
 
 
-    def createPopulation(self):
+    def createPopulation(self, city):
         print("createPop function")
-        Pop = Population(self.__State, self.__County).get_dict()
+        if city == 'Anytown':
+            Pop = Population(self.__State, self.__County).get_dict()
+        if city == 'Oklahoma_City':
+            Pop = Population(self.__State, self.__County, num_households=250000, npop=650000, num_workplaces=24000).get_dict()
         return Pop
 
     def createSubmodules(self):

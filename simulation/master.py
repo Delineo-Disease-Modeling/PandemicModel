@@ -1,4 +1,3 @@
-
 from person import Person
 from module import Module
 from submodule import Submodule
@@ -11,18 +10,22 @@ import math
 from datetime import datetime
 import sciris as sc
 from bisect import bisect_left
+import xlrd
+
 
 poiID = 0
 
 class MasterController:
-    # MasterController class, this runs the simulation by instantiating module
+    '''
+    This class is responsible for instantiaitng a module, which is a flexible synthetic environment equivalent to a town or city. This class essentially acts
+    an an API layer that kicks off and runs the simulation, and provides the functionaility necessary to package the simulation results into the formats necessary
+    for communicating with the frontend.
+    '''
 
     state = 'Oklahoma'
     county = 'Barnsdall'
     population = 650000
-    # Uncertain exactly what/how many interventions to expect
 
-    interventions = {"MaskWearing": False,"FacilityCap": 1, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
 
@@ -46,100 +49,111 @@ class MasterController:
     #                   Basically use this for print statements in places that won't immediately clog the terminal with thousands of lines of output
     generalDebugMode = True
     #####
-
-    # getUserInput: This function will assign the state, county, and interventions as the user specifies
-    # params:
-    #   state - the state passed by the user
-    #   county - the county passed by the user
-    #   interventions - an array oof booleans corresponding to certain interventions (size TBD)
+     
     def getUserInput(self, state, county, interventions):
+        '''
+        This function will assign the state, county, and interventions as the user specifies
+        Params:
+            state - the state passed by the user
+            county - the county passed by the user
+            interventions - an dictionary of values corresponding to certain interventions 
+        '''
         self.state = state
         self.county = county
         self.interventions = interventions
 
-    # createModules: This function will create a module with the given state, county, and interventions
-    # params:
-    #   state - the state passed by the user
-    #   county - the county passed by the user
-    #   interventions - an array oof booleans corresponding to certain interventions (size TBD)
     def createModule(self):
+        '''
+        This function will create a module with the given state, county, and interventions
+        Params:
+            state - the state passed by the user
+            county - the county passed by the user
+            interventions - an dictionary of values corresponding to certain interventions 
+        '''
         return Module(self.state, self.county, self.interventions)
 
-    # updateTime: This function will advance the time forward one hour
-    # params:
-    #   dayOfWeek - current day of the week
-    #   timeOfDay - the current time of day
     def updateTime(self):
+        '''
+        This function will advance the time forward one hour
+        Params:
+            dayOfWeek - current day of the week
+            timeOfDay - the current time of day
+        '''
         if self.timeOfDay == 23:
             self.dayOfWeek = self.dayOfWeek + 1
         self.timeOfDay = (self.timeOfDay + 1) % 24
+   
+    def excelToJson(self, excelfile, jsonfile):
+        '''
+        WILL BE REMOVED
+        This function is used to read dummy data and saves it as a file
+        Params:
+            excelfile: .xsl to be read
+            jsonfile: JSON object to be sent back to frontend
+        '''
+        workbook = xlrd.open_workbook(excelfile)
+        workbook = xlrd.open_workbook(excelfile, on_demand=True)
+        worksheet = workbook.sheet_by_index(0)
+        data = {'date': [], 'newcases': []}
+        for row in range(1, worksheet.nrows):
+            data['date'].append({'year': worksheet.cell_value(row, 0),
+                                 'month': worksheet.cell_value(row, 1),
+                                 'day': worksheet.cell_value(row, 2)})
+            data['newcases'].append(worksheet.cell_value(row, 3))
+        df = pd.DataFrame(data)
+        result = df.to_json(orient="records")
+        json_data = {'case distribution':
+                     {'school': '', 'restaurant': '', 'gym': '', 'bar': ''},
+                     'initial_cases': 0, 'data': result}
+        with open(jsonfile, 'w') as outfile:
+            json.dump(json_data, outfile)
 
-    # runSim: This function runs the simulation over a desired time interval
-    # params:
-    #   interval - the number of hours to run the simulation for
-    #   population - the population as instantiated by a Module object
-    #   facilities - the facility list as instantiated by a Module object
-    def runSim(self, interval, population, facilities, module):
-        # for each time step, move population, create subgroups, infect the new people
-        # uncertain exactly how time works
-        for i in range(interval):
-            module.movePop(self.dayOfWeek, self.timeOfDay,
-                           population, facilities) #  Moves population at interval steps (eventually move pop will be
-                                                   #  Integrated with ML team
-            for facility in facilities:
-                facility.createGroups() # Groups being created
-                G = facility.createGraph() # Graph created
-                facility.calcInfection(G)
-            self.updateTime()
-            if self.timeOfDay == 23:
-                self.implementPhaseDay(self.currDay, self.phaseNum, self.phaseDay, self.phasePlan, population, facilities)
-
-    def displayResult(self):
-        # TODO
-        print('Nothing to show yet')
-
-    def jsonRequest(self, request):
-        """ Parse json_string and store values in MasterController members
-        Key strings must be valid attribute names.
-        Parameters:
-        request (string): Json string of the form {"Request": {"key": value, ...}}
-        """
-        json_dictionary = json.loads(request)['Request']
-        print(json_dictionary)
-        for k, v in json_dictionary.items():
-            setattr(self, k, v)
+    def return_json(self, location):
+        '''
+        Returns a JSON file
+        Params:
+            location: geographical location that the excel file covers
+        '''
+        excel_file = location + ' Data.xls'
+        json_file = location + ' Data.json'
+        self.excelToJson(excel_file, json_file)
+        file = open(json_file, 'r')
+        return file
 
     def jsonResponse(self, response):
-        """ Form json response
+        ''' 
+        Form json response
         Usage:
-        jsonResponse(infectionInFacilitiesHourly)
+            jsonResponse(infectionInFacilitiesHourly)
         Parameters:
-        response (obj): Data to load into response. May be of any form accepted by the json.dumps() function
+            response (obj): Data to load into response. May be of any form accepted by the json.dumps() function
         Returns:
-        string: string containing json response of the form {"Response": data}
-        """
+            string: string containing json response of the form {"Response": data}
+        '''
         return json.dumps(response)
 
     def jsonResponseToFile(self, response, filename):
-        """ Form json response and write to a file
+        '''
+        Form json response and write to a file
         Usage:
-        jsonResponse(infectionInFacilitiesHourly, file)
+            jsonResponse(infectionInFacilitiesHourly, file)
         Parameters:
-        response (obj): Data to load into response. May be of any form accepted by the json.dumps() function
-        filename (string): filename to write to
-        """
+            response (obj): Data to load into response. May be of any form accepted by the json.dumps() function
+            filename (string): filename to write response to
+        '''
         response = self.jsonResponse(response)
         file = open(filename, 'w')
         file.write(response)
         file.close()
 
     def loadVisitMatrix(self, filename):
-        """Load full visit matrix from a pickle file
+        '''
+        Load full visit matrix from a pickle file
         Parameters:
-        filename (string): pickle file to read from
+            filename (string): pickle file to read from
         Returns:
-        (obj): visit matrix with CBGs in x-axis and POIs in y-axis,
-        """
+            (obj): visit matrix with CBGs in x-axis and POIs in y-axis,
+        '''
         file = open(filename, 'rb')
         self.visitMatrices = pickle.load(file)
         file.close()
@@ -147,9 +161,11 @@ class MasterController:
         self.poi_cbg_visit_matrix_history = self.visitMatrices['poi_cbg_visit_matrix_history']
         self.cbgs_idxs_to_ids = self.visitMatrices['cbgs_idxs_to_ids']
         self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
-        #self.pois_ids_to_name = self.visitMatrices['pois_ids_to_name']
 
     def BinSearch(self, a, x):
+        '''
+        Used to speed up calcInfectionsHomes because Python does a linear search for checking lists
+        '''
         i = bisect_left(a, x)
         if i != len(a) and a[i] == x:
             return i
@@ -157,53 +173,50 @@ class MasterController:
             return -1
 
     def in_list(self, item_list, item):
+        '''
+        Using a binary search to find items in lists, used in calcInfectionsHomes
+        '''
         return self.BinSearch(item_list, item) != -1
 
     def calcInfectionsHomes(self, atHomeIDs, Pop, currentInfected):
+        '''
+        Used in the simulation() function. Is responsible for handling the spread of infection within household groups right
+        '''
         numperhour = 0
         newlyinfectedathome = []
-        averageinfectiouslength = 24 * 3  # number of days an individual is infectious
+
+        # TODO: this math needs to be worked out more, along with correct, scientific numbers
         averageinfectionrate = .2  # total odds of infecting someone whom they are connected to in a household with
-        # note this math may need to be worked out more, along with correct, scientific numbers
-        # infectedAndHome = set()
 
         ##### generalDebugMode #####
         if self.generalDebugMode:
             print('===master.py/calcInfectionsHomes: currentInfected length is ', len(currentInfected),'===')
         ##### generalDebugMode #####
 
-        '''
-        ##### generalDebugMode #####
-        if self.generalDebugMode:
-          print('===master.py/calcInfectionsHomes: infectedAndHome length is ', len(infectedAndHome),'===')
-        ##### generalDebugMode #####
-        '''
-
-
+        # For each person that's currently infected, we have to loop through their household group and calculate the chance that
+        # the people they share living spaces with get infected
         for current in currentInfected:
-            '''
-            ##### loopDebugMode #####
-            if self.loopDebugMode:
-                print('===master.py/calcInfectionsHomes: looping currentInfected===')
-            ##### loopDebugMode #####
-            '''
+            
             if self.in_list(atHomeIDs, current.getID()) and 0 <= current.getInfectionState() <= 3:
-                currentlywith = list(current.getHouseholdMembers()) #id's #someone should check that this list is behaving 7/14
+                household_group = list(current.getHouseholdMembers()) #id's #someone should check that this list is behaving 7/14
                 r = random.randint(1,24)
                 if r <= 2:
+                    # Right now, r determines the chance that someone in household_group gets put on infection track
                     neighborhouse = list(current.getextendedhousehold())[random.randint(0, len(current.getextendedhousehold())-1)]
-                    # currentlywith.append(neighborhouse)
                     for each in Pop[neighborhouse].getHouseholdMembers():
-                        currentlywith.append(each)
-                for each in currentlywith:
+                        household_group.append(each)
+
+                for each in household_group:
+
                     ##### loopDebugMode #####
                     if self.loopDebugMode:
-                        print('===master.py/calcInfectionsHomes: looping currentlywith===')
+                        print('===master.py/calcInfectionsHomes: looping household_group===')
                     ##### loopDebugMode #####
+
                     if len(Pop[each].getInfectionTrack()) > 0:
                         continue
                     if (Pop[each].getVaccinatedStatus()):
-                        householdRandomVariable = 20 * random.random()
+                        householdRandomVariable = 20 * random.random() # Multiplying by 20 increases householdRandomVariable, decreasing the chance of infection
                     else:
                         householdRandomVariable = random.random()
 
@@ -212,15 +225,26 @@ class MasterController:
                         Pop[each].assignTrajectory()
                         newlyinfectedathome.append(Pop[each])
                         numperhour += 1
+
         return newlyinfectedathome
 
-    # Update everyone's infection status at the beginning of each day
     def update_status(self, interventions, currentInfected, tested):
+        '''
+        Update everyone's infection status at the beginning of each day
+        Params:
+            interventions: dictionary of interventions
+            currentInfected: list of all currently infected agents
+            tested: set of all agents that have been tested for infection
+        Returns:
+            currentInfected: updated currentInfected set
+            tested: updated tested set
+        '''
         toremove = []
 
         ##### Debug added 7/14 ####
         if self.generalDebugMode:
             print('===master.py/update_status: length of currentInfected', len(currentInfected), '===')
+        ##### Debug added 7/14 ####
 
         for person in currentInfected:
             ### Debug added 7/14 ####
@@ -238,16 +262,20 @@ class MasterController:
                     tested.add(person)
             
         for person in toremove:
-            ### Debug added 7/14 ####
+            #### Debug added 7/14 ####
             if self.loopDebugMode:
                  print('===master.py/update_status: looping toremove===')
+            ####
 
-            currentInfected.remove(person)
+            currentInfected.remove(person) # a person has recovered at this point
 
         return (currentInfected, tested)
 
-    # Add people to facilities based on data in visit matrices
-    def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h):
+    def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h, isAnytown):
+        '''
+        Add people to facilities based on data in visit matrices. Loads in the data matrix and uses df.apply() to dump people into POI columns
+        '''
+
         # Array of facility submodules that are both open and not full
         openFacilities = {id: facility for id, facility in facilities.items()
                           if daysDict[dayOfWeek] in facility.getDays()
@@ -262,11 +290,15 @@ class MasterController:
         dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Sum all CBGs (converts dataframe to series)
 
         # Use the apply function on the dataframe to move people for each facilitiy
-        dfVisitMatrix.to_frame().apply(lambda row: self.move_people_in_facility(facilities, notAssigned, interventions, row, Pop, openFacilities), axis=1)
+        dfVisitMatrix.to_frame().apply(lambda row: self.move_people_in_facility(facilities, notAssigned, interventions, row, Pop, openFacilities, isAnytown), axis=1)
 
         return (facilities, notAssigned)
 
-    def move_people_in_facility(self, facilities, notAssigned, interventions, row, Pop, openFacilities):
+    def move_people_in_facility(self, facilities, notAssigned, interventions, row, Pop, openFacilities, isAnytown):
+        '''
+        Takes in a specific facility and fills it to maximum capacity with people assigned to the facility. Will stop
+        if it runs out of people OR the limit is reached.
+        '''
         poiID = row.name  # Get the POI's ID from the dataframe
         numPeople = row[0]  # Get the number of people at the facility from the dataframe
         facility = openFacilities.get(poiID)  # Get the correct facility based on the poiID
@@ -279,6 +311,9 @@ class MasterController:
         r = 2 if interventions["stayAtHome"] else 1
 
         num_people_at_facility = math.ceil(numPeople / r)
+        if isAnytown:
+            num_people_at_facility = num_people_at_facility * len(Pop) / 600000.0 # Scale population for Anytown, USA
+
         facility_capacity = math.ceil((interventions["roomCapacity"] / 100) * facility.getCapacity())
 
         for _ in range(min(num_people_at_facility, facility_capacity)):
@@ -287,14 +322,16 @@ class MasterController:
             id_index_to_add = random.randint(0, len(notAssigned) - 1)
             facilities[poiID].addPerson(Pop[notAssigned.pop(id_index_to_add)])  # Add random person to POI
 
-    # Main simulation
     def simulation(self, num_days, currentInfected, interventions, totalInfectedInFacilities,
                     facilities, infectionInFacilitiesDaily, infectionInFacilitiesHourly,
                     peopleInFacilitiesHourly, infectionInHouseholds, facilityinfections,
-                    houseinfections, infectionInFacilities, daysDict, openHours, Pop):
+                    houseinfections, infectionInFacilities, daysDict, openHours, Pop, isAnytown):
 
-        # Main simulation loop
-        # Assume movements to facilities in the day only (10:00 - 18:00)
+        '''
+        Main simulation loop
+        '''
+        # TODO: retention rate within facilities- currently no one stays in a facility longer than one hour, pending ML team
+
         tested = set()
         for h in range(num_days * 24):
 
@@ -308,15 +345,8 @@ class MasterController:
             # Initialize current hour's total infections by previous hour
             totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
 
-            # Number of people at facilities
-
-            # numberOut = random.randint(0, min(len(Pop)-1,
-            #                       totalFacilityCapacities)) #Not used anymore
-
             dayOfWeek = (h // 24) % 7
             hourOfDay = h % 24
-
-            # TODO: retention rate within the same facility. currently no one is retained - Retention rate eventually covered by ML team
 
             for id in facilities:
                 ##### loopDebugMode #####
@@ -326,33 +356,30 @@ class MasterController:
                 facility.setVisitors(0)
                 facility.clearPeople()
 
-            #print("breakpoint zero")
+            # Move agents throughout facilities
+            facilities, notAssigned = self.move_people(facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h, isAnytown)
 
-            facilities, notAssigned = self.move_people(facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h)
-
-            # print(notAssigned)
-
-            #print("breakpoint three")
-            # Calculate infections for those still not assigned (assume all
-            # not in a facility are at home)
-            """
-            #_____GRAPH VERSION______
-            infectedathome = households.calcInfection(G, notAssigned) #TODO return list of persons infected
-            """
-            # ____SETHOUSEHOLDS_____
+            # Updating the list of people infected via spread within household 
             infectedathome = self.calcInfectionsHomes(notAssigned, Pop, currentInfected)
+
+            # Update the currentInfected list for the whole simulation
             for each in infectedathome:
                 ##### loopDebugMode #####
                 if self.loopDebugMode:
                     print('===master.py/simulation: looping infectedathome===')
+                ##### loopDebugMode #####
                 currentInfected.add(each)
-            numinfectedathome = len(infectedathome)
-            houseinfections += numinfectedathome
+
+            numinfectedathome = len(infectedathome) # Updating the number of infections that occured in households this timestep
+            houseinfections += numinfectedathome 
+
+            # Updating the list that keeps track of household infections throughout course of simulation
             if h == 0:
                 infectionInHouseholds.append(numinfectedathome)
             else:
                 infectionInHouseholds.append(numinfectedathome + infectionInHouseholds[h - 1])
 
+            # Loop through all facilities to assign infection spread
             for i in range(len(facilities)):
 
                 ##### loopDebugMode #####
@@ -369,8 +396,7 @@ class MasterController:
                 finalInfectionNumber = initialInfectionNumber
 
                 # Probability of infection in facility i
-
-                prob = facilities[i].probability(interventions)  # Wells-Riley here
+                prob = facilities[i].probability(interventions)  # Probability of infection is assigned here
 
                 # get number of people in facilities
                 peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
@@ -406,13 +432,16 @@ class MasterController:
 
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
+
         return (totalInfectedInFacilities,
         facilities, infectionInFacilitiesHourly,
         peopleInFacilitiesHourly, facilityinfections,
         houseinfections, infectionInFacilities, Pop)
 
-    # Set intervention list based on inputs
     def set_interventions(self, intervention_list):
+        '''
+         Set intervention list based on dictionary of interventions
+        '''
         if intervention_list is None:
             intervention_list = {"maskWearing": 0, "dailyTesting": 0, "roomCapacity": 100, "contactTracing": 0,
                                  "stayAtHome": False}
@@ -430,35 +459,32 @@ class MasterController:
             intervention_list["vaccinatedPercent"] = 0
         return intervention_list
 
-    # Add people to households
     def set_households(self, Pop):
+        '''
+        Add people to households
+        '''
         for person in Pop:
             for i in range(9):
                 extendedtoadd = random.randint(0, len(Pop) - 1)
                 if Pop[extendedtoadd] != Pop[person] and extendedtoadd not in Pop[person].getHouseholdMembers():
                     Pop[person].addtoextendedhousehold(extendedtoadd)
                     Pop[extendedtoadd].addtoextendedhousehold(person)
-                    # for each in Pop[extendedtoadd].getHouseholdMembers():
-                    #   Pop[person].addtoextendedhousehold(each)
-                    #   Pop[each].addtoextendedhousehold(person)
         return Pop
 
-
-    # Wells-Riley
-
-    # Modularized: contents can be found in simulation, set_households, set interventions,
-    # move_people, update_status
-    def WellsRiley(self, print_infection_breakdown, num_days=7, interventions=None):
+    def run_simulation(self, city, print_infection_breakdown, isAnytown, num_days=7, interventions=None):
+        '''
+        Function that initializes and runs the entire simulation. Depends on simulation(), set_households(), and set_interventions(),
+        move_people(), and update_status()
+        '''
 
         interventions = self.set_interventions(interventions)
 
         M = self.createModule()
 
         # Population created and returned as array of People class objects
-        Pop = M.createPopulation()
+        Pop = M.createPopulation(city)
 
         # Visit matrix: (CBG x POI) x hour = gives number people from CBG at POI in a given hour
-        # visitMatrix = loadVisitMatrix('filename')
         currentInfected = set()
         facilityinfections = 0
         houseinfections = 0
@@ -482,19 +508,11 @@ class MasterController:
         for v in vaccinatedIDs:
             Pop[v].setVaccinated(True)
 
-        # TODO: to pull from actual data of Oklahoma/frontend map.
-        # Currently assuming a fixed number of each, and using a range of 6
-        # types of facilities representing different essential level and attributes eg ventilation rate
 
-        # Instantiate submodules with
-        # {id: submodule}, int, {hour: set of facilities open}
+        # Instantiate submodules with format {id: submodule}, int, {hour: set of facilities open}
+        facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV('core_poi_OKCity.csv') 
 
-
-        facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV('core_poi_OKCity.csv') # wasn't this changed to load the .txt? 7/13
-
-        #facilities, totalFacilityCapacities, openHours = M.createFacilitiesTXT('facilites_info.txt')
-        # facilities, totalFacilityCapacities, openHours = M.createFacilities(
-        #     'submodules2.json')
+        # facilities, totalFacilityCapacities, openHours = M.createFacilities('submodules2.json')
 
 
         # Fill with change in infections as [initial, final] per hour
@@ -515,18 +533,6 @@ class MasterController:
         infectionInHouseholds = []
         infectionInHouseholdsDaily = [0 for day in range(num_days)]
 
-        # ____SET HOUSEHOLDS + NETWORK STRATEGY____
-        '''
-        for person in Pop:
-            for i in range(9):
-                extendedtoadd = random.randint(0,len(Pop) - 1)
-                if Pop[extendedtoadd] != Pop[person] and extendedtoadd not in Pop[person].getHouseholdMembers():
-                    Pop[person].addtoextendedhousehold(extendedtoadd)
-                    Pop[extendedtoadd].addtoextendedhousehold(person)
-                    # for each in Pop[extendedtoadd].getHouseholdMembers():
-                     #   Pop[person].addtoextendedhousehold(each)
-                     #   Pop[each].addtoextendedhousehold(person)
-        '''
         Pop = self.set_households(Pop)
         daysDict = {
             0: 'Sun',
@@ -543,30 +549,25 @@ class MasterController:
         num_days, currentInfected, interventions, totalInfectedInFacilities,
         facilities, infectionInFacilitiesDaily, infectionInFacilitiesHourly,
         peopleInFacilitiesHourly, infectionInHouseholds, facilityinfections,
-        houseinfections, infectionInFacilities, daysDict, openHours, Pop)
+        houseinfections, infectionInFacilities, daysDict, openHours, Pop, isAnytown)
 
         print(
             f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
 
         #Updated the formatting of the json file
         response = {'Buildings': [
-                    {"BuildingName": str(facilities[id].getFacilityType())+ str(id),
+                    {"BuildingName": str(facilities[id].getFacilityType()) + str(id),
                     "InfectedDaily": infectionInFacilitiesHourly[id],
                     "PeopleDaily": peopleInFacilitiesHourly[id]}
                     for id in range(len(facilities))]
                     } #we should probably have households at least as one large "household"
 
-        #response = {f'({id}, {facilities[id].getFacilityType()})': array
-                    #for id, array in infectionInFacilitiesHourly.items()}
         self.jsonResponseToFile(response, "output.txt")
 
         num = 0
         for each in Pop:
             if len(Pop[each].getInfectionTrack()) > 0:
                 num += 1
-                #print(Pop[each].getInfectionState(),Pop[each].getinfectionTimer(), Pop[each].getInfectionTrack())
-
-        # f.close()
 
         if print_infection_breakdown:
             print("Initial infections:", initialInfected)
@@ -576,14 +577,24 @@ class MasterController:
 
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds
-        return
+
+        return response
 
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-        self.WellsRiley(print_infection_breakdown, num_days, intervention_list)
+        self.run_simulation(print_infection_breakdown, num_days, intervention_list, isAnytown = True)
+
+    # Function to run Oklahoma City
+    def Run_OKC(self, print_infection_breakdown, num_days, intervention_list):
+        self.loadVisitMatric('Oklahoma_Jan06_fullweek_dict.pkl')
+        self.run_simulation(print_infection_breakdown, num_days, intervention_list, isAnytown = False)
 
     def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
+        '''
+        NOT USED CURRENTLY, SPRINT 5 BACKLOG ITEM
+        This function is responsible for administering vaccines and keeping track of vaccination progress
+        '''
         #If a facility has an appointments on this day, administer appointments to each person.
         for facility in facilities:
             for i in facility.getAppointment(currDay):
@@ -608,8 +619,10 @@ class MasterController:
                 daysAfter = random.randint(1, 14)
                 facilities[i].scheduleAppointment(currDay + daysAfter)
 
-    # Test facilities
     def runFacilityTests(self, filename):
+        '''
+        Test facilities
+        '''
         M = self.createModule()
 
         facilities, totalCapacities, openHours = M.createFacilitiesTXT(filename, False)
@@ -642,11 +655,13 @@ class MasterController:
         print("Should find: 495")
         print("Found: " + str(len(found)))
 
-    # For each POI in the visit matrices, add together all the people in the CBGs
-    # Notes: x-axis (cols) is CBGs, y-axis (rows) is POIs
-    #        dfVisitMatrix.sum(axis=0) for column-wise sum
-    #        dfVisitMatrix.sum(axis=1) for row-wise sum
     def sumVisitMatrices(self):
+        '''
+        For each POI in the visit matrices, add together all the people in the CBGs
+        Notes: x-axis (cols) is CBGs, y-axis (rows) is POIs
+            dfVisitMatrix.sum(axis=0) for column-wise sum
+            dfVisitMatrix.sum(axis=1) for row-wise sum
+        '''
         totals = []
 
         # Access each visit matrix for each hour in the week (total of 168 hours)
@@ -660,18 +675,14 @@ class MasterController:
         # print(totals)
 
 if __name__ == '__main__':
+
     mc = MasterController()  # Instantiate a MasterController
-
-    #mc.runFacilityTests('facilites_info.txt')  # Run facility tests
-
-    # TODO* Graph approach for standard facilities is above in main. We want to tweak this for a household model.
-    # TODO School and Work spread need to be implemented as well - either through Wells Riley model or Graph approach.
-    # TODO MasterController() should take in json file - load information such as population, interventions, etc
-    # TODO Callibration to match realistic/standard data once above is completed.
 
     mc.loadVisitMatrix('Oklahoma_Jan06_fullweek_dict.pkl')
     #mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.runFacilityTests('facilities_info.txt')
-    mc.WellsRiley(True, 61, interventions)  # Run Wells Riley
+    
+    mc.run_simulation('Anytown', True, 61, interventions)  # Run entire simulation
+    mc.excelToJson('OKC Data.xls', 'OKC Data.json')
