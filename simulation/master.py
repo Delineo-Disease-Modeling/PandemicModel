@@ -26,6 +26,8 @@ class MasterController:
     county = 'Barnsdall'
     population = 650000
 
+    interventions = {"MaskWearing": False,"roomCapacity": 100, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
+
     dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
     timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
 
@@ -313,7 +315,7 @@ class MasterController:
 
         num_people_at_facility = math.ceil(numPeople / r)
         if isAnytown:
-            num_people_at_facility = num_people_at_facility * len(Pop) / 600000.0 # Scale population for Anytown, USA
+            num_people_at_facility = math.ceil(num_people_at_facility * len(Pop) / 600000) # Scale population for Anytown, USA
 
         facility_capacity = math.ceil((interventions["roomCapacity"] / 100) * facility.getCapacity())
 
@@ -481,6 +483,12 @@ class MasterController:
 
         M = self.createModule()
 
+        #Set initial number of infected people in the module
+        if city == 'Anytown':
+            initialInfected = 10
+        else:
+            initialInfected = 100 
+
         # Population created and returned as array of People class objects
         Pop = M.createPopulation(city)
 
@@ -492,7 +500,7 @@ class MasterController:
         numVaccinated = math.floor( (len(Pop) * interventions["vaccinatedPercent"])/100)
 
         # Assign initial infection state status for each person
-        initialInfected = 100  # Should be customizable in  the future
+        
         notInfected = [*range(len(Pop))] # list from 1 to num in pop
         for i in range(initialInfected):
             nextInfected = notInfected.pop(random.randint(0,
@@ -583,12 +591,12 @@ class MasterController:
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-        self.run_simulation(print_infection_breakdown, num_days, intervention_list, isAnytown = True)
+        self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = True)
 
     # Function to run Oklahoma City
     def Run_OKC(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatric('Oklahoma_Jan06_fullweek_dict.pkl')
-        self.run_simulation(print_infection_breakdown, num_days, intervention_list, isAnytown = False)
+        self.loadVisitMatrix('Oklahoma_Jan06_fullweek_dict.pkl')
+        self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = False)
 
     def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
         '''
@@ -678,13 +686,12 @@ if __name__ == '__main__':
 
     mc = MasterController()  # Instantiate a MasterController
 
-    mc.loadVisitMatrix('Oklahoma_Jan06_fullweek_dict.pkl')
     #mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
     
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.runFacilityTests('facilities_info.txt')
     
-    mc.run_simulation('Anytown', True, 61, interventions)  # Run entire simulation
+    mc.Run_OKC(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
 
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')
