@@ -99,9 +99,6 @@ class Person:
         self.infectionState = state
         return state
 
-        return state
-
-
     def setIncubation(self, incubation):
         self.incubation = incubation
 

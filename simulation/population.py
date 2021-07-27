@@ -1,13 +1,13 @@
-#import synthpops.synthpops as sp
-#If above not working try
-import synthpops as sp
+import synthpops.synthpops as sp
+# If the above is not working, try below
+# import synthpops as sp
 from person import Person
 import random
 
 
 class Population():
     # constructor
-    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0):
+    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0, num_households = 2400, npop = 6000, num_workplaces = 200):
 
         self.state = state
         self.country = country
@@ -16,6 +16,13 @@ class Population():
         self.populationSize = populationSize
         self.phaseNum = phaseNum
         self.currPhaseDayNum = currPhaseDayNum
+
+        self.num_households = num_households
+        self.npop = npop
+        self.num_workplaces = num_workplaces
+
+        ##### Debug flag #####
+        self.debugMode = True
 
     def get_dict(self):
         sp.validate()
@@ -27,9 +34,9 @@ class Population():
         level = 'county'
 
 
-        num_households = 2400 # 459
-        npop = 6000 #1132 #this is 6000 - but when increased synthpops does not work
-        num_workplaces = 200
+        num_households = self.num_households # 459
+        npop = self.npop #1132 #this is 6000 - but when increased synthpops does not work
+        num_workplaces = self.num_workplaces
 
         # TODO: default school sizes are still being used
         population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
@@ -43,6 +50,8 @@ class Population():
             peopleArray[i] = person
         self.peopleArray = peopleArray
 
+        if self.debugMode:
+            print('=population.py/get_dict: peopleArray length is', len(peopleArray),' =')
         return peopleArray
 
     # calls synthpops and generates population (dictionary)
