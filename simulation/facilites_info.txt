@@ -1,0 +1,230 @@
+Full-Service Restaurants                                                                           960
+Offices of Physicians (except Mental Health Specialists)                                           819
+Religious Organizations                                                                            495
+Limited-Service Restaurants                                                                        385
+Insurance Agencies and Brokerages                                                                  332
+Offices of Dentists                                                                                315
+Beauty Salons                                                                                      311
+Child Day Care Services                                                                            259
+Commercial Banking                                                                                 247
+Nature Parks and Other Similar Institutions                                                        241
+Snack and Nonalcoholic Beverage Bars                                                               234
+Gasoline Stations with Convenience Stores                                                          234
+General Automotive Repair                                                                          218
+Other Personal Care Services                                                                       209
+Drugs and Druggists' Sundries Merchant Wholesalers                                                 195
+Hotels (except Casino Hotels) and Motels                                                           194
+Elementary and Secondary Schools                                                                   189
+Automotive Parts and Accessories Stores                                                            181
+Fitness and Recreational Sports Centers                                                            168
+Offices of Mental Health Practitioners (except Physicians)                                         149
+Hardware Stores                                                                                    148
+Women's Clothing Stores                                                                            140
+Wireless Telecommunications Carriers (except Satellite)                                            139
+Supermarkets and Other Grocery (except Convenience) Stores                                         131
+Nail Salons                                                                                        129
+All Other General Merchandise Stores                                                               129
+Home Health Care Services                                                                          124
+Used Car Dealers                                                                                   121
+Used Merchandise Stores                                                                            118
+Investment Advice                                                                                  104
+Automotive Body, Paint, and Interior Repair and Maintenance                                        102
+Tax Preparation Services                                                                            85
+Furniture Stores                                                                                    81
+Sporting Goods Stores                                                                               80
+Family Clothing Stores                                                                              80
+Beer, Wine, and Liquor Stores                                                                       79
+Optical Goods Stores                                                                                78
+Offices of Chiropractors                                                                            77
+Veterinary Services                                                                                 70
+Pet and Pet Supplies Stores                                                                         69
+Cosmetics, Beauty Supplies, and Perfume Stores                                                      66
+Shoe Stores                                                                                         65
+Jewelry Stores                                                                                      64
+Colleges, Universities, and Professional Schools                                                    63
+Pharmacies and Drug Stores                                                                          60
+Electronics Stores                                                                                  59
+Paint and Wallpaper Stores                                                                          57
+Malls                                                                                               55
+Car Washes                                                                                          55
+General Medical and Surgical Hospitals                                                              45
+Gift, Novelty, and Souvenir Stores                                                                  45
+Office Supplies and Stationery Stores                                                               44
+Medical Laboratories                                                                                43
+Offices of Real Estate Agents and Brokers                                                           41
+Lessors of Miniwarehouses and Self-Storage Units                                                    40
+Assisted Living Facilities for the Elderly                                                          39
+Offices of Physical, Occupational and Speech Therapists, and Audiologists                           37
+New Car Dealers                                                                                     36
+Motorcycle, ATV, and All Other Motor Vehicle Dealers                                                35
+Carpet and Upholstery Cleaning Services                                                             35
+Florists                                                                                            35
+Consumer Lending                                                                                    35
+Home and Garden Equipment Repair and Maintenance                                                    34
+Food (Health) Supplement Stores                                                                     34
+Hobby, Toy, and Game Stores                                                                         33
+Fire Protection                                                                                     33
+Passenger Car Rental                                                                                33
+Regulation and Administration of Transportation Programs                                            32
+Convenience Stores                                                                                  32
+All Other Home Furnishings Stores                                                                   31
+Musical Instrument and Supplies Stores                                                              30
+Motion Picture Theaters (except Drive-Ins)                                                          30
+Bowling Centers                                                                                     29
+Pet Care (except Veterinary) Services                                                               29
+Motor Vehicle Towing                                                                                27
+Freestanding Ambulatory Surgical and Emergency Centers                                              24
+Couriers and Express Delivery Services                                                              24
+Sewing, Needlework, and Piece Goods Stores                                                          24
+Retail Bakeries                                                                                     24
+Book Stores                                                                                         24
+Kidney Dialysis Centers                                                                             23
+Department Stores                                                                                   22
+Libraries and Archives                                                                              21
+Sporting and Recreational Goods and Supplies Merchant Wholesalers                                   21
+Golf Courses and Country Clubs                                                                      21
+Confectionery and Nut Stores                                                                        21
+Hazardous Waste Treatment and Disposal                                                              20
+Other General Government Support                                                                    19
+Museums                                                                                             19
+Truck, Utility Trailer, and RV (Recreational Vehicle) Rental and Leasing                            19
+Tobacco Stores                                                                                      19
+Miscellaneous Financial Investment Activities                                                       18
+Postal Service                                                                                      18
+Breweries                                                                                           18
+All Other Nondepository Credit Intermediation                                                       17
+Drycleaning and Laundry Services (except Coin-Operated)                                             17
+All Other Miscellaneous Store Retailers (except Tobacco Stores)                                     17
+Other Commercial and Industrial Machinery and Equipment Rental and Leasing                          16
+Drinking Places (Alcoholic Beverages)                                                               15
+Fruit and Vegetable Markets                                                                         15
+Children's and Infants' Clothing Stores                                                             15
+Sign Manufacturing                                                                                  14
+Automotive Transmission Repair                                                                      14
+Boat Dealers                                                                                        14
+Employment Placement Agencies                                                                       14
+All Other Health and Personal Care Stores                                                           13
+Video Tape and Disc Rental                                                                          13
+Other Automotive Mechanical and Electrical Repair and Maintenance                                   13
+Photography Studios, Portrait                                                                       13
+Exam Preparation and Tutoring                                                                       12
+Diet and Weight Reducing Centers                                                                    11
+Art Dealers                                                                                         10
+Other Construction Material Merchant Wholesalers                                                    10
+Clothing Accessories Stores                                                                         10
+Tire Dealers                                                                                        10
+Parking Lots and Garages                                                                            10
+Industrial Machinery and Equipment Merchant Wholesalers                                              9
+Correctional Institutions                                                                            9
+Amusement and Theme Parks                                                                            9
+Other Clothing Stores                                                                                9
+Family Planning Centers                                                                              9
+Men's Clothing Stores                                                                                9
+Plumbing, Heating, and Air-Conditioning Contractors                                                  9
+All Other Personal Services                                                                          8
+Barber Shops                                                                                         7
+Floor Covering Stores                                                                                7
+Other Individual and Family Services                                                                 7
+Baked Goods Stores                                                                                   7
+All Other Automotive Repair and Maintenance                                                          7
+Offices of All Other Miscellaneous Health Practitioners                                              7
+Warm Air Heating and Air-Conditioning Equipment and Supplies Merchant Wholesalers                    7
+All Other Miscellaneous Ambulatory Health Care Services                                              7
+Other Activities Related to Credit Intermediation                                                    7
+Child and Youth Services                                                                             6
+Women's Handbag and Purse Manufacturing                                                              6
+Janitorial Services                                                                                  6
+Offices of Optometrists                                                                              6
+Language Schools                                                                                     5
+Other Technical and Trade Schools                                                                    5
+Historical Sites                                                                                     5
+Mortgage and Nonmortgage Loan Brokers                                                                5
+Service Establishment Equipment and Supplies Merchant Wholesalers                                    5
+General Warehousing and Storage                                                                      5
+Funeral Homes and Funeral Services                                                                   5
+Automotive Oil Change and Lubrication Shops                                                          5
+Police Protection                                                                                    5
+All Other Consumer Goods Rental                                                                      5
+Luggage and Leather Goods Stores                                                                     5
+Line-Haul Railroads                                                                                  4
+Cosmetology and Barber Schools                                                                       4
+Home Centers                                                                                         4
+Footwear and Leather Goods Repair                                                                    4
+Other Electronic Parts and Equipment Merchant Wholesalers                                            4
+All Other Amusement and Recreation Industries                                                        4
+Sports Teams and Clubs                                                                               4
+Other Airport Operations                                                                             4
+Lumber, Plywood, Millwork, and Wood Panel Merchant Wholesalers                                       4
+Automotive Glass Replacement Shops                                                                   4
+Investment Banking and Securities Dealing                                                            4
+Travel Agencies                                                                                      4
+Cable and Other Subscription Programming                                                             4
+Fine Arts Schools                                                                                    3
+Construction and Mining (except Oil Well) Machinery and Equipment Merchant Wholesalers               3
+Other Miscellaneous Durable Goods Merchant Wholesalers                                               3
+Automobile Driving Schools                                                                           3
+Clay Building Material and Refractories Manufacturing                                                3
+Other Grantmaking and Giving Services                                                                3
+Wineries                                                                                             3
+Plumbing and Heating Equipment and Supplies (Hydronics) Merchant Wholesalers                         3
+Other Support Activities for Air Transportation                                                      3
+Junior Colleges                                                                                      3
+Direct Title Insurance Carriers                                                                      3
+Electrical Apparatus and Equipment, Wiring Supplies, and Related Equipment Merchant Wholesalers      3
+Services for the Elderly and Persons with Disabilities                                               3
+Commercial Screen Printing                                                                           3
+Blood and Organ Banks                                                                                3
+Exterminating and Pest Control Services                                                              3
+All Other Miscellaneous Schools and Instruction                                                      3
+General Rental Centers                                                                               3
+Used Household and Office Goods Moving                                                               3
+Casinos (except Casino Hotels)                                                                       2
+Tire and Tube Merchant Wholesalers                                                                   2
+Construction, Mining, and Forestry Machinery and Equipment Rental and Leasing                        2
+Refrigeration Equipment and Supplies Merchant Wholesalers                                            2
+Nursing Care Facilities (Skilled Nursing Facilities)                                                 2
+Hardware Merchant Wholesalers                                                                        2
+Security Systems Services (except Locksmiths)                                                        2
+Hydroelectric Power Generation                                                                       2
+Recyclable Material Merchant Wholesalers                                                             2
+Roofing, Siding, and Insulation Material Merchant Wholesalers                                        2
+Psychiatric and Substance Abuse Hospitals                                                            2
+Fish and Seafood Markets                                                                             2
+Flooring Contractors                                                                                 2
+Paint, Varnish, and Supplies Merchant Wholesalers                                                    1
+Landscaping Services                                                                                 1
+All Other Support Services                                                                           1
+Footwear Merchant Wholesalers                                                                        1
+Metal Service Centers and Other Metal Merchant Wholesalers                                           1
+All Other Specialty Food Stores                                                                      1
+Industrial Supplies Merchant Wholesalers                                                             1
+Other Building Material Dealers                                                                      1
+Appliance Repair and Maintenance                                                                     1
+Commercial Printing (except Screen and Books)                                                        1
+Other Chemical and Allied Products Merchant Wholesalers                                              1
+Other Services to Buildings and Dwellings                                                            1
+Household Appliance Stores                                                                           1
+Medical, Dental, and Hospital Equipment and Supplies Merchant Wholesalers                            1
+Direct Life Insurance Carriers                                                                       1
+Ice Manufacturing                                                                                    1
+Diagnostic Imaging Centers                                                                           1
+Freight Transportation Arrangement                                                                   1
+Roofing Contractors                                                                                  1
+All Other Transportation Equipment Manufacturing                                                     1
+Data Processing, Hosting, and Related Services                                                       1
+Direct Property and Casualty Insurance Carriers                                                      1
+Computer and Office Machine Repair and Maintenance                                                   1
+Other Grocery and Related Products Merchant Wholesalers                                              1
+Perishable Prepared Food Manufacturing                                                               1
+Interurban and Rural Bus Transportation                                                              1
+All Other Business Support Services                                                                  1
+RV (Recreational Vehicle) Parks and Campgrounds                                                      1
+Residential Remodelers                                                                               1
+All Other Transit and Ground Passenger Transportation                                                1
+Metal Coating, Engraving (except Jewelry and Silverware), and Allied Services to Manufacturers       1
+Automobile and Other Motor Vehicle Merchant Wholesalers                                              1
+Lessors of Other Real Estate Property                                                                1
+Environment, Conservation and Wildlife Organizations                                                 1
+Securities Brokerage                                                                                 1
+Masonry Contractors                                                                                  1
+Name: sub_category, dtype: int64

@@ -10,7 +10,7 @@ import math
 class Submodule:
 
     def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0,
-                 Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0):
+                 Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0, latitude = 36.561002, longitude = -96.161577, categories = {}):
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
@@ -20,7 +20,9 @@ class Submodule:
             "Retail": 20, #TODO: there is so much variablity in retail/restaraunt capacities and airflow etc. How can we model them all with one factor?
             "School": 20,
             "Hospital": 60,
-            "Gym": 30
+            "Gym": 30,
+            "Other": 20
+
         }
         self.__Capacity = capacities[facilitytype] if facilitytype in capacities else 20
         self.__Visitors = 0  # the current number of customers in the facility
@@ -39,6 +41,12 @@ class Submodule:
         self.vaccineStock = vaccineStock
         self.appointments = appointments
         self.rate = rate
+        self.latitude = latitude
+        self.longitude = longitude
+        self.categories = categories
+
+        ##### Debug added 7/14 #####
+        self.debugMode = True
 
     def getID(self):
         return self.__id
@@ -51,6 +59,9 @@ class Submodule:
 
     def getDays(self):
         return set(self.__Days)
+
+    def getHours(self):
+        return self.__Hours
 
     def getVisitors(self):
         return self.__Visitors
@@ -212,8 +223,13 @@ class Submodule:
         peopleDict = {person.getID(): person for person in self.__People}
         infectedAndHome = [person for person in self.__People if
                            0 <= person.getInfectionState() <= 3 and person.getID() in atHomeIDs]
+        
+        ##### Debug #####
+        if self.debugMode:
+                print('=== submodule.py/calcInfection: length of infectedAndHome',len(infectedAndHome), ' ===')
 
         for person in infectedAndHome:
+
             neighborIDs = list(stochGraph.neighbors(person.getID()))
             for neighborID in neighborIDs:
                 neighbor = peopleDict[neighborID]
@@ -257,13 +273,16 @@ class Submodule:
                       set(['Movie theater']),
                       set(['Community center', 'Gym', 'Spa']),
                       set(['Nursing home', 'Hospital']),
-                      set(['Gas station', 'Park', 'Zoo'])]
+                      set(['Gas station', 'Park', 'Zoo']),
+                      set(['Other'])]
         # 50 is placeholder for outdoor facilities. todo: find actual air flow rate
-        ventRate = [2.5, 3.5, 3.8, 5, 10, 13, 50]
+        ventRate = [2.5, 3.5, 3.8, 5, 10, 13, 50, 10]
         # todo add more types of facilities
         for i in range(len(facilities)):
             if facility in facilities[i]:
                 return ventRate[i]
+            else:
+                return 2.5
 
     def quantaGen(self, facility):
         # 14 - 48 - wells reilly needs updating
@@ -277,6 +296,8 @@ class Submodule:
             return 25
         if facility == 'Gym' or facility =='Community center' or facility =='Church' or facility == 'School':
             return 48
+        if facility == 'Other':
+            return 20 
         return 14 # catch case
 
 
