@@ -11,6 +11,7 @@ from datetime import datetime
 import sciris as sc
 from bisect import bisect_left
 import xlrd
+import sys
 
 
 poiID = 0
@@ -110,7 +111,8 @@ class MasterController:
                      'initial_cases': 0, 'data': result}
         with open(jsonfile, 'w') as outfile:
             json.dump(json_data, outfile)
-
+        
+    
     def return_json(self, location):
         '''
         Returns a JSON file
@@ -333,6 +335,7 @@ class MasterController:
         '''
         Main simulation loop
         '''
+
         # TODO: retention rate within facilities- currently no one stays in a facility longer than one hour, pending ML team
 
         tested = set()
@@ -581,8 +584,12 @@ class MasterController:
             print("Initial infections:", initialInfected)
             print("Total infections in households:", houseinfections)
             print("Total infections in facilities:", facilityinfections)
+            output['Initial infections'] = initialInfected
+            output['Total infections in households'] = houseinfections
+            output['Total infections in facilities'] = facilityinfections
+            
         print("Total infections:", num)
-
+        output['Total infections'] = num
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds
 
@@ -645,7 +652,7 @@ class MasterController:
             if day in facility.getDays():
                validFacilities.append(facility.getID())
         print(len(validFacilities))
-
+        output['Testing facilities open on '] = (day,hour)
     def testFacilitiesByCategory(self, facilities, category):
         sc.heading("Testing facilities with category " + category)
         found = []
@@ -653,7 +660,10 @@ class MasterController:
             if category in facility.categories:
                 found.append(facility.getID())
         print(len(found))
-
+       
+        heading = 'Testing facilities with category '
+        heading += category
+        output[heading] = len(found)
     def testFacilitiesByType(self, facilities, facType):
         sc.heading("Testing facilities with type: " + facType)
         found = []
@@ -662,7 +672,9 @@ class MasterController:
                 found.append(facility.getID())
         print("Should find: 495")
         print("Found: " + str(len(found)))
-
+       
+        output['Should find'] = 495
+        output['Found'] = str(len(found))
     def sumVisitMatrices(self):
         '''
         For each POI in the visit matrices, add together all the people in the CBGs
@@ -681,17 +693,21 @@ class MasterController:
 
         # Uncomment the line below to print out the list of sums
         # print(totals)
-
+    def outputToJson(self,jsonFile):
+        print(output)
+        with open(jsonFile,'w') as outputFile:
+            json.dump(output,outputFile)
+    
 if __name__ == '__main__':
-
     mc = MasterController()  # Instantiate a MasterController
-
+    
+    output = {}
     #mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
     
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.runFacilityTests('facilities_info.txt')
     
-    mc.Run_OKC(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
-
+    #mc.Run_OKC(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
+    mc.outputToJson('Output.json')
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')
