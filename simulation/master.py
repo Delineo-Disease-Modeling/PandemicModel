@@ -577,11 +577,13 @@ class MasterController:
             if len(Pop[each].getInfectionTrack()) > 0:
                 num += 1
 
+        f = open("simulationOutput.txt","w")
         if print_infection_breakdown:
-            print("Initial infections:", initialInfected)
-            print("Total infections in households:", houseinfections)
-            print("Total infections in facilities:", facilityinfections)
-        print("Total infections:", num)
+            f.write("Initial infections:", initialInfected)
+            f.write("Total infections in households:", houseinfections)
+            f.write("Total infections in facilities:", facilityinfections)
+        f.write("Total infections:", num)
+        f.close()
 
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds
