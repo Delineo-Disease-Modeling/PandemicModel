@@ -281,8 +281,8 @@ class MasterController:
 
         # Array of facility submodules that are both open and not full
         openFacilities = {id: facility for id, facility in facilities.items()
-                          if daysDict[dayOfWeek] in facility.getDays()
-                          and facility in openHours[hourOfDay]}
+                          if daysDict[dayOfWeek] in facility.getDays() # Finds days of week facility is open
+                          and facility in openHours[hourOfDay]} # finds hours of day that facility is open
 
         # A list of IDs not yet assigned to a facility
         notAssigned = [*range(len(Pop))]
@@ -295,7 +295,7 @@ class MasterController:
         # Use the apply function on the dataframe to move people for each facilitiy
         dfVisitMatrix.to_frame().apply(lambda row: self.move_people_in_facility(facilities, notAssigned, interventions, row, Pop, openFacilities, isAnytown), axis=1)
 
-        return (facilities, notAssigned)
+        return (facilities, notAssigned) # returns updated facilities and notAssigned
 
     def move_people_in_facility(self, facilities, notAssigned, interventions, row, Pop, openFacilities, isAnytown):
         '''
@@ -307,22 +307,22 @@ class MasterController:
         facility = openFacilities.get(poiID)  # Get the correct facility based on the poiID
 
         # Nothing to do if any of these conditions are met
-        if not notAssigned or not facility or facility.getCapacity() == facility.getVisitors():
+        if not notAssigned or not facility or facility.getCapacity() == facility.getVisitors(): # check if facility is already full
             return
 
         # Reduce number of people at facilities by factor of 2 if stay at home orders are in place
         r = 2 if interventions["stayAtHome"] else 1
 
-        num_people_at_facility = math.ceil(numPeople / r)
+        num_people_at_facility = math.ceil(numPeople / r) # updates number of people in facility given stay at home orders
         if isAnytown:
             num_people_at_facility = math.ceil(num_people_at_facility * len(Pop) / 600000) # Scale population for Anytown, USA
 
-        facility_capacity = math.ceil((interventions["roomCapacity"] / 100) * facility.getCapacity())
+        facility_capacity = math.ceil((interventions["roomCapacity"] / 100) * facility.getCapacity()) # finds slots of facility
 
         for _ in range(min(num_people_at_facility, facility_capacity)):
             if not notAssigned:  # Nothing to do if everyone has been assigned
                 return
-            id_index_to_add = random.randint(0, len(notAssigned) - 1)
+            id_index_to_add = random.randint(0, len(notAssigned) - 1) # randomly determine positions to full in facility
             facilities[poiID].addPerson(Pop[notAssigned.pop(id_index_to_add)])  # Add random person to POI
 
     def simulation(self, num_days, currentInfected, interventions, totalInfectedInFacilities,
