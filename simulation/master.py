@@ -49,7 +49,7 @@ class MasterController:
 
     # generalDebugMode: targets areas of the codebase responsible for progressing through the simulation at a high level, like going through days, facilities, etc.
     #                   Basically use this for print statements in places that won't immediately clog the terminal with thousands of lines of output
-    generalDebugMode = True
+    generalDebugMode = False
     #####
      
     def getUserInput(self, state, county, interventions):
@@ -577,13 +577,13 @@ class MasterController:
             if len(Pop[each].getInfectionTrack()) > 0:
                 num += 1
 
-        f = open("simulationOutput.txt","w")
-        if print_infection_breakdown:
-            f.write("Initial infections:", initialInfected)
-            f.write("Total infections in households:", houseinfections)
-            f.write("Total infections in facilities:", facilityinfections)
-        f.write("Total infections:", num)
-        f.close()
+        # f = open("simulationOutput.txt","w")
+        # if print_infection_breakdown:
+        #     f.write("Initial infections:", initialInfected)
+        #     f.write("Total infections in households:", houseinfections)
+        #     f.write("Total infections in facilities:", facilityinfections)
+        # f.write("Total infections:", num)
+        # f.close()
 
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds

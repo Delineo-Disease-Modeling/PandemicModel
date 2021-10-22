@@ -48,11 +48,15 @@ plt.ylabel('total infected')
 plt.title('Test Run for Total Infected')
 plt.show()
 
+def sum_by_day(arr):
+    return np.add.reduceat(arr, np.arange(0, len(arr), 24))
+
 plt.figure()
 #Facilities graph
+runsFacilities_days = np.array(list(map(sum_by_day, runsFacilities)))
 for i in range(len(runsFacilities)):
-	plt.plot(runsFacilities[i],colors[i%7])
-plt.xlabel('hours')
+	plt.plot(runsFacilities_days[i],colors[i%7])
+plt.xlabel('days')
 plt.ylabel('infected in Facilities')
 plt.title('Test Run for Infected in Facilities')
 plt.show()
