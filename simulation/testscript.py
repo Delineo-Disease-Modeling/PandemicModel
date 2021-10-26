@@ -23,8 +23,8 @@ while value != 'n':
 for i in range(numRuns):
     infecTotal = []
     currRun = mc()
-    currRun.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    currRun.run_simulation(city='Anytown', print_infection_breakdown=True, isAnytown=True, num_days=61, interventions=interventions)  
+    currRun.loadVisitMatrix('Baltimore_2020-01-01_2020-02-29.pkl')
+    currRun.run_simulation(city='Baltimore', print_infection_breakdown=True, isAnytown=True, num_days=61, interventions=interventions)  
     
     for (i1, i2) in zip(currRun.infecFacilitiesTot, currRun.infecHousesTot):
         infecTotal.append(i1+i2+10)
