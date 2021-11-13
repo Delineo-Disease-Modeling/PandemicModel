@@ -11,6 +11,7 @@ from datetime import datetime
 import sciris as sc
 from bisect import bisect_left
 import xlrd
+import requests
 
 
 poiID = 0
@@ -681,6 +682,19 @@ class MasterController:
 
         # Uncomment the line below to print out the list of sums
         # print(totals)
+
+    def httpRequest(self):
+        # Make a GET request
+        r = requests.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+
+        # Check for error
+        if (r != 200):
+            print("Error sending HTTP request")
+            return
+        
+        # Print content
+        print(r.content)
+        
 
 if __name__ == '__main__':
 
