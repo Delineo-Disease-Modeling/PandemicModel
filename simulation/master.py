@@ -683,18 +683,22 @@ class MasterController:
         # Uncomment the line below to print out the list of sums
         # print(totals)
 
-    def httpRequest(self):
+    #def httpRequest(self):
         # Make a GET request
-        r = requests.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+        #r = requests.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 
         # Check for error
-        if (r != 200):
-            print("Error sending HTTP request")
-            return
+        #if (r != 200):
+            #print("Error sending HTTP request")
+            #return
         
         # Print content
-        print(r.content)
-        
+        #print(r.content)
+
+    def return_json_okc(self):
+        json_file = 'dummy.json'
+        file = open(json_file, 'r')
+        return file
 
 if __name__ == '__main__':
 
