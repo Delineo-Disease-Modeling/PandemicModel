@@ -1,0 +1,11 @@
+request: {
+    maskWearing: ,
+    capacityRestrictions: ,
+    massTest: ,
+    vaxRate: ,
+    stayAtHome: true/false,
+    schools: true/false,
+    restaurants: true/false,
+    gyms: true/false,
+    bars: true/false
+}
