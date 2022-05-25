@@ -50,7 +50,7 @@ class MasterController:
 
     # generalDebugMode: targets areas of the codebase responsible for progressing through the simulation at a high level, like going through days, facilities, etc.
     #                   Basically use this for print statements in places that won't immediately clog the terminal with thousands of lines of output
-    generalDebugMode = True
+    generalDebugMode = False
     #####
      
     def getUserInput(self, state, county, interventions):
@@ -578,11 +578,13 @@ class MasterController:
             if len(Pop[each].getInfectionTrack()) > 0:
                 num += 1
 
-        if print_infection_breakdown:
-            print("Initial infections:", initialInfected)
-            print("Total infections in households:", houseinfections)
-            print("Total infections in facilities:", facilityinfections)
-        print("Total infections:", num)
+        # f = open("simulationOutput.txt","w")
+        # if print_infection_breakdown:
+        #     f.write("Initial infections:", initialInfected)
+        #     f.write("Total infections in households:", houseinfections)
+        #     f.write("Total infections in facilities:", facilityinfections)
+        # f.write("Total infections:", num)
+        # f.close()
 
         self.infecFacilitiesTot= totalInfectedInFacilities
         self.infecHousesTot= infectionInHouseholds
@@ -598,6 +600,11 @@ class MasterController:
     def Run_OKC(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix('Oklahoma_Jan06_fullweek_dict.pkl')
         self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = False)
+
+    # Function to run Baltimore
+    def Run_Baltimore(self, print_infection_breakdown, num_days, intervention_list):
+        self.loadVisitMatrix('Baltimore_2020-01-01_2020-02-29.pkl')
+        self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = False)
 
     def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
         '''
@@ -710,6 +717,6 @@ if __name__ == '__main__':
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.runFacilityTests('facilities_info.txt')
     
-    mc.Run_OKC(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
+    mc.Run_Baltimore(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
 
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')

@@ -23,8 +23,8 @@ while value != 'n':
 for i in range(numRuns):
     infecTotal = []
     currRun = mc()
-    currRun.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-    currRun.run_simulation(city='Anytown', print_infection_breakdown=True, isAnytown=True, num_days=61, interventions=interventions)  
+    currRun.loadVisitMatrix('Baltimore_2020-01-01_2020-02-29.pkl')
+    currRun.run_simulation(city='Baltimore', print_infection_breakdown=True, isAnytown=True, num_days=61, interventions=interventions)  
     
     for (i1, i2) in zip(currRun.infecFacilitiesTot, currRun.infecHousesTot):
         infecTotal.append(i1+i2+10)
@@ -48,11 +48,15 @@ plt.ylabel('total infected')
 plt.title('Test Run for Total Infected')
 plt.show()
 
+def sum_by_day(arr):
+    return np.add.reduceat(arr, np.arange(0, len(arr), 24))
+
 plt.figure()
 #Facilities graph
+runsFacilities_days = np.array(list(map(sum_by_day, runsFacilities)))
 for i in range(len(runsFacilities)):
-	plt.plot(runsFacilities[i],colors[i%7])
-plt.xlabel('hours')
+	plt.plot(runsFacilities_days[i],colors[i%7])
+plt.xlabel('days')
 plt.ylabel('infected in Facilities')
 plt.title('Test Run for Infected in Facilities')
 plt.show()
