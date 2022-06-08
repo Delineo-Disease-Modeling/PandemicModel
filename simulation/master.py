@@ -20,7 +20,7 @@ class MasterController:
     '''
     This class is responsible for instantiaitng a module, which is a flexible synthetic environment equivalent to a town or city. This class essentially acts
     an an API layer that kicks off and runs the simulation, and provides the functionaility necessary to package the simulation results into the formats necessary
-    for communicating with the frontend. 
+    for communicating with the frontend and backend.
     '''
 
     state = 'Oklahoma'
