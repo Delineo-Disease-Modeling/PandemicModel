@@ -88,6 +88,9 @@ class Module:
         facility_type = ''
 
         #create facilities of each category
+
+        # TODO: We might have to assign this based off of what Info support finds for us
+        
         while (index < len(category)):
             counter = 0 
             #create n facilities depending on the value in category_num

@@ -3,6 +3,34 @@ import numpy as np
 
 class Person:
 
+    ''''This function is used to define an individual person in the simulation. 
+    
+    It takes in the following parameters:
+    ID: the ID of the person
+    age: the age of the person
+    sex: the sex of the person
+    householdLocation: where their home is located
+    householdMembers: who else lives in their home
+    comorbidities: other conditions that affect them
+    demographicInfo: information about the person's demographic information
+    severityRisk: the severity of the person's disease
+    currentLocation: where the person is currently located
+    infectionState: the state of the person's infection
+    incubation: the number of days the person has been in the incubation period
+    infectionTimer: the number of days the person has been in the infection period
+    infectionTrack: the list of days the person has been infected
+    householdContacts: the people who live in the same household as the person who they interract with
+    extendedhousehold: the people who live in the same household as extended members (visitors)
+    vaccinated: whether or not the person is vaccinated
+    COVID_type: the type of the person's disease
+    vaccineName: the name of the person's vaccine
+    shotNumber: the number of times the person has been shot
+    daysAfterShot: the number of days since the person has been shot
+    essentialWorker: whether or not the person is an essential worker
+    madeVaccAppt: whether or not the person has made a vaccine appointment
+    vaccApptDate: the date of the person's vaccine appointment
+    '''
+
     # Initialization function, sets all parameters at once.
     # TODO: have some default parameters if we can't set all of them at once, for initializing them with synthpops.
 
@@ -245,6 +273,7 @@ class Person:
             peakStateDays = 10
         return peakStateDays
 
+
     def assignTrajectory(self):
         peakstate = self.calcInfectionState()
         self.severityRisk = self.calcSeverityRisk()
@@ -298,6 +327,9 @@ class Person:
         self.vaccineName = name
         self.shotNumber = shotNumberGiven
         self.daysAfterShot = 0
+
+
+    #TODO: add way for half vaccination/more vaccines over the required 
 
     def completeVaccinated(self):
         if self.vaccineName == "Moderna" and self.shotNumber == 2 and self.daysAfterShot == 14:
