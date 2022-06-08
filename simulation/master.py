@@ -14,13 +14,13 @@ import xlrd
 import requests
 
 
-poiID = 0
+poiID = 0 
 
 class MasterController:
     '''
     This class is responsible for instantiaitng a module, which is a flexible synthetic environment equivalent to a town or city. This class essentially acts
     an an API layer that kicks off and runs the simulation, and provides the functionaility necessary to package the simulation results into the formats necessary
-    for communicating with the frontend.
+    for communicating with the frontend. 
     '''
 
     state = 'Oklahoma'
@@ -41,6 +41,12 @@ class MasterController:
     infecHousesTot = []
 
     visitMatrices = None # Save matrices
+
+    averageHouseholdInfectionRate = .2  # total odds of infecting someone whom they are connected to in a household with
+
+
+    '''TOOD: For interventions, we have to take out assigned variables and assign them based off of the values provided by user. There are a lot of assigned variables that are randomly assigned'''
+
 
     #####
     # The below booleans turn on a whole bunch of print statements, at some point this should be redesigned to so we can better target specific functions
@@ -184,13 +190,18 @@ class MasterController:
 
     def calcInfectionsHomes(self, atHomeIDs, Pop, currentInfected):
         '''
-        Used in the simulation() function. Is responsible for handling the spread of infection within household groups right
+        Used in the simulation() function. Is responsible for handling the spread of infection within household groups.
+        Params:
+            atHomeIDs - list of people who are at home
+            Pop - list of people in the population
+            currentInfected - list of people who are currently infected
+        Returns:
+            (list): list of people who are infected
         '''
         numperhour = 0
         newlyinfectedathome = []
 
         # TODO: this math needs to be worked out more, along with correct, scientific numbers
-        averageinfectionrate = .2  # total odds of infecting someone whom they are connected to in a household with
 
         ##### generalDebugMode #####
         if self.generalDebugMode:
@@ -224,7 +235,7 @@ class MasterController:
                     else:
                         householdRandomVariable = random.random()
 
-                    if (householdRandomVariable < (averageinfectionrate / (24 * (len(
+                    if (householdRandomVariable < (self.averageHouseholdInfectionRate / (24 * (len(
                             current.getInfectionTrack()) - current.getIncubation()))) and self.in_list(atHomeIDs, each)):  # Probability of infection if in same house at the moment
                         Pop[each].assignTrajectory()
                         newlyinfectedathome.append(Pop[each])
@@ -275,9 +286,19 @@ class MasterController:
 
         return (currentInfected, tested)
 
-    def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h, isAnytown):
+    def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, hourOfWeek, isAnytown):
         '''
         Add people to facilities based on data in visit matrices. Loads in the data matrix and uses df.apply() to dump people into POI columns
+        Params:
+            facilities: dictionary of facilities
+            Pop: list of people in the population
+            interventions: dictionary of interventions
+            daysDict: dictionary of days
+            openHours: list of open hours
+            dayOfWeek: day of the week
+            hourOfDay: hour of the day
+            hourOfWeek: hour of the week
+            isAnytown: boolean, whether or not the simulation is in the Anytown scenario
         '''
 
         # Array of facility submodules that are both open and not full
@@ -289,7 +310,7 @@ class MasterController:
         notAssigned = [*range(len(Pop))]
 
         # Assign people to facilities based on visit matrices
-        hourVisitMatrix = self.poi_cbg_visit_matrix_history[h % 168]  # mod resets h to be the hour in current week ie all mondays at midnight will be 0
+        hourVisitMatrix = self.poi_cbg_visit_matrix_history[hourOfWeek % 168]  # mod resets h to be the hour in current week ie all mondays at midnight will be 0
         dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
         dfVisitMatrix = dfVisitMatrix.sum(axis=1)  # Sum all CBGs (converts dataframe to series)
 
@@ -302,6 +323,14 @@ class MasterController:
         '''
         Takes in a specific facility and fills it to maximum capacity with people assigned to the facility. Will stop
         if it runs out of people OR the limit is reached.
+        Params:
+            facilities: dictionary of facilities
+            notAssigned: list of IDs not yet assigned to a facility
+            interventions: dictionary of interventions
+            row: row of the dataframe
+            Pop: list of people in the population
+            openFacilities: list of open facilities
+            isAnytown: boolean, whether or not the simulation is in the Anytown scenario
         '''
         poiID = row.name  # Get the POI's ID from the dataframe
         numPeople = row[0]  # Get the number of people at the facility from the dataframe
@@ -333,6 +362,23 @@ class MasterController:
 
         '''
         Main simulation loop
+        Params:
+            num_days: number of days to simulate
+            currentInfected: list of all currently infected agents
+            interventions: dictionary of interventions
+            totalInfectedInFacilities: dictionary of total infections in each facility
+            facilities: dictionary of facilities
+            infectionInFacilitiesDaily: dictionary of daily infections in each facility
+            infectionInFacilitiesHourly: dictionary of hourly infections in each facility
+            peopleInFacilitiesHourly: dictionary of hourly people in each facility
+            infectionInHouseholds: dictionary of infections in each household
+            facilityinfections: dictionary of infections in each facility
+            houseinfections: dictionary of infections in each household
+            infectionInFacilities: dictionary of infections in each facility
+            daysDict: dictionary of days
+            openHours: list of open hours
+            Pop: list of people in the population
+            isAnytown: boolean, whether or not the simulation is in the Anytown scenario                    
         '''
         # TODO: retention rate within facilities- currently no one stays in a facility longer than one hour, pending ML team
 
@@ -445,6 +491,10 @@ class MasterController:
     def set_interventions(self, intervention_list):
         '''
          Set intervention list based on dictionary of interventions
+            Params:
+                intervention_list: dictionary of interventions
+            Returns: 
+                interventions: dictionary of interventions with updated values
         '''
         if intervention_list is None:
             intervention_list = {"maskWearing": 0, "dailyTesting": 0, "roomCapacity": 100, "contactTracing": 0,
@@ -465,7 +515,9 @@ class MasterController:
 
     def set_households(self, Pop):
         '''
-        Add people to households
+        Add people to random households who are randomly selected from population
+            Params:
+                Pop: list of people in the population
         '''
         for person in Pop:
             for i in range(9):
@@ -479,6 +531,14 @@ class MasterController:
         '''
         Function that initializes and runs the entire simulation. Depends on simulation(), set_households(), and set_interventions(),
         move_people(), and update_status()
+            Params:
+                city: what city this simulation belongs to
+                print_infection_breakdown: boolean, whether or not to print infection breakdown
+                isAnytown: boolean, whether or not to run simulation for anytown
+                num_days: number of days to run simulation for
+                interventions: dictionary of interventions
+            Returns:
+                totalInfectedInFacilities: list of total number of infections in each facility
         '''
         interventions = self.set_interventions(interventions)
 
@@ -552,6 +612,7 @@ class MasterController:
             5: 'F',
             6: 'Sat'
         }
+
         numFacilities = len(facilities)
 
         totalInfectedInFacilities, facilities, infectionInFacilitiesHourly, peopleInFacilitiesHourly, facilityinfections, houseinfections, infectionInFacilities, Pop = self.simulation(
@@ -572,6 +633,7 @@ class MasterController:
                     } #we should probably have households at least as one large "household"
 
         self.jsonResponseToFile(response, "output.txt")
+        #TODO: Upload this json to a database based on interventions ran, how long, etc.
 
         num = 0
         for each in Pop:
@@ -589,6 +651,8 @@ class MasterController:
 
         return response
 
+    # TODO: Implement an easier way to run these simultaions for difference cities
+
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
@@ -603,6 +667,15 @@ class MasterController:
         '''
         NOT USED CURRENTLY, SPRINT 5 BACKLOG ITEM
         This function is responsible for administering vaccines and keeping track of vaccination progress
+        Params:
+            currDay: current day of simulation
+            phaseNum: current phase of simulation
+            phaseDay: day of phase
+            phasePlan: list of vaccines to be administered
+            population: population of the city
+            facilities: list of facilities in the city
+        Returns:
+            population: updated population
         '''
         #If a facility has an appointments on this day, administer appointments to each person.
         for facility in facilities:
@@ -630,7 +703,9 @@ class MasterController:
 
     def runFacilityTests(self, filename):
         '''
-        Test facilities
+        Test facilities by running a simulation for a number of days, and seeing how many people are infected
+        Params:
+            filename: name of file to save results to
         '''
         M = self.createModule()
 
@@ -683,9 +758,13 @@ class MasterController:
         # Uncomment the line below to print out the list of sums
         # print(totals)
 
+        
+    #TODO: use this to get the simulation results from the database
     #def httpRequest(self):
         # Make a GET request
         #r = requests.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+        # Guys... you're a genius.
+        
 
         # Check for error
         #if (r != 200):
