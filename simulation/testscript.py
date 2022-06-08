@@ -10,15 +10,17 @@ import scipy.stats as stats
 import statistics
 import math
 
-numRuns = int(input("enter number of runs: ")) # number of runs
-runsTotal = []
-runsFacilities = []
-runsHouses = []
-value = input('any interventions? y or n ') # if yes, enter the intervention name
+
+
+numRuns = int(input("enter number of runs: "))
+runsTotal = [] # how many runs should be ran?
+runsFacilities = [] #what facilities should be used?
+runsHouses = [] #what homes should be used?
+value = input('any interventions? y or n ') #should we use interventions?
 interventions = {}
 
 while value != 'n':
-    a = input('Enter intervention: ')
+    a = input('Enter intervention: ') #TODO: give a list of interventions that can be used
     b = int(input("Enter magnitude of intervention: "))
     interventions[a] = b
     value = input('would you like to add another intervention, y or n? ') # if yes, repeat the above process for each intervention
