@@ -8,18 +8,22 @@ import pandas as pd
 import math
 from datetime import datetime
 
+# Description:
+#   This module represents the populations of the simulation. It contains the population and the submodules that are used to create the facilties of the simulation from several files.
+#   This module has these capabilities: Creating a population, moving a population, creating facilties for the population 
+
 class Module:
 
-    def __init__(self, State, County, Interventions):
+    def __init__(self, State, County, Interventions): # Initalizer for the module with parameters for the state and county
         self.__State = State
         self.__County = County
 
-    def createPopulationObj(self):
+    def createPopulationObj(self): # Creates a population object
         Pop = Population(self.__State, self.__County)
         return Pop
 
 
-    def createPopulation(self, city):
+    def createPopulation(self, city): # Creates a population object for a specific city
         print("createPop function")
         if city == 'Anytown':
             Pop = Population(self.__State, self.__County).get_dict()
@@ -27,7 +31,7 @@ class Module:
             Pop = Population(self.__State, self.__County, num_households=250000, npop=650000, num_workplaces=24000).get_dict()
         return Pop
 
-    def createSubmodules(self):
+    def createSubmodules(self): # Creates a submodule object for every facility to be used in the simulation
         with open("submodules.json") as file:
             subdict = json.load(file)
 
@@ -36,14 +40,14 @@ class Module:
             subList.append(Submodule(each, each[0]))
         return subList
 
-    def movePop(self, TOD, DOW, population, facilities):
+    def movePop(self, TOD, DOW, population, facilities): # Moves the population from one facility to another randomly by first clearing the facility, then adding the population to the new facility
         for each in facilities:
             each.clearPeople()
         for each in population:
             fac = (random.randint(0, 19))
             facilities[fac].addPerson(population[each])
 
-    def createFacilities(self, filename):
+    def createFacilities(self, filename): # Creates a facility object for every facility in the txt file
         # current file format: [facility type(str), capacity(int), open hours per day(list(int)), open days(list(str)), latitude(float), longitude(float), people in it(list[Person])]
         # TODO better format the .json file to make varying hours over the days of a week, and distribute permanant workers into people[]
         with open(filename) as f:
@@ -62,8 +66,7 @@ class Module:
                 openHours[h].add(nextFacility)
         return facilities, totalCapacities, openHours
 
-    def createFacilitiesTXT(self, filename, verbose):
-        #Read in the information from the facilities txt file
+    def createFacilitiesTXT(self, filename, verbose): # Creates a facility object for every facility in the txt file. Data is based off of the txt file
         with open('facilites_info.txt') as f:
             lines = f.readlines()
             lines = lines[:-1]
@@ -133,7 +136,7 @@ class Module:
         return facilities, totalCapacities, openHours
 
    
-    def createFacilitiesCSV(self, filename):
+    def createFacilitiesCSV(self, filename): # Creates a facility object for every facility in the csv file. 
         df = pd.read_csv(filename)
         dfList = df.values.tolist()
         facilities = dict()
