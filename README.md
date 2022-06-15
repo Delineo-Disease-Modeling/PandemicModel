@@ -26,6 +26,7 @@ For both, the best way to verify everything is working is to navigate into the `
 - Please do not commit `venv` stuff.
 - If you `pip install ` anything, remember to  `pip freeze > requirements.txt` before committing any changes.
 - You cannot commit to the `master` branch, remember to commit all changes to a new branch and open a PR when you're ready to merge.
+- Do you need the Baltimore pkl file? https://drive.google.com/file/d/1DWG04IsdxIqKWCGYxdshpljrJ9D0ZWSv/view?usp=sharing
 
 ## `Important Folders/Files`
 All important files for running are in the /simulation folder
