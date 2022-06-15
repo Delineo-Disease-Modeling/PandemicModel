@@ -5,8 +5,8 @@ class ValueController:
     def __init__(self, state: str, county: str, population: int, interventions: set, dayOfWeek: int, timeOfDay: int, 
                     phasePlan: PhasePlan, currDay: int, phaseNum: int, phaseDay: int, infecFacilitiesTot: list, infecHousesTot: list,
                     visitMatrices, averageHouseholdInfectionRate: float) -> None:
+        # TODO: INIT WITH APIController
         """Initializer for ValueController
-
         Args:
             state (str): state
             county (str): county

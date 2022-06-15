@@ -1,0 +1,18 @@
+
+  {
+    "state": "Oklahoma",
+    "country": "Barnsdall",
+    "population": 650000,
+    "interventions": {"MaskWearing": false,"roomCapacity": 100, "StayAtHome": false},
+    "dayOfWeek": 1,
+    "timeOfDay": 0,
+    "phasePlan": "PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60])",
+    "currDay": 0,
+    "phaseNum": 0,
+    "phaseDay": 0,
+    "infecFacilitiesTot":[],
+    "infecHousesTot": [],
+    "visitMatricies": "None",
+    "averageHouseholdInfectionRate": 0.2
+    
+  }
