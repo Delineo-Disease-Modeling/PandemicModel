@@ -27,6 +27,11 @@ while (facility != 'Train station' and facility != 'Airport' and
     print('Invalid facility, please try again')
     facility = input("Enter the facility you are entering: ")
 
+"""
+This method returns the facility type.
+Returns:
+    Either the Facilty(String) variable or a String representing the facility's type.
+"""
 def facilityType():
     if (facility == 'Train station' or facility == 'Airport'):
         return 'Public transit station'
@@ -57,21 +62,21 @@ arr.append(0) #in the case of deaths
 total = s0 + e0 + i0 + r0
 print(arr)
 
-incubation = int(input("Enter average number of days of incubation (from 3 - 14): "))
+incubation = int(input("Enter average number of days of incubation (from 3 - 14): ")) #user enters a number for days of incubaton, from 3-14
 while (incubation < 3 or incubation > 14):
     print("Incubation out of range, please try again.")
     incubation = int(input("Enter average number of days of incubation (from 3 - 14): "))
         
 alpha = 1/(incubation*24) #average incubation time is 6 days * 24 hours/day
     
-infection = int(input("Enter average number of days of infection (from 14 - 28): "))
+infection = int(input("Enter average number of days of infection (from 14 - 28): ")) #user enters a number for days of infection, from 14-28
 while (infection < 14 or infection > 28):
     print("Infection out of range, please try again.")
     infection = int(input("Enter average number of days of infection (from 14 - 28): "))
     
 timeInfectious = infection*24 #time infectious is the average time it takes for exposed->infectious (15 days * 24 hours/day)
 
-alpha = 1/(incubation*24)
+alpha = 1/(incubation*24) #average incubation time is 6 days * 24 hours/day
 
 area = int(input("Enter the area of your facility (from 50 - 150): "))
 while (area < 50 or area > 150):
@@ -124,40 +129,45 @@ if (facility == "Prison"):
         prisonDeathRate = float(input("Enter prison death rate (0.05 - 0.2): "))
 
 def main():
-    
-    print("Average change in susceptible individuals: " + str(hours*changeSusceptible(s0, e0, i0, r0)))
+    """
+    s0(int) represents number of susceptible individuals
+    e0(int) represents number of exposed individuals
+    i0(int) represents number of infected individuals
+    r0(int) represents number of recovered individuals
+    """
+    print("Average change in susceptible individuals: " + str(hours*changeSusceptible(s0, e0, i0, r0))) 
     print("Average change in exposed individuals: " + str(hours*changeExposed(s0, e0, i0, r0)))
     
-    if (facility == "ICU" or facility == "Hospital" or facility == "Nursing home" or facility == "Prison"):
+    if (facility == "ICU" or facility == "Hospital" or facility == "Nursing home" or facility == "Prison"): #Specific information available in ICU, Hospitals, prisons, nursing homes
        print("Average change in infected individuals: " + str(hours*changeInfected(s0, e0, i0, r0)))
        print("Average change in recovered individuals: " + str(hours*changeRecovered(s0, e0, i0, r0)))
        print("Average change in dead individuals: " + str(hours*changeDead(s0, e0, i0, r0)))
     
-    randS = random()
-    if (randS < ((hours*changeSusceptible(s0, e0, i0, r0))%1)):
+    randS = random() #changeS is the change in susceptible individuals 
+    if (randS < ((hours*changeSusceptible(s0, e0, i0, r0))%1)): #
         changeS = math.floor(hours*changeSusceptible(s0, e0, i0, r0)) + 1
     else:
         changeS = math.floor(hours*changeSusceptible(s0, e0, i0, r0))
     
-    randE = random()
+    randE = random() #changeE is the change in exposed individuals
     if (randE < ((hours*changeExposed(s0, e0, i0, r0))%1)):
         changeE = math.floor(hours*changeExposed(s0, e0, i0, r0)) + 1
     else:
         changeE = math.floor(hours*changeExposed(s0, e0, i0, r0))
     
-    randI = random()
+    randI = random() #changeI is the change in infected individuals
     if (randI < ((hours*changeInfected(s0, e0, i0, r0))%1)):
         changeI = math.floor(hours*changeInfected(s0, e0, i0, r0)) + 1
     else:
         changeI = math.floor(hours*changeInfected(s0, e0, i0, r0))
     
-    randR = random()
+    randR = random() #changeR is the change in recovered individuals
     if (randR < ((hours*changeRecovered(s0, e0, i0, r0))%1)):
         changeR = math.floor(hours*changeRecovered(s0, e0, i0, r0)) + 1
     else:
         changeR = math.floor(hours*changeRecovered(s0, e0, i0, r0))
     
-    randD = random()
+    randD = random() #changeD is the change in dead individuals
     if (randD < ((hours*changeDead(s0, e0, i0, r0))%1)):
         changeD = math.floor(hours*changeDead(s0, e0, i0, r0)) + 1
     else:
@@ -171,7 +181,7 @@ def main():
         print("Change in infected individuals: " + str(changeI))
         print("Change in recovered individuals: " + str(changeR))
         print("Change in dead individuals: " + str(changeD))
-    print("Transmission Rate: " + str(transmissionRate(s0, e0, i0, r0)))
+    print("Transmission Rate: " + str(transmissionRate(s0, e0, i0, r0))) #prints the transmission rate for the values of current s0, e0, i0, and r0
     
     
     #Shows the bar graph of s, e, i, r, d (orange represents change)
@@ -196,6 +206,7 @@ def main():
 
 
 def areaFactor():
+    #returns the area of the facility
     return area
 
 #Broken up into 3 types of facility
@@ -203,6 +214,13 @@ def areaFactor():
 #2. individuals fixed location, shared room
 #3. individuals free to move around, shared room
 def mobilityFactor():
+    """
+    This function assigns a multiplier for mobility, depending on which type the facility falls in.
+    Uses:
+        FacilityType(): Returns a string for the facility's type
+    Returns:
+        multiplier(float or int): The mobility multiplier of the facility
+    """
     multiplier = 0
     if (facilityType() == 'Hospital' or facilityType() == 'ICU' or facilityType() == 'Prison' or facilityType() == 'Nursing home'):
         multiplier = 0
@@ -214,6 +232,13 @@ def mobilityFactor():
 
 #Needs work
 def contactFactor():
+    """
+    Returns contact factor multiplier based on facility type
+    Uses:
+        FacilityType(): Returns a string for the facility's type
+    Returns:
+        multiplier(float or int): The contact multiplier of the facility
+    """
     multiplier = 0
     if (facilityType() == 'Public transportation' or facilityType == 'Food service' or facilityType() == 'ICU' or facilityType() == 'Nursing home' or facilityType() == 'Prison'):
         multiplier = 0.2
@@ -233,6 +258,13 @@ def hasFood(facility):
 
 #Facilities that are outdoors = cleaner, have food = not as clean
 def cleanlinessFactor():
+    """
+    Uses:
+        isOutdoors(): Returns boolean whether the facility is outdoors
+        hasFood(): Returns boolean whether the facility has food
+    Returns:
+        multiplier(float or int): The cleanliness multiplier of the facility
+    """
     multiplier = 0
     if (isOutdoors(facility)):
         multiplier -= 0.05
@@ -244,8 +276,21 @@ def cleanlinessFactor():
 
 #Transmission rate equations, combine different factors
 def transmissionRate(s0, e0, i0, r0):
-    n = s0 + e0 + i0 + r0
-    density = n / areaFactor()
+    """
+    s0(int) represents number of susceptible individuals
+    e0(int) represents number of exposed individuals
+    i0(int) represents number of infected individuals
+    r0(int) represents number of recovered individuals
+    Uses:
+        areaFactor(): The area of the facility
+        mobilityFactor(): The mobility factor of the facility
+        contactFactor(): The contact factor of the facility
+        cleanlinessFactor(): The cleanliness factor of the facility
+    Returns:
+        beta: Transmission rate, using the values and mults entered by the user earlier
+    """
+    n = s0 + e0 + i0 + r0 #n is the total number of people (equivalent to variable "total" earlier in the script)
+    density = n / areaFactor() #people per area 
     mobility = mobilityFactor()
     contact = contactFactor()
     cleanliness = cleanlinessFactor()
@@ -255,6 +300,10 @@ def transmissionRate(s0, e0, i0, r0):
 
 #Represents average contagious level among infected agents
 def overallContagiousness(): 
+    """
+    Returns:
+        multiplier: Contagiousness multiplier, which can either be 0.95, 1.0, 1.05, 1.1 (approximately, though not exactly, 1/4 chance of each)
+    """
     multiplier = 0.0
     averageContagiousLevel = random()*4
     if averageContagiousLevel >= 0 and averageContagiousLevel <= 1:
@@ -270,6 +319,10 @@ def overallContagiousness():
 
 #Represents average severity risk among infected agents (how likely they are to die/recover)
 def overallSeverityRisk():
+    """
+    Returns:
+    multiplier: multiplier of severity risk among infected individuals, can either be 0.95, 1.0, 1.05, 1.1.
+    """
     multiplier = 0.0
     averageSeverityRisk = random()*4
     if averageSeverityRisk >= 0 and averageSeverityRisk <= 1:
