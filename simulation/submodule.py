@@ -8,7 +8,30 @@ import math
 
 
 class Submodule:
+    """
+    Takes the following parameters:
 
+    Self
+    id: the id of the facility
+    facilitytype: the type of the facility
+    capacity: capacity of a facility, which corresponds to types (supermarket, restaurant, retail, school, hospital, gym, other types)
+    hours: hours in the facility for the submodule
+    days: days in the facility for the submodule
+    numGroups: number of groups
+    Groups: array of the groups
+    People: array of people (person objects)
+    Area: area of the facility
+    Contact: number representing contact of people
+    Mobility: number representing mobility in the facility
+    Density: Density of people in the area
+    Cleanliness: Number representing cleanliness
+    Infected: array of infected people
+    vaccineStock: dictionary of three vaccines (Moderna, Pfizer, J&J) and the stock for each
+    appointments: dictionary for vaccination appointments of persons
+    rate: vaccination rate
+    latitude: represents latitude location
+    longitude: represents longtitude location
+    """
     def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0,
                  Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0, latitude = 36.561002, longitude = -96.161577, categories = {}):
         # Either initialize parameterized or empty and fill in with methods.
@@ -102,6 +125,11 @@ class Submodule:
     #TODO This code will be adapted to fit household model - Likely want to instantiate houses as groups
 
     def createGroups(self):
+        """
+        This function creates groups from individuals in the person array. It alters numGroups and Groups, as necessary.
+        Params:
+            People(array): Array of persons
+        """
         count = 0
         groups = []
         while count < len(self.__People):
@@ -124,6 +152,11 @@ class Submodule:
 
     #create groups based on household network
     def createGroupsHH(self):
+        """
+        Creates groups in a network of households. Alters numGroups and Groups as necessary.
+        Params:
+            People(array): array of persons
+        """
         groupsDict = {} # If we know total number households here, we can just use a list
         for person in self.__People:
             # Create new group if household not yet instantiated
@@ -149,6 +182,7 @@ class Submodule:
                 0 <= person.getInfectionState() <= 3]
 
     # This is a potential new function to create the graph, which calcInfection will then traverse
+    #Returns G: The graph
     def createGraph(self):
         sizes = [0] * self.__numGroups
         print("Number of groups: ",self.__numGroups)
@@ -214,7 +248,15 @@ class Submodule:
     # It seems for simplicity, it would make the most sense to calcInfection here
 
     def calcInfection(self, stochGraph, atHomeIDs):
-
+        """
+        Calculates infections based off of the persons in the submodule, which represents the disease spreading within homes and to neighbors
+        Params:
+            People: Array of persons
+            Stochgraph: a graph representing groups
+            atHomeIDs: array for the IDs of persons at home
+        Returns:
+            newlyinfectedathome: array of individuals newly infected at home
+        """
         numperhour = 0
         newlyinfectedathome = []
         averageinfectiouslength = 24 * 3 # number of days an individual is infectious
@@ -222,7 +264,7 @@ class Submodule:
         # note this math may need to be worked out more, along with correct, scientific numbers
         peopleDict = {person.getID(): person for person in self.__People}
         infectedAndHome = [person for person in self.__People if
-                           0 <= person.getInfectionState() <= 3 and person.getID() in atHomeIDs]
+                           0 <= person.getInfectionState() <= 3 and person.getID() in atHomeIDs] #array for individuals who are infected at home
         
         ##### Debug #####
         if self.debugMode:
@@ -245,6 +287,13 @@ class Submodule:
 
     # Wells Riley
     def pulmonaryVentilation(self):
+        """
+        Returns a number representing the pulmonary ventilation of the infected individuals
+        Uses:
+            getInfected(): Array of infected individuals
+        Returns:
+            A number representing the pulmonary ventilation of infected individuals combined as an average
+        """
         d = {'susceptible' : -1,
             'asymptomatic': 0,
             'mild':        1,
@@ -266,6 +315,13 @@ class Submodule:
         return sum(infected)/len(infected) if infected else 0
 
     def facVentRate(self, facility):
+        """
+        Gives a number representing the vent rate of a facility
+        Params:
+            facility: The facility for which the method is being run
+        Returns:
+            Either ventRate (should represent the vent rate for a facility that is defined in the method) or 2.5
+        """
         facilities = [set(['Church', 'Prison']),
                       set(['Airplane']),
                       set(['Casino', 'Airport', 'Supermarket',
@@ -320,6 +376,11 @@ class Submodule:
         #return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!
 
     def restockVaccines(self, restock):
+        """
+        Intended to restock vaccines, changed the values stored in the dictionary for vaccineStock
+        Params:
+            restock: dictionary of number to restock
+        """
         self.vaccineStock["Pfizer"] += restock["Pfizer"]
         self.vaccineStock["Moderna"] += restock["Moderna"]
         self.vaccineStock["Johnson&Johnson"] += restock["Johnson&Johnson"]

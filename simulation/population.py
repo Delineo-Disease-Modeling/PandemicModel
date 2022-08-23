@@ -6,6 +6,23 @@ import random
 
 
 class Population():
+
+    '''This class is used to define a population in the simulation.
+
+    It takes in the following parameters:
+    self
+    state: The state in which the population is located
+    country: The country in which the population is located
+    population: An array of different person classes
+    peopleArray: A dictionary representing people in the population
+    populationSize: The size of the population
+    phaseNum: The phase of the population
+    currPhaseDayNum: The day number of the current phase
+    num_households: The number of households in the population
+    npop: How many people are in the population, for synthpops
+    num_workplaces: The number of workplaces in the population
+  
+    '''
     # constructor
     def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0, num_households = 2400, npop = 6000, num_workplaces = 200):
 
@@ -24,7 +41,17 @@ class Population():
         ##### Debug flag #####
         self.debugMode = True
 
+
     def get_dict(self):
+        '''
+        This function generates a synthetic population using synthpops for barnsdall, Oklahoma, usa and returns a corresponding dictionary. 
+
+        Params:
+            npop(int): The size of the population to be used by sp
+            num_workplaces(int): The number of workplaces to be used by sp
+        Returns:
+            peopleArray: Dictionary of individuals (objects of the "person" class) with parameters from info available in the generated synthpops population
+        '''
         sp.validate()
         datadir = sp.datadir
         location = 'barnsdall'
@@ -57,6 +84,14 @@ class Population():
     # calls synthpops and generates population (dictionary)
     def generatePopulation(self, populationSize):
         # call function from person class
+        '''
+        This function generates a population (dictionary) using synthpops and returns a dictionary of persons with parameters corresponding to info in
+        the synthpops population
+        Params:
+            populationSize(int): The size of the population
+        Returns:
+            peopleArray(dictionary): The dictionary of persons with parameters corresponding to info in the generated synthpops population
+        '''
         peopleArray = {}
         population = sp.generate_synthetic_population(populationSize)
         for i in range(populationSize):
@@ -70,12 +105,26 @@ class Population():
         return peopleArray
 
     def addComorbidities(self):
+        '''
+        This function iterates through the people of the population and sets a random comorbidity number to each individual.
+        Params:
+            peopleArray(dictionary): Dictionary of persons of the population for whom a comorbidity is set.
+        Return:
+            comorbiditiesArray(dictionary): Dictionary of comorbidities set for the population (might still need to fix?).
+        '''
         comorbiditiesArray = {}
         for i in range(len(self.peopleArray)):
             self.peopleArray[i].setComorbidities(random.randint(0, 5))
         return comorbiditiesArray
 
     def addDem(self):
+        '''
+        This function iterates through the people of the population and sets a random demographic info number to each individual.
+        Params:
+            peopleArray(dictionary): Dictionary o persons of the population for whom demographic info is set.
+        Return:
+            demographicsArray(dictionary): Dictionary of the demographics set for the population (might still need to fix?).
+        '''
         demographicsArray = {}
         for i in range(len(self.peopleArray)):
             self.peopleArray[i].setDemographicInfo(random.randint(0, 5))
@@ -282,6 +331,14 @@ class Population():
         self.addHypertension()
 
     def generateVacinationPopulation(self):
+        '''
+        Iterates through the information of the people in the population to assign vaccination status values for each individual.
+        Params:
+            peopleArray(dictionary): Dictionary of persons in the population.
+            populationSize(int): Size of the current population.
+        Returns:
+            vaccinated(dictionary): Dictionary representing the vaccination statuses of each corresponding person in the population.
+        '''
         peopleArray = self.generatePopulation(self.populationSize)
         vaccinated = {} # create a dictionary of people and their vaccination status
         for i in range(len(peopleArray)):
@@ -294,6 +351,11 @@ class Population():
         return vaccinated
 
     def infectedPop(self):
+        '''
+        Generates an infected population.
+        Returns:
+            infectedArray(dictionary): Dictionary of infection status for the population.
+        '''
         vaccinated = self.generateVacinationPopulation()
         infectedArray = {}
         for i in vaccinated:
@@ -302,10 +364,21 @@ class Population():
         return infectedArray
 
     def incrementPhaseDayNum(self):
+        '''
+        Increments the phase day of the population by one.
+        Params:
+            currPhaseDayNum(int): The phase day number of the population, before the method is run.
+        '''
         self.currPhaseDayNum += 1
 
     def implementPhase(self, plan):
         # maxPhaseNum will depend on how many phases there will be
+        '''
+        Runs the current phase in the population.
+        Params:
+            currPhaseDayNum(int): The phase day number of the population, before the method is run.
+            plan(PhasePlan): An object of the PhasePlan class, which contains the phase plan of the simulation to run the simulation for a phase.
+        '''
         while self.phaseNum < plan.maxPhaseNum:
             # phaseNumber will depend on the phase that it is in
             while self.currPhaseDayNum < plan.daysInPhase[self.phaseNum]:
