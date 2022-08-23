@@ -256,7 +256,7 @@ def transmissionRate(s0, e0, i0, r0):
 #Represents average contagious level among infected agents
 def overallContagiousness(): 
     multiplier = 0.0
-    averageContagiousLevel = random()*4
+    averageContagiousLevel = random() * 4
     if averageContagiousLevel >= 0 and averageContagiousLevel <= 1:
         multiplier = 0.95
     elif averageContagiousLevel >= 1 and averageContagiousLevel <= 2:

@@ -1,5 +1,6 @@
 from person import Person
 from module import Module
+from ValueController import ValueController
 from submodule import Submodule
 from phasePlan import PhasePlan
 import random
@@ -14,6 +15,7 @@ import xlrd
 import requests
 
 
+
 poiID = 0 
 
 class MasterController:
@@ -22,27 +24,28 @@ class MasterController:
     an an API layer that kicks off and runs the simulation, and provides the functionaility necessary to package the simulation results into the formats necessary
     for communicating with the frontend and backend.
     '''
+    values = ValueController('Oklahoma','Barnsdall', 650000, {"MaskWearing": False,"roomCapacity": 100, "StayAtHome": False}, 1, 0, PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60]), 0, 0 , 0, [], [], None, 0.2)
 
-    state = 'Oklahoma'
-    county = 'Barnsdall'
-    population = 650000
+    state = values.getState
+    county = values.getCounty
+    population = values.getPopulation
 
-    interventions = {"MaskWearing": False,"roomCapacity": 100, "StayAtHome": False}  # Default Interventions 1=100% facilitycap
+    interventions = values.getInterventions  # Default Interventions 1=100% facilitycap
 
-    dayOfWeek = 1  # Takes values 1-7 representing Mon-Sun
-    timeOfDay = 0  # Takes values 0-23 representing the hour (rounded down)
+    dayOfWeek = values.getDayOfWeek # Takes values 1-7 representing Mon-Sun
+    timeOfDay = values.getTimeOfDay  # Takes values 0-23 representing the hour (rounded down)
 
-    phasePlan = PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
-    currDay = 0
-    phaseNum = 0
-    phaseDay = 0
+    phasePlan = values.getPhasePlan
+    currDay = values.getCurrDay
+    phaseNum = values.getPhaseNum
+    phaseDay = values.getPhaseDay
 
-    infecFacilitiesTot = []
-    infecHousesTot = []
+    infecFacilitiesTot = values.getInfecFacilitiesTot
+    infecHousesTot = values.getInfecHousesTot
 
-    visitMatrices = None # Save matrices
+    visitMatrices = values.getVisitMatrices # Save matrices
 
-    averageHouseholdInfectionRate = .2  # total odds of infecting someone whom they are connected to in a household with
+    averageHouseholdInfectionRate = values.getAverageHouseholdInfectionRate # total odds of infecting someone whom they are connected to in a household with
 
 
     '''TOOD: For interventions, we have to take out assigned variables and assign them based off of the values provided by user. There are a lot of assigned variables that are randomly assigned'''

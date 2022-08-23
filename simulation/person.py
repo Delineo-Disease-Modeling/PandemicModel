@@ -258,7 +258,7 @@ class Person:
     #TODO update according to info support research
     def assignNumDaysPeakState(self):
 
-        peakStateDays =0
+        peakStateDays = 0
         #peakStateDays ranging from 4-10 days, based on severityRisk
         if self.severityRisk >= 0 & self.severityRisk <=25:
             peakStateDays = 4
@@ -338,6 +338,8 @@ class Person:
             self.vaccinated = True
         elif self.vaccineName == "Johnson&Johnson" and self.shotNumber == 1 and self.daysAfterShot == 14:
             self.vaccinated = True
+
+    #TODO: add more vaccine methods and determine values
 
     def infectedAfterCompletelyVaccinated(self):
         chance = 0
