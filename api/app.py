@@ -1,4 +1,5 @@
 from flask import Flask, request
+from simulation.master import MasterController
 
 app = Flask(__name__)
 
@@ -9,6 +10,8 @@ def home():
 
 @app.route("/simulation", methods=['POST'])
 def run_simulation():
+    mc = MasterController()
+    mc.runFacilityTests('facilities_info.txt')
     return request.get_json()
 
 
