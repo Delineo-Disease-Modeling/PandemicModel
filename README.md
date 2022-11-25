@@ -34,3 +34,18 @@ All important files for running are in the /simulation folder
 **simulation/diseasedata**: contains comorbidity data  
 **simulation/synthpops**: DO NOT TOUCH unless you really know what you're doing  
 **simulation/master.py**: runs the simulation- call this file on command line to get a result  
+
+## 'Tips'
+If you're coding in VSC, ensure that this setting is checked:
+
+
+In your VSCode for Windows
+
+File --> Preferences --> Settings --> (User)Extensions --> Python -->
+
+Terminal: Execute In File Dir --> Check It
+
+or
+
+File --> Preferences --> Settings --> Search Settings --> python.terminal.executeInFileDir
+
