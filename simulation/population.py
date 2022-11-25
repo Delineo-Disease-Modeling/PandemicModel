@@ -1,6 +1,6 @@
-#import synthpops.synthpops as sp
+import synthpops.synthpops as sp
 # If the above is not working, try below
-import synthpops as sp
+#import synthpops as sp
 from person import Person
 import random
 

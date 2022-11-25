@@ -26,26 +26,26 @@ class MasterController:
     '''
     values = ValueController('Oklahoma','Barnsdall', 650000, {"MaskWearing": False,"roomCapacity": 100, "StayAtHome": False}, 1, 0, PhasePlan(3, [60, 40, 16], [99, 99, 99], [60, 45, 60]), 0, 0 , 0, [], [], None, 0.2)
 
-    state = values.getState
-    county = values.getCounty
-    population = values.getPopulation
+    state = values.getState()
+    county = values.getCounty()
+    population = values.getPopulation()
 
-    interventions = values.getInterventions  # Default Interventions 1=100% facilitycap
+    interventions = values.getInterventions()  # Default Interventions 1=100% facilitycap
 
-    dayOfWeek = values.getDayOfWeek # Takes values 1-7 representing Mon-Sun
-    timeOfDay = values.getTimeOfDay  # Takes values 0-23 representing the hour (rounded down)
+    dayOfWeek = values.getDayOfWeek() # Takes values 1-7 representing Mon-Sun
+    timeOfDay = values.getTimeOfDay()  # Takes values 0-23 representing the hour (rounded down)
 
-    phasePlan = values.getPhasePlan
-    currDay = values.getCurrDay
-    phaseNum = values.getPhaseNum
-    phaseDay = values.getPhaseDay
+    phasePlan = values.getPhasePlan()
+    currDay = values.getCurrDay()
+    phaseNum = values.getPhaseNum()
+    phaseDay = values.getPhaseDay()
 
-    infecFacilitiesTot = values.getInfecFacilitiesTot
-    infecHousesTot = values.getInfecHousesTot
+    infecFacilitiesTot = values.getInfecFacilitiesTot()
+    infecHousesTot = values.getInfecHousesTot()
 
-    visitMatrices = values.getVisitMatrices # Save matrices
+    visitMatrices = values.getVisitMatrices() # Save matrices
 
-    averageHouseholdInfectionRate = values.getAverageHouseholdInfectionRate # total odds of infecting someone whom they are connected to in a household with
+    averageHouseholdInfectionRate = values.getAverageHouseholdInfectionRate() # total odds of infecting someone whom they are connected to in a household with
 
 
     '''TOOD: For interventions, we have to take out assigned variables and assign them based off of the values provided by user. There are a lot of assigned variables that are randomly assigned'''
@@ -636,6 +636,7 @@ class MasterController:
                     } #we should probably have households at least as one large "household"
 
         self.jsonResponseToFile(response, "output.txt")
+        print("Output written to output.txt")
         #TODO: Upload this json to a database based on interventions ran, how long, etc.
 
         num = 0
@@ -799,6 +800,6 @@ if __name__ == '__main__':
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.runFacilityTests('facilities_info.txt')
     
-    mc.Run_Baltimore(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
+    mc.Anytown(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
 
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')

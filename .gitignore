@@ -244,6 +244,4 @@ temp/
 output.txt
 
 # End of https://www.gitignore.io/api/node
-
-#Baltimore Pkl
-Baltimore_2020-01-01_2020-02-29.pkl
+simulation/Baltimore_2020-01-01_2020-02-29.pkl
