@@ -37,15 +37,5 @@ All important files for running are in the /simulation folder
 
 ## 'Tips'
 If you're coding in VSC, ensure that this setting is checked:
-
-
-In your VSCode for Windows
-
-File --> Preferences --> Settings --> (User)Extensions --> Python -->
-
-Terminal: Execute In File Dir --> Check It
-
-or
-
 File --> Preferences --> Settings --> Search Settings --> python.terminal.executeInFileDir
 
