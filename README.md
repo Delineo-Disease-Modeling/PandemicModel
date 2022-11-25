@@ -35,7 +35,7 @@ All important files for running are in the /simulation folder
 **simulation/synthpops**: DO NOT TOUCH unless you really know what you're doing  
 **simulation/master.py**: runs the simulation- call this file on command line to get a result  
 
-## 'Tips'
+## `Tips`
 If you're coding in VSC, ensure that this setting is checked:
 File --> Preferences --> Settings --> Search Settings --> python.terminal.executeInFileDir
 
