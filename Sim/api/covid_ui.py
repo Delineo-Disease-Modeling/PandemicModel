@@ -1,10 +1,8 @@
 import sys
 import requests
-from master import MasterController
-from ValueController import ValueController
+from Delineo_Simulation import master as sim
 from concurrent.futures import ThreadPoolExecutor, as_completed, Future
 from threading import current_thread
-from phasePlan import PhasePlan
 
 
 class Covid_UI:
@@ -51,9 +49,7 @@ class Covid_UI:
         return data
 
     def http_requests(self):
-        values = ValueController('Oklahoma', 'Barnsdall', 650000, {"MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, PhasePlan(
-            3, [60, 40, 16], [99, 99, 99], [60, 45, 60]), 0, 0, 0, [], [], None, 0.2)
-        mc = MasterController(values)
+        mc = sim()
         inputJSON = {"p": [0.25, 0.25], "u0": [
             0.99, 0.01, 0.0], "tspan": [0.0, 2]}
         length = self.format_input_data(inputJSON)

@@ -2,8 +2,7 @@ from flask import Flask, request
 
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.master import MasterController
+import Delineo_Simulation as sim
 app = Flask(__name__)
 
 
@@ -14,14 +13,14 @@ def home():
 
 @app.route("/simulation", methods=['POST'])
 def run_simulation():
-    mc = MasterController()
+    mc = sim.MasterController()
     mc.runFacilityTests('facilities_info.txt')
     return request.get_json()
 
 
 @app.route("/covid_ui", methods=['POST'])
-def run_simulation():
-    mc = MasterController()
+def run_simulation2():
+    mc = sim.MasterController()
     mc.runFacilityTests('facilities_info.txt')
     return request.get_json()
 

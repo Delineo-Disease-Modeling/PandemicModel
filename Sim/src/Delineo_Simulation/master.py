@@ -671,7 +671,8 @@ class MasterController:
             for id in range(len(facilities))]
         }  # we should probably have households at least as one large "household"
 
-        self.jsonResponseToFile(response, "Delineo_Simulation\output\output.txt")
+        self.jsonResponseToFile(
+            response, "Delineo_Simulation\output\output.txt")
         print("Output written to output.txt")
         # TODO: Upload this json to a database based on interventions ran, how long, etc.
 
@@ -697,25 +698,29 @@ class MasterController:
 
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix('Delineo_Simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+        self.loadVisitMatrix(
+            'Delineo_Simulation\data\Anytown_Jan06_fullweek_dict.pkl')
         self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                             num_days=num_days, interventions=intervention_list, isAnytown=True)
 
       # Function to run Anytown
     def Run_Covid_UI(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix('Delineo_Simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+        self.loadVisitMatrix(
+            'Delineo_Simulation\data\Anytown_Jan06_fullweek_dict.pkl')
         return self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                                    num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=True)
 
     # Function to run Oklahoma City
     def Run_OKC(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix('Delineo_Simulation\data\Oklahoma_Jan06_fullweek_dict.pkl')
+        self.loadVisitMatrix(
+            'Delineo_Simulation\data\Oklahoma_Jan06_fullweek_dict.pkl')
         self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown,
                             num_days=num_days, interventions=intervention_list, isAnytown=False)
 
     # Function to run Baltimore
     def Run_Baltimore(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix('Delineo_Simulation\data\Baltimore_2020-01-01_2020-02-29.pkl')
+        self.loadVisitMatrix(
+            'Delineo_Simulation\data\Baltimore_2020-01-01_2020-02-29.pkl')
         self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown,
                             num_days=num_days, interventions=intervention_list, isAnytown=False)
 
@@ -854,4 +859,5 @@ if __name__ == '__main__':
     mc.Anytown(print_infection_breakdown=False, num_days=2,
                intervention_list=interventions)  # Run entire simulation for 61 days
 
-    mc.excelToJson('Delineo_Simulation\data\OKC Data.xls', 'Delineo_Simulation\data\OKC Data.json')
+    mc.excelToJson('Delineo_Simulation\data\OKC Data.xls',
+                   'Delineo_Simulation\data\OKC Data.json')
