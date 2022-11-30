@@ -1,7 +1,11 @@
 from flask import Flask, request
-from simulation.master import MasterController
 
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.master import MasterController
 app = Flask(__name__)
+
 
 @app.route("/")
 def home():
@@ -15,4 +19,11 @@ def run_simulation():
     return request.get_json()
 
 
-app.run(debug=True)
+@app.route("/covid_ui", methods=['POST'])
+def run_simulation():
+    mc = MasterController()
+    mc.runFacilityTests('facilities_info.txt')
+    return request.get_json()
+
+
+app.run(host="", debug=True, port=5000, threaded=True)
