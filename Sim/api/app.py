@@ -1,7 +1,5 @@
 from flask import Flask, request
 
-import os
-import sys
 import Delineo_Simulation as sim
 app = Flask(__name__)
 
