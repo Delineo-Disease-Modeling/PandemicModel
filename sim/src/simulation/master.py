@@ -1,8 +1,8 @@
-import person as Person
-from module import Module
-from ValueController import ValueController
-from submodule import Submodule
-from phasePlan import PhasePlan
+import src.simulation.person as Person
+from src.simulation.module import Module
+from src.simulation.ValueController import ValueController
+from src.simulation.submodule import Submodule
+from src.simulation.phasePlan import PhasePlan
 import random
 import json
 import pickle
@@ -699,28 +699,28 @@ class MasterController:
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix(
-            'Delineo_Simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+            'simulation\data\Anytown_Jan06_fullweek_dict.pkl')
         self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                             num_days=num_days, interventions=intervention_list, isAnytown=True)
 
       # Function to run Anytown
     def Run_Covid_UI(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix(
-            'Delineo_Simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+            'simulation\data\Anytown_Jan06_fullweek_dict.pkl')
         return self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                                    num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=True)
 
     # Function to run Oklahoma City
     def Run_OKC(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix(
-            'Delineo_Simulation\data\Oklahoma_Jan06_fullweek_dict.pkl')
+            'simulation\data\Oklahoma_Jan06_fullweek_dict.pkl')
         self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown,
                             num_days=num_days, interventions=intervention_list, isAnytown=False)
 
     # Function to run Baltimore
     def Run_Baltimore(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix(
-            'Delineo_Simulation\data\Baltimore_2020-01-01_2020-02-29.pkl')
+            'simulation\data\Baltimore_2020-01-01_2020-02-29.pkl')
         self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown,
                             num_days=num_days, interventions=intervention_list, isAnytown=False)
 
@@ -844,20 +844,3 @@ class MasterController:
     def __init__(self, values=None):
         if values is not None:
             values = values
-
-
-if __name__ == '__main__':
-
-    mc = MasterController()  # Instantiate a MasterController
-
-    # mc.sumVisitMatrices()  # Verify correctness of visit matrices
-    interventions = {}
-
-    #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    # mc.runFacilityTests('facilities_info.txt')
-
-    mc.Anytown(print_infection_breakdown=False, num_days=2,
-               intervention_list=interventions)  # Run entire simulation for 61 days
-
-    mc.excelToJson('Delineo_Simulation\data\OKC Data.xls',
-                   'Delineo_Simulation\data\OKC Data.json')

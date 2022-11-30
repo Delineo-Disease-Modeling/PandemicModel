@@ -1,4 +1,4 @@
-from phasePlan import PhasePlan
+from src.simulation.phasePlan import PhasePlan
 
 
 class ValueController:

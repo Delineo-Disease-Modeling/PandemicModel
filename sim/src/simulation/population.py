@@ -1,16 +1,15 @@
-import synthpops.synthpops as sp
+import sys
+import os
+from src.simulation.synthpops import synthpops as sp
 # If the above is not working, try below
-#import synthpops as sp
-from person import Person
+from src.simulation.person import Person
 import random
 
 
 class Population():
 
     '''This class is used to define a population in the simulation.
-
     It takes in the following parameters:
-    self
     state: The state in which the population is located
     country: The country in which the population is located
     population: An array of different person classes

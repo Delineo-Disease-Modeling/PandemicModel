@@ -1,5 +1,5 @@
-from population import Population
-from submodule import Submodule
+from src.simulation.population import Population
+from src.simulation.submodule import Submodule
 import json
 import random
 import pandas as pd
@@ -71,7 +71,7 @@ class Module:
 
     # Creates a facility object for every facility in the txt file. Data is based off of the txt file
     def createFacilitiesTXT(self, filename, verbose):
-        with open('facilites_info.txt') as f:
+        with open(filename) as f:
             lines = f.readlines()
             lines = lines[:-1]
         totalCapacities = 0
