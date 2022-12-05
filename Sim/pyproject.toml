@@ -1,6 +1,6 @@
 [project]
 name = "Delineo_Simulation"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Delineo", email="delineodiseasemodeling@gmail.com" },
 ]

@@ -615,7 +615,7 @@ class MasterController:
 
         # Instantiate submodules with format {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
-            'Delineo_Simulation\data\core_poi_OKCity.csv')
+            'simulation\data\core_poi_OKCity.csv')
 
         # facilities, totalFacilityCapacities, openHours = M.createFacilities('submodules2.json')
 
@@ -672,7 +672,7 @@ class MasterController:
         }  # we should probably have households at least as one large "household"
 
         self.jsonResponseToFile(
-            response, "Delineo_Simulation\output\output.txt")
+            response, "simulation\output\output.txt")
         print("Output written to output.txt")
         # TODO: Upload this json to a database based on interventions ran, how long, etc.
 

@@ -1,8 +1,7 @@
 import sys
 import os
-from src.simulation.synthpops import synthpops as sp
 import src.simulation.synthpops.synthpops.config as cfg
-import src.simulation.synthpops.synthpops. as sp
+import src.simulation.synthpops.synthpops.contact_networks as cn
 # If the above is not working, try below
 from src.simulation.person import Person
 import random
@@ -54,7 +53,7 @@ class Population():
             peopleArray: Dictionary of individuals (objects of the "person" class) with parameters from info available in the generated synthpops population
         '''
         cfg.validate()
-        datadir = sp.datadir
+        datadir = cfg.datadir
         location = 'barnsdall'
         state_location = 'Oklahoma'
         country_location = 'usa'
@@ -66,7 +65,7 @@ class Population():
         num_workplaces = self.num_workplaces
 
         # TODO: default school sizes are still being used
-        population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
+        population, homes_dic = cn.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
 
                                                                  state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
 

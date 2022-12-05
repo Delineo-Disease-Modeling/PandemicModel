@@ -1,6 +1,6 @@
 from flask import Flask, request
 
-import Delineo_Simulation as sim
+from Delineo_Simulation import master as sim
 app = Flask(__name__)
 
 
@@ -16,7 +16,7 @@ def run_simulation():
     return request.get_json()
 
 
-@app.route("/covid_ui", methods=['POST'])
+@app.route("/covid_ui")
 def run_simulation2():
     mc = sim.MasterController()
     mc.runFacilityTests('facilities_info.txt')

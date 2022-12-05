@@ -191,7 +191,7 @@ class Person:
         # numComorbidities = len(self.comorbidities) if list
         numComorbidities = self.comorbidities
         # sex not currently accounted for
-        sevRisk = open("Delineo_Simulation\diseasedata\severity_risk.dat", "r")
+        sevRisk = open("simulation\diseasedata\severity_risk.dat", "r")
         distrWithComorbidities = {}
         distrWithoutComorbidities = {}
         for lines in sevRisk:
