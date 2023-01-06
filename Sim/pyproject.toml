@@ -1,18 +1,16 @@
 [project]
-name = "Delineo_Simulation"
-version = "0.0.3"
-authors = [
-  { name="Delineo", email="delineodiseasemodeling@gmail.com" },
-]
+name = "Delineo"
+version = "0.0.7"
+authors = [{ name = "Delineo", email = "delineodiseasemodeling@gmail.com" }]
 description = "A small example package"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = "=3.8"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/pypa/sampleproject"
+"Homepage" = "https://test.pypi.org/project/Delineo_Simulation"
 "Bug Tracker" = "https://github.com/pypa/sampleproject/issues"

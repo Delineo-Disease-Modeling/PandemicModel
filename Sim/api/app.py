@@ -1,6 +1,6 @@
 from flask import Flask, request
 
-from Delineo_Simulation import master as sim
+import Delineo_Simulation as sim
 app = Flask(__name__)
 
 
