@@ -11,9 +11,9 @@ if __name__ == '__main__':
     interventions = {}
 
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.runFacilityTests(r'simulation\data\facilites_info.txt')
+    mc.runFacilityTests(r'sim\src\simulation\data\facilites_info.txt')
 
     mc.Anytown(print_infection_breakdown=False, num_days=2,
               intervention_list=interventions)  # Run entire simulation for 61 days
 
-    mc.excelToJson('simulation\data\OKC Data.xls', 'simulation\data\OKC Data.json')
+    mc.excelToJson(r'sim\src\simulation\data\OKC_Data.xls', r'sim\src\simulation\data\OKC_Data.json')

@@ -615,7 +615,7 @@ class MasterController:
 
         # Instantiate submodules with format {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
-            'simulation\data\core_poi_OKCity.csv')
+            r'sim\src\simulation\data\core_poi_OKCity.csv')
 
         # facilities, totalFacilityCapacities, openHours = M.createFacilities('submodules2.json')
 
@@ -672,8 +672,8 @@ class MasterController:
         }  # we should probably have households at least as one large "household"
 
         self.jsonResponseToFile(
-            response, "simulation\output\output.txt")
-        print("Output written to output.txt")
+            response, r"sim\src\simulation\output\output.json")
+        print("Output written to output.json")
         # TODO: Upload this json to a database based on interventions ran, how long, etc.
 
         num = 0
@@ -699,7 +699,7 @@ class MasterController:
     # Function to run Anytown
     def Anytown(self, print_infection_breakdown, num_days, intervention_list):
         self.loadVisitMatrix(
-            'simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+            r'sim\src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
         self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                             num_days=num_days, interventions=intervention_list, isAnytown=True)
 
@@ -825,12 +825,12 @@ class MasterController:
     # TODO: use this to get the simulation results from the database
     # def httpRequest(self):
         # Make a GET request
-        #r = requests.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+        # r = requests.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
         # Guys... you're a genius.
 
         # Check for error
         # if (r != 200):
-            #print("Error sending HTTP request")
+            # print("Error sending HTTP request")
             # return
 
         # Print content
