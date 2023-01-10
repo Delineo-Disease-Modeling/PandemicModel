@@ -11,7 +11,7 @@ if __name__ == '__main__':
     mc.runFacilityTests(r'sim\src\simulation\data\facilites_info.txt')
 
     mc.Anytown(print_infection_breakdown=False, num_days=2,
-               intervention_list=interventions)  # Run entire simulation for 61 days
+               intervention_list=interventions, visitMatrix=r'sim\src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')  # Run entire simulation for 61 days
 
     mc.excelToJson(r'sim\src\simulation\data\OKC_Data.xls',
                    r'sim\src\simulation\data\OKC_Data.json')
