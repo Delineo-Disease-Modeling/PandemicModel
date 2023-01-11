@@ -1,2 +1,0 @@
-graft   sim\src\simulation\*
-include sim\src\simulation\master.py
