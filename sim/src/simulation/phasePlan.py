@@ -15,3 +15,4 @@ class PhasePlan():
         self.ageMax.append(ageMax)
         self.daysInPhase.append(days)
         self.maxPhaseNum += 1
+    

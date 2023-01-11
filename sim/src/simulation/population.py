@@ -1,9 +1,9 @@
 import sys
 import os
-import src.simulation.synthpops.synthpops.config as cfg
-import src.simulation.synthpops.synthpops.contact_networks as cn
+import synthpops as sp
 # If the above is not working, try below
-from src.simulation.person import Person
+# import synthpops.synthpops as sp
+from  . import person as Person
 import random
 
 
@@ -52,8 +52,8 @@ class Population():
         Returns:
             peopleArray: Dictionary of individuals (objects of the "person" class) with parameters from info available in the generated synthpops population
         '''
-        cfg.validate()
-        datadir = cfg.datadir
+        sp.validate()
+        datadir = sp.datadir
         location = 'barnsdall'
         state_location = 'Oklahoma'
         country_location = 'usa'

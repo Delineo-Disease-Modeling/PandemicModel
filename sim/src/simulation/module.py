@@ -1,5 +1,5 @@
-from src.simulation.population import Population
-from src.simulation.submodule import Submodule
+from . import population as Population
+from . import submodule as Submodule
 import json
 import random
 import pandas as pd
@@ -19,15 +19,15 @@ class Module:
         self.__County = County
 
     def createPopulationObj(self):  # Creates a population object
-        Pop = Population(self.__State, self.__County)
+        Pop =  Population.Population(self.__State, self.__County)
         return Pop
 
     def createPopulation(self, city):  # Creates a population object for a specific city
         print("createPop function")
         if city == 'Anytown':
-            Pop = Population(self.__State, self.__County).get_dict()
+            Pop = Population.Population(self.__State, self.__County).get_dict()
         if city == 'Oklahoma_City':
-            Pop = Population(self.__State, self.__County, num_households=250000,
+            Pop =  Population.Population(self.__State, self.__County, num_households=250000,
                              npop=650000, num_workplaces=24000).get_dict()
         return Pop
 
@@ -120,12 +120,12 @@ class Module:
                 elif "Gym" in category[index] or "Weight Reducing Centers" in category[index]:
                     facility_type = 'Gym'
                     cap = 30
-                #default for facilities with categories not represented in submodule.py # UPDATE NOT DOING THIS #
+                # default for facilities with categories not represented in submodule.py # UPDATE NOT DOING THIS #
                 else:
                     # If facility type does not appear in submodule.py we should skip it #
                     break
-                    #facility_type = 'Other'
-                    #cap = 20
+                    # facility_type = 'Other'
+                    # cap = 20
 
                 totalCapacities += cap
                 nextFacility = Submodule(id=facilities_ID, facilitytype=facility_type,

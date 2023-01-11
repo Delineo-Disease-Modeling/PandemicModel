@@ -20,7 +20,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
-    python_requires="=3.8"
+    package_data={"": ["*.csv", "*.json", "*.txt"]},
+    package_dir={"": "src/simulation"},
+    packages=setuptools.find_packages(where="src/simulation"),
+    python_requires="==3.8"
 )

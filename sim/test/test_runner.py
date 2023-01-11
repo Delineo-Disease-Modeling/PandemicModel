@@ -1,8 +1,6 @@
-from simulation.master import MasterController as sim
+import simulation.master
 
 if __name__ == '__main__':
-
-    mc = sim()  # Instantiate a MasterController
 
     # mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
@@ -10,8 +8,7 @@ if __name__ == '__main__':
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.runFacilityTests(r'sim\src\simulation\data\facilites_info.txt')
 
-    mc.Anytown(print_infection_breakdown=False, num_days=2,
-               intervention_list=interventions, visitMatrix=r'sim\src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')  # Run entire simulation for 61 days
+    mc.runTest(2)  # Run entire simulation for 61 days
 
     mc.excelToJson(r'sim\src\simulation\data\OKC_Data.xls',
                    r'sim\src\simulation\data\OKC_Data.json')

@@ -1,8 +1,8 @@
-import src.simulation.person as Person
-from src.simulation.module import Module
-from src.simulation.ValueController import ValueController
-from src.simulation.submodule import Submodule
-from src.simulation.phasePlan import PhasePlan
+from . import person as Person
+from . import module as Module
+from . import ValueController
+from . import submodule as Submodule
+from . import phasePlan as PhasePlan
 import random
 import json
 import pickle
@@ -24,8 +24,9 @@ class MasterController:
     an an API layer that kicks off and runs the simulation, and provides the functionaility necessary to package the simulation results into the formats necessary
     for communicating with the frontend and backend.
     '''
-    values = ValueController('Oklahoma', 'Barnsdall', 650000, {"MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, PhasePlan(
-        3, [60, 40, 16], [99, 99, 99], [60, 45, 60]), 0, 0, 0, [], [], None, 0.2)
+    phasePlan = PhasePlan.PhasePlan(
+        3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
+    values = ValueController.ValueController('Oklahoma', 'Barnsdall', 650000, {"MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, phasePlan, 0, 0, 0, [], [], None, 0.2)
 
     state = values.getState()
     county = values.getCounty()
@@ -84,7 +85,7 @@ class MasterController:
             county - the county passed by the user
             interventions - an dictionary of values corresponding to certain interventions 
         '''
-        return Module(self.state, self.county, self.interventions)
+        return Module.Module(self.state, self.county, self.interventions)
 
     def updateTime(self):
         '''
@@ -697,32 +698,27 @@ class MasterController:
     # TODO: Implement an easier way to run these simultaions for difference cities
 
     # Function to run Anytown
-    def Anytown(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix(
-            r'sim\src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
-        self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
-                            num_days=num_days, interventions=intervention_list, isAnytown=True)
-
-      # Function to run Anytown
-    def Run_Covid_UI(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix(
-            'simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+    def createSimulation(self, name, print_infection_breakdown, num_days, intervention_list):
+        if name == 'Anytown':
+            self.loadVisitMatrix(
+                r'sim\src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+            self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=True)
+        elif name == 'BaltimoreMD':
+            self.loadVisitMatrix(
+                'simulation\data\BaltimoreMD_Jan06_fullweek_dict.pkl')
+            self.run_simulation(city='BaltimoreMD', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=False)
+        elif name == 'OKCity':
+            self.loadVisitMatrix(
+                r'sim\src\simulation\data\OKCity_Jan06_fullweek_dict.pkl')
+            self.run_simulation(city='OKCity', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=False)
+        elif name == 'COVID_UI':
+            self.loadVisitMatrix(
+                'simulation\data\Anytown_Jan06_fullweek_dict.pkl')
         return self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                                    num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=True)
-
-    # Function to run Oklahoma City
-    def Run_OKC(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix(
-            'simulation\data\Oklahoma_Jan06_fullweek_dict.pkl')
-        self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown,
-                            num_days=num_days, interventions=intervention_list, isAnytown=False)
-
-    # Function to run Baltimore
-    def Run_Baltimore(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix(
-            'simulation\data\Baltimore_2020-01-01_2020-02-29.pkl')
-        self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown,
-                            num_days=num_days, interventions=intervention_list, isAnytown=False)
 
     def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
         '''
@@ -819,23 +815,6 @@ class MasterController:
             # Round the sum and append to the list
             totals.append(round(total_sum))
 
-        # Uncomment the line below to print out the list of sums
-        # print(totals)
-
-    # TODO: use this to get the simulation results from the database
-    # def httpRequest(self):
-        # Make a GET request
-        # r = requests.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
-        # Guys... you're a genius.
-
-        # Check for error
-        # if (r != 200):
-            # print("Error sending HTTP request")
-            # return
-
-        # Print content
-        # print(r.content)
-
     def return_json_okc(self):
         json_file = 'dummy.json'
         file = open(json_file, 'r')
@@ -844,3 +823,12 @@ class MasterController:
     def __init__(self, values=None):
         if values is not None:
             values = values
+
+
+def runSimulation():
+    mc = MasterController()
+
+
+def runTest():
+    mc = MasterController()
+    mc.createSimulation('AnyTown', False, 2, {})
