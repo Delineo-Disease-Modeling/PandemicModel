@@ -1,1 +1,9 @@
 graft   src
+# added by check-manifest
+include *.py
+include *.sh
+include Dockerfile
+include LICENSE
+recursive-include api *.json
+recursive-include api *.py
+recursive-include test *.py

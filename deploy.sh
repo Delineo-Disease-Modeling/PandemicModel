@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # This script is used to deploy a new package. Please run it from the root of the project.
-cd sim
 git pull
 cd src
 pip install -r requirements.txt
