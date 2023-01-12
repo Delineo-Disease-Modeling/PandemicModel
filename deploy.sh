@@ -10,5 +10,4 @@ py -m build
 py -m pip install --upgrade twine
 py -m twine upload -u 'Delineo' -p 'Bluejay123*' --repository-url https://test.pypi.org/legacy/ --verbose --skip-existing dist/* dist/* 
 echo "https://test.pypi.org/project/Delineo/"
-echo "Upload successful!"
 read -p "Press enter to continue"
