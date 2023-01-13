@@ -5,7 +5,7 @@ with open(r"README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="Delineo",
-    version="0.0.4",
+    version="0.1.0",
     author="Delineo",
     author_email="delineodiseasemodeling@gmail.com",
     description="short package description",
@@ -19,8 +19,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_data={"": ["*.csv", "*.json", "*.txt"]},
-    package_dir={"": "src"},
-    packages=setuptools.find_packages(where=""),
+    packages=['delineo'],
+    package_dir={'delineo': 'src/simulation'},
+    package_data={'delineo': ['data/*']},
     python_requires="==3.8"
 )

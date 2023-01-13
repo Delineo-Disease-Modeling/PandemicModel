@@ -1,13 +1,12 @@
 import unittest
-import simulation as master
-from inspect import getmembers, isfunction
+from delineo import master
 
 
 class MasterTester(unittest.TestCase):
     def test_master(self):
         print("Testing master.py")
-        print(getmembers(master, isfunction))
-        print(dir(master))
+        print("Testing functions:")
+        master.runTest()
 
 
 if __name__ == '__main__':

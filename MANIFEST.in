@@ -1,12 +1,14 @@
-prune api
+recursive-include src *.py
+# added by check-manifest
+include *.sh
+include LICENSE
+recursive-include test *.py
+
 # added by check-manifest
 include *.py
 include Dockerfile
-include LICENSE
 recursive-include api *.json
 recursive-include api *.py
-recursive-include test *.py
-recursive-exclude ~ *.exe
 recursive-include src *.DS_Store
 recursive-include src *.bat
 recursive-include src *.css
@@ -20,7 +22,6 @@ recursive-include src *.md
 recursive-include src *.obj
 recursive-include src *.png
 recursive-include src *.pop
-recursive-include src *.py
 recursive-include src *.rst
 recursive-include src *.rtf
 recursive-include src *.txt
@@ -29,3 +30,10 @@ recursive-include src *.xlsx
 recursive-include src *.xml
 recursive-include src *.yaml
 recursive-include src Makefile
+recursive-include test *.py
+
+# added by check-manifest
+recursive-include test *.py
+
+# added by check-manifest
+recursive-include test *.py
