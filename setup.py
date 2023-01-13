@@ -5,15 +5,14 @@ with open(r"README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="Delineo",
-    version="0.0.1",
+    version="0.0.4",
     author="Delineo",
     author_email="delineodiseasemodeling@gmail.com",
     description="short package description",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="package URL",
+    url="https://test.pypi.org/project/Delineo/",
     project_urls={
-        "Bug Tracker": "package issues URL",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
