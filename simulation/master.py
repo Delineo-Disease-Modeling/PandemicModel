@@ -3,6 +3,8 @@ from module import Module
 from ValueController import ValueController
 from submodule import Submodule
 from phasePlan import PhasePlan
+from dotenv import load_dotenv, find_dotenv
+from jsonCompressionAlgorithm import jsonCompress, jsonDecompress, get_size
 import random
 import json
 import pickle
@@ -13,10 +15,21 @@ import sciris as sc
 from bisect import bisect_left
 import xlrd
 import requests
+import pymongo
+import urllib
+import os
+import certifi 
+import copy
+import hashlib
 
 
-
-poiID = 0 
+poiID = 0
+load_dotenv(find_dotenv())
+password = urllib.parse.quote_plus(os.environ.get("MONGO_PWD"))
+connection_string = f"mongodb+srv://root:{password}@cluster0.vnuo3wg.mongodb.net/?retryWrites=true&w=majority"
+client = pymongo.MongoClient(connection_string, tlsCAFile=certifi.where())
+delineo_db = client["delineo_disease_modeling"]
+simulation_data = delineo_db["simulation_data"]
 
 class MasterController:
     '''
@@ -358,6 +371,46 @@ class MasterController:
             id_index_to_add = random.randint(0, len(notAssigned) - 1) # randomly determine positions to full in facility
             facilities[poiID].addPerson(Pop[notAssigned.pop(id_index_to_add)])  # Add random person to POI
 
+    def write_to_simulation_db(self, city, params, response):
+        response_data = copy.deepcopy(response)
+        h = hashlib.sha256()
+        hash_tag_unencoded = str(params).encode()
+        h.update(hash_tag_unencoded)
+        hash_id = h.hexdigest()
+        tag = city + "_" + hash_id
+        query = {"_id": {"$regex": tag}}
+        collection = simulation_data.find(query)
+        ids = [doc["_id"] for doc in collection]
+        compressed = jsonCompress(response_data)
+        print("size of compressed ->", get_size(compressed))
+
+        if len(ids) == 0:
+            idx = tag + "_" + str(1)
+            simulation_data.insert_one({"_id" : idx, "data": compressed})
+            
+        else:
+            ids.sort(reverse=True, key = lambda x: x[x.index("_") + 1:])
+            last_inserted = ids[0]
+            last_inserted_id = int(last_inserted[last_inserted.rindex("_") + 1:])
+            idx = tag + "_" + str(last_inserted_id + 1)
+            simulation_data.insert_one({"_id" : idx, "data": compressed})
+
+    def get_simulation_data(self, id):
+        query = {"_id": id}
+        collection = simulation_data.find(query)
+        docs = [doc["data"] for doc in collection]
+        if len(docs) == 0:
+            return f"Run with ID: {id} not found"
+        else:
+            return jsonDecompress(docs[0])
+
+    def delete_simulation_run(self, id):
+        query = {"_id": id}
+        if (simulation_data.find(query) is not None):
+            simulation_data.delete_one(query)
+        else:
+            return f"Run with ID: {id} not found"
+
     def simulation(self, num_days, currentInfected, interventions, totalInfectedInFacilities,
                     facilities, infectionInFacilitiesDaily, infectionInFacilitiesHourly,
                     peopleInFacilitiesHourly, infectionInHouseholds, facilityinfections,
@@ -638,6 +691,8 @@ class MasterController:
         self.jsonResponseToFile(response, "output.txt")
         print("Output written to output.txt")
         #TODO: Upload this json to a database based on interventions ran, how long, etc.
+        params = city + str(isAnytown) + str(num_days) + str(interventions)
+        self.write_to_simulation_db(city, params, response)
 
         num = 0
         for each in Pop:
@@ -796,10 +851,11 @@ if __name__ == '__main__':
 
     #mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
+
     
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.runFacilityTests('facilities_info.txt')
+    #mc.runFacilityTests('facilities_info.txt')
     
     mc.Anytown(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
+    #mc.excelToJson('OKC Data.xls', 'OKC Data.json')
 
-    mc.excelToJson('OKC Data.xls', 'OKC Data.json')
