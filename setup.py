@@ -5,7 +5,7 @@ with open(r"README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="Delineo",
-    version="0.2.26",
+    version="0.3.0",
     author="Delineo",
     author_email="delineodiseasemodeling@gmail.com",
     description="short package description",
