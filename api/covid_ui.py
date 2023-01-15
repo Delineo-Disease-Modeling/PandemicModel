@@ -1,6 +1,6 @@
 import sys
 import requests
-from Delineo_Simulation import master as sim
+import delineo as sim
 from concurrent.futures import ThreadPoolExecutor, as_completed, Future
 from threading import current_thread
 

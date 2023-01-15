@@ -1,3 +1,4 @@
+import json
 import networkx as nx
 import random as rnd
 import matplotlib.pyplot as plt
@@ -370,11 +371,11 @@ class Submodule:
 
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
-        #print(self.__Facilitytype, q)
+        # print(self.__Facilitytype, q)
         I = len(self.getInfected())
         t = 1
 
-        #print("p:",p,"Q:",Q,"q:",q,"I:",I,"prob", 1 - math.exp(-(I*q*p*t)/(Q*100)) )
+        # print("p:",p,"Q:",Q,"q:",q,"I:",I,"prob", 1 - math.exp(-(I*q*p*t)/(Q*100)) )
         temporarytuningfactor = 90
         # This needs to be fixed so wells reilly is actually implemented with better numbers!
         return 1 - math.exp(-(I*q*p*t)/(Q*temporarytuningfactor))
@@ -432,3 +433,7 @@ class Submodule:
         # Reset person's vaccination appointment details
         person.madeVaccAppt = False
         person.vaccApptDate = 0
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)

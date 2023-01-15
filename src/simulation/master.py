@@ -72,7 +72,7 @@ class MasterController:
         Params:
             state - the state passed by the user
             county - the county passed by the user
-            interventions - an dictionary of values corresponding to certain interventions 
+            interventions - an dictionary of values corresponding to certain interventions
         '''
         self.state = state
         self.county = county
@@ -84,7 +84,7 @@ class MasterController:
         Params:
             state - the state passed by the user
             county - the county passed by the user
-            interventions - an dictionary of values corresponding to certain interventions 
+            interventions - an dictionary of values corresponding to certain interventions
         '''
         return Module.Module(self.state, self.county, self.interventions)
 
@@ -139,7 +139,7 @@ class MasterController:
         return file
 
     def jsonResponse(self, response):
-        ''' 
+        '''
         Form json response
         Usage:
             jsonResponse(infectionInFacilitiesHourly)
@@ -407,7 +407,7 @@ class MasterController:
             daysDict: dictionary of days
             openHours: list of open hours
             Pop: list of people in the population
-            isAnytown: boolean, whether or not the simulation is in the Anytown scenario                    
+            isAnytown: boolean, whether or not the simulation is in the Anytown scenario
         '''
         # TODO: retention rate within facilities- currently no one stays in a facility longer than one hour, pending ML team
 
@@ -528,7 +528,7 @@ class MasterController:
          Set intervention list based on dictionary of interventions
             Params:
                 intervention_list: dictionary of interventions
-            Returns: 
+            Returns:
                 interventions: dictionary of interventions with updated values
         '''
         if intervention_list is None:
@@ -659,13 +659,6 @@ class MasterController:
             peopleInFacilitiesHourly, infectionInHouseholds, facilityinfections,
             houseinfections, infectionInFacilities, daysDict, openHours, Pop, isAnytown)
         # Updated the formatting of the json file
-
-        if (ApiCall):
-
-            return totalInfectedInFacilities, facilities, infectionInFacilitiesHourly, peopleInFacilitiesHourly, facilityinfections, houseinfections, infectionInFacilities, Pop
-
-        print(
-            f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
         response = {'Buildings': [
             {"BuildingName": str(facilities[id].getFacilityType()) + str(id),
              "InfectedDaily": infectionInFacilitiesHourly[id],
@@ -674,10 +667,13 @@ class MasterController:
             for id in range(len(facilities))]
         }  # we should probably have households at least as one large "household"
 
-        self.jsonResponseToFile(
-            response, r"src\simulation\output\output.json")
-        print("Output written to output.json")
-        # TODO: Upload this json to a database based on interventions ran, how long, etc.
+        if ApiCall == False:
+            print(
+                f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
+            self.jsonResponseToFile(
+                response, r"src\simulation\output\output.json")
+            print("Output written to output.json")
+            # TODO: Upload this json to a database based on interventions ran, how long, etc.
 
         num = 0
         for each in Pop:
@@ -695,34 +691,35 @@ class MasterController:
         self.infecFacilitiesTot = totalInfectedInFacilities
         self.infecHousesTot = infectionInHouseholds
 
-        return response
+        return self.jsonResponse(response)
 
     # TODO: Implement an easier way to run these simultaions for difference cities
 
     # Function to run Anytown
-    def createSimulation(self, name, print_infection_breakdown, num_days, intervention_list):
-        if name == 'Anytown':
+    def createSimulation(self, name, print_infection_breakdown, num_days, intervention_list, ApiCall=False):
+        if name == 'AnyTown':
             self.loadVisitMatrix(
                 r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
-            self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
-                                num_days=num_days, interventions=intervention_list, isAnytown=True)
+            return self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
+                                       num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=ApiCall)
         elif name == 'BaltimoreMD':
             self.loadVisitMatrix(
                 'simulation\data\BaltimoreMD_Jan06_fullweek_dict.pkl')
-            self.run_simulation(city='BaltimoreMD', print_infection_breakdown=print_infection_breakdown,
-                                num_days=num_days, interventions=intervention_list, isAnytown=False)
+            return self.run_simulation(city='BaltimoreMD', print_infection_breakdown=print_infection_breakdown,
+                                       num_days=num_days, interventions=intervention_list, isAnytown=False, ApiCall=ApiCall)
         elif name == 'OKCity':
             self.loadVisitMatrix(
                 r'src\simulation\data\OKCity_Jan06_fullweek_dict.pkl')
-            self.run_simulation(city='OKCity', print_infection_breakdown=print_infection_breakdown,
-                                num_days=num_days, interventions=intervention_list, isAnytown=False)
+            return self.run_simulation(city='OKCity', print_infection_breakdown=print_infection_breakdown,
+                                       num_days=num_days, interventions=intervention_list, isAnytown=False, ApiCall=ApiCall)
         elif name == 'COVID_UI':
             self.loadVisitMatrix(
                 'simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+
         self.loadVisitMatrix(
             r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
         return self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
-                                   num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=True)
+                                   num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=ApiCall)
 
     def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
         '''
@@ -829,9 +826,26 @@ class MasterController:
             values = values
 
 
+'''
+runTest is for testing the code base with preset values. Please run this out of test_master.py.
+'''
+
+
 def runTest():
     mc = MasterController()
     mc.runFacilityTests(r'src\simulation\data\facilites_info.txt')
     mc.createSimulation('Anytown', False, 2, {})
     mc.excelToJson(r'src\simulation\data\OKC_Data.xls',
                    r'src\simulation\data\OKC_Data.json')
+
+
+'''
+runSimulation is for testing the code base with preset values. Please run this out of test_master.py.
+'''
+
+
+def runSimulation(location, print_infection_breakdown, num_days, intervention_list, ApiCall=False):
+    mc = MasterController()
+    response = mc.createSimulation(location, print_infection_breakdown,
+                                   num_days, intervention_list, ApiCall=ApiCall)
+    return response
