@@ -3,9 +3,9 @@ This module provides the layer for communicating with the agent-based model Cova
 """
 
 import sciris as sc
-import synthpops as sp
+from . import *
 
-# Put this here so it's accessible as sp.api.popsize_choices
+# Put this here so it's accessible as api.popsize_choices
 popsize_choices = [5000,
                    10000,
                    20000,
@@ -34,7 +34,7 @@ def make_population(n=None, max_contacts=None, generate=None, with_industry_code
     '''
 
     if rand_seed is not None:
-        sp.set_seed(rand_seed)
+        set_seed(rand_seed)
 
     default_n = 10000
     default_max_contacts = {'S': 20, 'W': 20}  # this can be anything but should be based on relevant average number of contacts for the population under study
@@ -71,20 +71,20 @@ def make_population(n=None, max_contacts=None, generate=None, with_industry_code
     # Heavy lift 1: make the contacts and their connections
     if not generate:
         # must read in from file, will fail if the data has not yet been generated
-        population = sp.make_contacts(location=location, state_location=state_location, country_location=country_location, options_args=options_args, network_distr_args=network_distr_args)
+        population = make_contacts(location=location, state_location=state_location, country_location=country_location, options_args=options_args, network_distr_args=network_distr_args)
     else:
         # make a new network on the fly
         if with_facilities:
-            population = sp.generate_microstructure_with_facilities(sp.datadir, location=location, state_location=state_location, country_location=country_location, gen_pop_size=n, return_popdict=True, use_two_group_reduction=use_two_group_reduction, average_LTCF_degree=average_LTCF_degree)
+            population = generate_microstructure_with_facilities(datadir, location=location, state_location=state_location, country_location=country_location, gen_pop_size=n, return_popdict=True, use_two_group_reduction=use_two_group_reduction, average_LTCF_degree=average_LTCF_degree)
         elif with_facilities and with_industry_code:
             errormsg = f'Requesting both long term care facilities and industries by code is not supported yet.'
             raise ValueError(errormsg)
         else:
             print(">>> Generated synth pop is: ")
-            population = sp.generate_synthetic_population(n, sp.datadir, location=location, state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
+            population = generate_synthetic_population(n, datadir, location=location, state_location=state_location, country_location=country_location, sheet_name=sheet_name, plot=False, return_popdict=True)
 
     # Semi-heavy-lift 2: trim them to the desired numbers
-    population = sp.trim_contacts(population, trimmed_size_dic=max_contacts, use_clusters=False)
+    population = trim_contacts(population, trimmed_size_dic=max_contacts, use_clusters=False)
 
     # Change types
     for key,person in population.items():

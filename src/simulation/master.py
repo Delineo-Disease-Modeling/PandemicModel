@@ -26,7 +26,8 @@ class MasterController:
     '''
     phasePlan = PhasePlan.PhasePlan(
         3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
-    values = ValueController.ValueController('Oklahoma', 'Barnsdall', 650000, {"MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, phasePlan, 0, 0, 0, [], [], None, 0.2)
+    values = ValueController.ValueController('Oklahoma', 'Barnsdall', 650000, {
+                                             "MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, phasePlan, 0, 0, 0, [], [], None, 0.2)
 
     state = values.getState()
     county = values.getCounty()
@@ -176,6 +177,7 @@ class MasterController:
         file.close()
 
         self.poi_cbg_visit_matrix_history = self.visitMatrices['poi_cbg_visit_matrix_history']
+
         self.cbgs_idxs_to_ids = self.visitMatrices['cbgs_idxs_to_ids']
         self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
 
@@ -616,7 +618,7 @@ class MasterController:
 
         # Instantiate submodules with format {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
-            r'sim\src\simulation\data\core_poi_OKCity.csv')
+            r'src\simulation\data\core_poi_OKCity.csv')
 
         # facilities, totalFacilityCapacities, openHours = M.createFacilities('submodules2.json')
 
@@ -673,7 +675,7 @@ class MasterController:
         }  # we should probably have households at least as one large "household"
 
         self.jsonResponseToFile(
-            response, r"sim\src\simulation\output\output.json")
+            response, r"src\simulation\output\output.json")
         print("Output written to output.json")
         # TODO: Upload this json to a database based on interventions ran, how long, etc.
 
@@ -701,7 +703,7 @@ class MasterController:
     def createSimulation(self, name, print_infection_breakdown, num_days, intervention_list):
         if name == 'Anytown':
             self.loadVisitMatrix(
-                r'sim\src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+                r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
             self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                                 num_days=num_days, interventions=intervention_list, isAnytown=True)
         elif name == 'BaltimoreMD':
@@ -711,12 +713,14 @@ class MasterController:
                                 num_days=num_days, interventions=intervention_list, isAnytown=False)
         elif name == 'OKCity':
             self.loadVisitMatrix(
-                r'sim\src\simulation\data\OKCity_Jan06_fullweek_dict.pkl')
+                r'src\simulation\data\OKCity_Jan06_fullweek_dict.pkl')
             self.run_simulation(city='OKCity', print_infection_breakdown=print_infection_breakdown,
                                 num_days=num_days, interventions=intervention_list, isAnytown=False)
         elif name == 'COVID_UI':
             self.loadVisitMatrix(
                 'simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+        self.loadVisitMatrix(
+            r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
         return self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                                    num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=True)
 
@@ -825,10 +829,9 @@ class MasterController:
             values = values
 
 
-def runSimulation():
-    mc = MasterController()
-
-
 def runTest():
     mc = MasterController()
-    mc.createSimulation('AnyTown', False, 2, {})
+    mc.runFacilityTests(r'src\simulation\data\facilites_info.txt')
+    mc.createSimulation('Anytown', False, 2, {})
+    mc.excelToJson(r'src\simulation\data\OKC_Data.xls',
+                   r'src\simulation\data\OKC_Data.json')

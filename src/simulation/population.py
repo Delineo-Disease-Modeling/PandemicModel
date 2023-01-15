@@ -1,6 +1,6 @@
 import sys
 import os
-import synthpops as sp
+from .synthpops.synthpops import *
 # If the above is not working, try below
 # import synthpops.synthpops as sp
 from  . import person as Person
@@ -52,8 +52,8 @@ class Population():
         Returns:
             peopleArray: Dictionary of individuals (objects of the "person" class) with parameters from info available in the generated synthpops population
         '''
-        sp.validate()
-        datadir = sp.datadir
+        validate()
+        dataloc = datadir
         location = 'barnsdall'
         state_location = 'Oklahoma'
         country_location = 'usa'
@@ -65,13 +65,13 @@ class Population():
         num_workplaces = self.num_workplaces
 
         # TODO: default school sizes are still being used
-        population, homes_dic = cn.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
+        population, homes_dic = generate_synthetic_population(npop, dataloc, num_households, num_workplaces, location=location,
 
                                                                  state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
 
         peopleArray = {}
         for i in range(npop):
-            person = Person(i)
+            person = Person.Person(i)
             person.setSynthPopParameters(population[i])
             peopleArray[i] = person
         self.peopleArray = peopleArray

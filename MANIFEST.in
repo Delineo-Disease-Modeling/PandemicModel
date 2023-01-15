@@ -1,39 +1,25 @@
-recursive-include src *.py
-# added by check-manifest
-include *.sh
-include LICENSE
-recursive-include test *.py
-
-# added by check-manifest
-include *.py
-include Dockerfile
-recursive-include api *.json
-recursive-include api *.py
-recursive-include src *.DS_Store
-recursive-include src *.bat
-recursive-include src *.css
-recursive-include src *.dat
-recursive-include src *.html
-recursive-include src *.ico
-recursive-include src *.iml
-recursive-include src *.js
-recursive-include src *.json
-recursive-include src *.md
-recursive-include src *.obj
-recursive-include src *.png
-recursive-include src *.pop
-recursive-include src *.rst
-recursive-include src *.rtf
-recursive-include src *.txt
-recursive-include src *.xls
-recursive-include src *.xlsx
-recursive-include src *.xml
-recursive-include src *.yaml
-recursive-include src Makefile
-recursive-include test *.py
-
-# added by check-manifest
-recursive-include test *.py
-
-# added by check-manifest
-recursive-include test *.py
+  include *.py
+  include *.sh
+  include Dockerfile
+  include LICENSE
+  recursive-include api *.json
+  recursive-include api *.py
+  recursive-include src *.DS_Store
+  recursive-include src *.bat
+  recursive-include src *.css
+  recursive-include src *.dat
+  recursive-include src *.html
+  recursive-include src *.ico
+  recursive-include src *.iml
+  recursive-include src *.js
+  recursive-include src *.json
+  recursive-include src *.md
+  recursive-include src *.png
+  recursive-include src *.py
+  recursive-include src *.rst
+  recursive-include src *.txt
+  recursive-include src *.xlsx
+  recursive-include src *.xml
+  recursive-include src *.yaml
+  recursive-include src Makefile
+  recursive-include test *.py
