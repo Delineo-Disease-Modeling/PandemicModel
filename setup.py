@@ -1,14 +1,14 @@
 import setuptools
 from pathlib import Path
-with open(r"README.md", "r", encoding="utf-8") as fh:
+with open(r"docs/README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="Delineo",
-    version="0.3.0",
+    version="0.3.1",
     author="Delineo",
     author_email="delineodiseasemodeling@gmail.com",
-    description="short package description",
+    description="Delineo is a disease modeling project that aims to provide a simple and easy to use interface for disease modeling.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://test.pypi.org/project/Delineo/",
