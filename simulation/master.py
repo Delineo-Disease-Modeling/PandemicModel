@@ -1,6 +1,7 @@
 from person import Person
 from module import Module
 from ValueController import ValueController
+from displayData import displayData
 from submodule import Submodule
 from phasePlan import PhasePlan
 import random
@@ -13,8 +14,7 @@ import sciris as sc
 from bisect import bisect_left
 import xlrd
 import requests
-
-
+import os
 
 poiID = 0 
 
@@ -179,6 +179,8 @@ class MasterController:
         '''
         Used to speed up calcInfectionsHomes because Python does a linear search for checking lists
         '''
+        #print("what u do ")
+        #print(a, x)
         i = bisect_left(a, x)
         if i != len(a) and a[i] == x:
             return i
@@ -214,8 +216,13 @@ class MasterController:
         # For each person that's currently infected, we have to loop through their household group and calculate the chance that
         # the people they share living spaces with get infected
         for current in currentInfected:
-            
-            if self.in_list(atHomeIDs, current.getID()) and 0 <= current.getInfectionState() <= 3:
+            id = 0
+            try:
+                id = current.getID()["ID"]
+            except:
+                id = current.getID()
+
+            if self.in_list(atHomeIDs, id) and 0 <= current.getInfectionState() <= 3:
                 household_group = list(current.getHouseholdMembers()) #id's #someone should check that this list is behaving 7/14
                 r = random.randint(1,24)
                 if r <= 2:
@@ -546,15 +553,56 @@ class MasterController:
         interventions = self.set_interventions(interventions)
 
         M = self.createModule()
+        Pop = {}
 
         #Set initial number of infected people in the module
         if city == 'Anytown':
             initialInfected = 10
         else:
-            initialInfected = 100 
+            initialInfected = 100
 
-        # Population created and returned as array of People class objects
-        Pop = M.createPopulation(city)
+        #Population created and returned as array of People class objects
+        if os.path.exists('./peopleArray.json'): #population file exist
+            #Pop = {}
+            try:
+                file = open('./peopleArray.json', 'r')
+                unformated_peopleArray = json.loads(file.read())
+                for i in range(len(unformated_peopleArray)):
+                    Pop[i] = Person(unformated_peopleArray[str(i)])
+                    Pop[i].setAllParameters(ID=unformated_peopleArray[str(i)]['ID'], age=unformated_peopleArray[str(i)]['age'],
+                                            sex=unformated_peopleArray[str(i)]['sex'],
+                                            householdLocation=unformated_peopleArray[str(i)]['householdLocation'],
+                                            householdContacts=unformated_peopleArray[str(i)]['householdContacts'],
+                                            comorbidities=unformated_peopleArray[str(i)]['comorbidities'],
+                                            demographicInfo=unformated_peopleArray[str(i)]['demographicInfo'],
+                                            severityRisk=unformated_peopleArray[str(i)]['severityRisk'],
+                                            currentLocation=unformated_peopleArray[str(i)]['currentLocation'],
+                                            vaccinated=unformated_peopleArray[str(i)]['vaccinated'],
+                                            extendedhousehold=unformated_peopleArray[str(i)]['extendedHousehold'],
+                                            COVID_type=unformated_peopleArray[str(i)]['COVID_type'],
+                                            vaccineName=unformated_peopleArray[str(i)]['vaccineName'],
+                                            shotNumber=unformated_peopleArray[str(i)]['shotNumber'],
+                                            daysAfterShot=unformated_peopleArray[str(i)]['daysAfterShot'],
+                                            essentialWorker=unformated_peopleArray[str(i)]['essentialWorker'],
+                                            madeVaccAppt=unformated_peopleArray[str(i)]['madeVaccAppt'],
+                                            vaccApptDate=unformated_peopleArray[str(i)]['vaccApptDate'],
+                                            infectionState=unformated_peopleArray[str(i)]['infectionState'],
+                                            incubation=unformated_peopleArray[str(i)]['incubation'],
+                                            disease=unformated_peopleArray[str(i)]['disease'],
+                                            infectionTimer=unformated_peopleArray[str(i)]['infectionTimer'],
+                                            infectionTrack=unformated_peopleArray[str(i)]['infectionTrack'])
+
+                # Displays population visualization
+                dp = displayData(population=Pop, from_json=True, file=None)
+                dp.plot_sex()  # Plots sex distribution
+            except:
+                print("File error")
+            finally:
+                # Close file even if error occurs
+                file.close()
+        else:
+            Pop = M.createPopulation(city)
+
 
         # Visit matrix: (CBG x POI) x hour = gives number people from CBG at POI in a given hour
         currentInfected = set()
@@ -658,21 +706,46 @@ class MasterController:
         return response
 
     # TODO: Implement an easier way to run these simultaions for difference cities
+    # Function that runs anytown, OKC, or Baltimore with switch case
+    # To Finish
+    def Run_city(self, city, print_infection_breakdown, num_days, intervention_list):
+        """
+        Function that runs simulation for different cities
+            Params:
+                city: what city this simulation should be run for, options: Anytown, Baltimore, OKC
+                print_infection_breakdown: boolean, whether or not to print infection breakdown
+                num_days: number of days to run simulation for
+                interventions: dictionary of interventions
+        """
+        if city == 'Anytown':
+            self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+            self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=True)
+        elif city == 'Oklahoma_City' or city == 'OKC':
+            self.loadVisitMatrix('Oklahoma_Jan06_fullweek_dict.pkl')
+            self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=False)
+        elif city == 'Baltimore':
+            self.loadVisitMatrix('Baltimore_2020-01-01_2020-02-29.pkl')
+            self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=False)
+        else:
+            print("Invalid city input")
 
-    # Function to run Anytown
-    def Anytown(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
-        self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = True)
-
-    # Function to run Oklahoma City
-    def Run_OKC(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix('Oklahoma_Jan06_fullweek_dict.pkl')
-        self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = False)
-
-    # Function to run Baltimore
-    def Run_Baltimore(self, print_infection_breakdown, num_days, intervention_list):
-        self.loadVisitMatrix('Baltimore_2020-01-01_2020-02-29.pkl')
-        self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = False)
+    # # Function to run Anytown
+    # def Anytown(self, print_infection_breakdown, num_days, intervention_list):
+    #     self.loadVisitMatrix('Anytown_Jan06_fullweek_dict.pkl')
+    #     self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = True)
+    #
+    # # Function to run Oklahoma City
+    # def Run_OKC(self, print_infection_breakdown, num_days, intervention_list):
+    #     self.loadVisitMatrix('Oklahoma_Jan06_fullweek_dict.pkl')
+    #     self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = False)
+    #
+    # # Function to run Baltimore
+    # def Run_Baltimore(self, print_infection_breakdown, num_days, intervention_list):
+    #     self.loadVisitMatrix('Baltimore_2020-01-01_2020-02-29.pkl')
+    #     self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown, num_days=num_days, interventions=intervention_list, isAnytown = False)
 
     def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
         '''
@@ -799,7 +872,15 @@ if __name__ == '__main__':
     
     #interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.runFacilityTests('facilities_info.txt')
+
+    mc.Run_city('Anytown', print_infection_breakdown=False, num_days=61, intervention_list=interventions)
     
-    mc.Anytown(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
+    #mc.Anytown(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
 
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')
+
+    # Clears json from file directory, later this can be removed if file is on DB
+    if os.path.exists('./peopleArray.json'):
+        os.remove('./peopleArray.json')
+    else:
+        print("The file does not exist")
