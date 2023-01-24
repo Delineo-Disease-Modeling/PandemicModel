@@ -1,6 +1,6 @@
 import synthpops.synthpops as sp
 # If the above is not working, try below
-#import synthpops as sp
+# import synthpops as sp
 from person import Person
 import random
 import json
@@ -24,10 +24,11 @@ class Population():
     num_households: The number of households in the population
     npop: How many people are in the population, for synthpops
     num_workplaces: The number of workplaces in the population
-  
+
     '''
     # constructor
-    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0, num_households = 2400, npop = 6000, num_workplaces = 200):
+
+    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0, num_households=2400, npop=6000, num_workplaces=200):
 
         self.state = state
         self.country = country
@@ -43,7 +44,6 @@ class Population():
 
         ##### Debug flag #####
         self.debugMode = True
-
 
     def get_dict(self):
         '''
@@ -63,37 +63,35 @@ class Population():
         sheet_name = 'United States of America'
         level = 'county'
 
-
-        num_households = self.num_households # 459
-        npop = self.npop #1132 #this is 6000 - but when increased synthpops does not work
+        num_households = self.num_households  # 459
+        npop = self.npop  # 1132 #this is 6000 - but when increased synthpops does not work
         num_workplaces = self.num_workplaces
 
         # TODO: default school sizes are still being used
         population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
 
-                                                              state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
+                                                                 state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
+        if (self.debugMode):
+            peopleArray = {}
+            for i in range(npop):
+                person = Person(i)
+                person.setSynthPopParameters(population[i])
+                peopleArray[i] = person
+            self.peopleArray = peopleArray
 
-        peopleArray = {}
-        for i in range(npop):
-            person = Person(i)
-            person.setSynthPopParameters(population[i])
-            peopleArray[i] = person
-        self.peopleArray = peopleArray
+            # We write the people array to a json to be able to use the data without generating a new population everytime
+            try:
+                outfile = open("peopleArray.json", "w")
+                json.dump(peopleArray, outfile, cls=PersonEncoder, indent=4)
+            finally:
+                outfile.close()
 
-        # We write the people array to a json to be able to use the data without generating a new population everytime
-        try:
-            outfile = open("peopleArray.json", "w")
-            json.dump(peopleArray, outfile, cls=PersonEncoder, indent=4)
-        finally:
-            outfile.close()
-
-        # Displays population visualization
-        dp = displayData(population=peopleArray, from_json=False, file=None)
-        dp.plot_sex() # Plots sex distribution
-
-
-        if self.debugMode:
-            print('=population.py/get_dict: peopleArray length is', len(peopleArray),' =')
+            # Displays population visualization
+            dp = displayData(population=peopleArray,
+                             from_json=False, file=None)
+            dp.plot_sex()  # Plots sex distribution
+            print('=population.py/get_dict: peopleArray length is',
+                  len(peopleArray), ' =')
         return peopleArray
 
     # calls synthpops and generates population (dictionary)
@@ -355,7 +353,7 @@ class Population():
             vaccinated(dictionary): Dictionary representing the vaccination statuses of each corresponding person in the population.
         '''
         peopleArray = self.generatePopulation(self.populationSize)
-        vaccinated = {} # create a dictionary of people and their vaccination status
+        vaccinated = {}  # create a dictionary of people and their vaccination status
         for i in range(len(peopleArray)):
             if (peopleArray[i].age > 60 or peopleArray[i].essentialWorker == True or peopleArray[i].comorbidities > 2):
                 peopleArray[i].vaccinated = True
@@ -404,15 +402,17 @@ class Population():
             self.phaseNum += 1
 
 # JSONEncoder subclass for Person
+
+
 class PersonEncoder(JSONEncoder):
     def default(self, o):
         if isinstance(o, Person):
             return {'ID': o.ID, 'age': o.age, 'sex': o.sex, 'householdLocation': o.householdLocation,
                     'householdContacts': list(o.householdContacts), 'comorbidities': o.comorbidities,
                     'demographicInfo': o.demographicInfo, 'severityRisk': o.severityRisk,
-                    'currentLocation' : o.currentLocation, 'vaccinated': o.vaccinated, 'extendedHousehold': list(o.extendedhousehold),
+                    'currentLocation': o.currentLocation, 'vaccinated': o.vaccinated, 'extendedHousehold': list(o.extendedhousehold),
                     'COVID_type': o.COVID_type, 'vaccineName': o.vaccineName, 'shotNumber': o.shotNumber,
-                    'daysAfterShot': o.daysAfterShot, 'essentialWorker': o.essentialWorker, 'madeVaccAppt':o.madeVaccAppt,
+                    'daysAfterShot': o.daysAfterShot, 'essentialWorker': o.essentialWorker, 'madeVaccAppt': o.madeVaccAppt,
                     'vaccApptDate': o.vaccApptDate, 'infectionState': o.infectionState, 'incubation': o.incubation,
                     'disease': o.disease, 'infectionTimer': o.infectionTimer, 'infectionTrack': o.infectionTrack
                     }

@@ -17,6 +17,7 @@ import xlrd
 import os
 import copy
 import hashlib
+import db
 poiID = 0
 
 
@@ -968,7 +969,17 @@ if __name__ == '__main__':
     # mc.sumVisitMatrices()  # Verify correctness of visit matrices
     interventions = {}
 
+    getDB = False
+
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
+    if (getDB):
+        print(db.get_data())
+
+    # Clears json from file directory, later this can be removed if file is on DB
+    if os.path.exists('./peopleArray.json'):
+        os.remove('./peopleArray.json')
+    else:
+        print("The file does not exist")
 
     mc.runFacilityTests('facilities_info.txt')
 
@@ -978,9 +989,3 @@ if __name__ == '__main__':
     # mc.Anytown(print_infection_breakdown=False, num_days=61, intervention_list=interventions)  # Run entire simulation for 61 days
 
     mc.excelToJson('OKC Data.xls', 'OKC Data.json')
-
-    # Clears json from file directory, later this can be removed if file is on DB
-    if os.path.exists('./peopleArray.json'):
-        os.remove('./peopleArray.json')
-    else:
-        print("The file does not exist")
