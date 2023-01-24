@@ -285,7 +285,6 @@ def get_n_contact_ids_by_age(contact_ids_by_age_dic, contact_ages, age_brackets,
     return contact_ids
 
 
-@nb.njit((nb.int64,), cache=True)
 def pt(rate):
     '''
     Results of a Poisson trial

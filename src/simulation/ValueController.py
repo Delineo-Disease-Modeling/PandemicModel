@@ -1,4 +1,4 @@
-from phasePlan import PhasePlan
+from . import phasePlan as PhasePlan
 
 
 class ValueController:

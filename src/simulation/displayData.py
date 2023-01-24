@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-from person import Person
+from . import person as Person
 
 
 class displayData():

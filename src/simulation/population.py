@@ -1,11 +1,11 @@
-import synthpops.synthpops as sp
+from .synthpops.synthpops import *
 # If the above is not working, try below
-# import synthpops as sp
-from person import Person
+
+from . import person as Person
 import random
 import json
 from json import JSONEncoder
-from displayData import displayData
+from . import displayData as displayData
 
 
 class Population():
@@ -42,11 +42,10 @@ class Population():
         self.npop = npop
         self.num_workplaces = num_workplaces
         self.debugMode = debugMode
-    
 
     def get_dict(self):
         '''
-        This function generates a synthetic population using synthpops for barnsdall, Oklahoma, usa and returns a corresponding dictionary. 
+        This function generates a synthetic population using synthpops for barnsdall, Oklahoma, usa and returns a corresponding dictionary.
 
         Params:
             npop(int): The size of the population to be used by sp
@@ -54,8 +53,8 @@ class Population():
         Returns:
             peopleArray: Dictionary of individuals (objects of the "person" class) with parameters from info available in the generated synthpops population
         '''
-        sp.validate()
-        datadir = sp.datadir
+        validate()
+        dataloc = datadir
         location = 'barnsdall'
         state_location = 'Oklahoma'
         country_location = 'usa'
@@ -67,17 +66,16 @@ class Population():
         num_workplaces = self.num_workplaces
 
         # TODO: default school sizes are still being used
-        population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
+        population, homes_dic = generate_synthetic_population(npop, dataloc, num_households, num_workplaces, location=location,
 
-                                                                 state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
+                                                              state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
+        peopleArray = {}
+        for i in range(npop):
+            person = Person.Person(i)
+            person.setSynthPopParameters(population[i])
+            peopleArray[i] = person
+        self.peopleArray = peopleArray
         if (self.debugMode):
-            peopleArray = {}
-            for i in range(npop):
-                person = Person(i)
-                person.setSynthPopParameters(population[i])
-                peopleArray[i] = person
-            self.peopleArray = peopleArray
-
             # We write the people array to a json to be able to use the data without generating a new population everytime
             try:
                 outfile = open("peopleArray.json", "w")
@@ -86,8 +84,8 @@ class Population():
                 outfile.close()
 
             # Displays population visualization
-            dp = displayData(population=peopleArray,
-                             from_json=False, file=None)
+            dp = displayData.displayData(population=peopleArray,
+                                         from_json=False, file=None)
             dp.plot_sex()  # Plots sex distribution
             print('=population.py/get_dict: peopleArray length is',
                   len(peopleArray), ' =')
@@ -405,7 +403,7 @@ class Population():
 
 class PersonEncoder(JSONEncoder):
     def default(self, o):
-        if isinstance(o, Person):
+        if isinstance(o, Person.Person):
             return {'ID': o.ID, 'age': o.age, 'sex': o.sex, 'householdLocation': o.householdLocation,
                     'householdContacts': list(o.householdContacts), 'comorbidities': o.comorbidities,
                     'demographicInfo': o.demographicInfo, 'severityRisk': o.severityRisk,

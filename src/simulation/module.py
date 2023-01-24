@@ -1,5 +1,5 @@
-from population import Population
-from submodule import Submodule
+from . import population as Population
+from . import submodule as Submodule
 import json
 import random
 import pandas as pd
@@ -22,16 +22,16 @@ class Module:
         self.debugMode = debugMode
 
     def createPopulationObj(self):  # Creates a population object
-        Pop = Population(self.__State, self.__County, self.debugMode)
+        Pop = Population.Population(self.__State, self.__County, self.debugMode)
         return Pop
 
     def createPopulation(self, city):  # Creates a population object for a specific city
         print("createPop function")
         if city == 'Anytown':
-            Pop = Population(self.__State, self.__County,
+            Pop = Population.Population(self.__State, self.__County,
                              self.debugMode).get_dict()
         if city == 'Oklahoma_City':
-            Pop = Population(self.__State, self.__County,  self.debugMode, num_households=250000,
+            Pop = Population.Population(self.__State, self.__County,  self.debugMode, num_households=250000,
                              npop=650000, num_workplaces=24000).get_dict()
         return Pop
 
@@ -75,7 +75,7 @@ class Module:
 
     # Creates a facility object for every facility in the txt file. Data is based off of the txt file
     def createFacilitiesTXT(self, filename, verbose):
-        with open('facilites_info.txt') as f:
+        with open(filename) as f:
             lines = f.readlines()
             lines = lines[:-1]
         totalCapacities = 0
@@ -132,7 +132,7 @@ class Module:
                     # cap = 20
 
                 totalCapacities += cap
-                nextFacility = Submodule(id=facilities_ID, facilitytype=facility_type, debugMode = self.debugMode,
+                nextFacility = Submodule.Submodule(id=facilities_ID, facilitytype=facility_type, debugMode = self.debugMode,
                                          capacity=cap, categories=category[index], hours=hours, days=days)
                 facilities[facilities_ID] = nextFacility
                 for h in hours:

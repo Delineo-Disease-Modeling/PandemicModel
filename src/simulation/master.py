@@ -3,7 +3,7 @@ from . import module as Module
 from . import ValueController
 from . import submodule as Submodule
 from . import phasePlan as PhasePlan
-from jsonCompressionAlgorithm import jsonCompress, jsonDecompress, get_size
+from .jsonCompressionAlgorithm import jsonCompress, jsonDecompress, get_size
 import random
 import json
 import pickle
@@ -16,7 +16,7 @@ import xlrd
 import os
 import copy
 import hashlib
-import db
+from . import db as db
 poiID = 0
 
 
@@ -26,9 +26,10 @@ class MasterController:
     an an API layer that kicks off and runs the simulation, and provides the functionaility necessary to package the simulation results into the formats necessary
     for communicating with the frontend and backend.
     '''
-    values = ValueController('Oklahoma', 'Barnsdall', 650000, {"MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, PhasePlan.PhasePlan(
-        3, [60, 40, 16], [99, 99, 99], [60, 45, 60]), 0, 0, 0, [], [], None, 0.2)
-
+    phasePlan = PhasePlan.PhasePlan(
+        3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
+    values = ValueController.ValueController('Oklahoma', 'Barnsdall', 650000, {
+                                             "MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, phasePlan, 0, 0, 0, [], [], None, 0.2)
     state = values.getState()
     county = values.getCounty()
     population = values.getPopulation()
@@ -66,7 +67,7 @@ class MasterController:
     generalDebugMode = False
     #####
 
-    debugMode = True
+    debugMode = False
 
     def getUserInput(self, state, county, interventions):
         '''
@@ -88,7 +89,7 @@ class MasterController:
             county - the county passed by the user
             interventions - an dictionary of values corresponding to certain interventions
         '''
-        return Module(self.state, self.county, self.debugMode, self.interventions)
+        return Module.Module(self.state, self.county, self.debugMode, self.interventions)
 
     def updateTime(self):
         '''
@@ -728,7 +729,7 @@ class MasterController:
 
         # Instantiate submodules with format {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
-            'core_poi_OKCity.csv')
+            r'src\simulation\data\core_poi_OKCity.csv')
 
         # facilities, totalFacilityCapacities, openHours = M.createFacilities('submodules2.json')
 
@@ -780,7 +781,7 @@ class MasterController:
                     for id in range(len(facilities))]
                     }  # we should probably have households at least as one large "household"
         if not ApiCall:
-            self.jsonResponseToFile(response, "output.txt")
+            self.jsonResponseToFile(response,  r"src\simulation\output\output.json")
             print("Output written to output.txt")
 
         if (getDB):
@@ -994,4 +995,3 @@ def runSimulation(location, print_infection_breakdown, num_days, intervention_li
     response = mc.create_simulation(location, print_infection_breakdown,
                                     num_days, intervention_list, ApiCall=ApiCall)
     return response
-
