@@ -1,16 +1,19 @@
-import sys
-import os
-from .synthpops.synthpops import *
+import synthpops.synthpops as sp
 # If the above is not working, try below
-# import synthpops.synthpops as sp
-from  . import person as Person
+# import synthpops as sp
+from person import Person
 import random
+import json
+from json import JSONEncoder
+from displayData import displayData
 
 
 class Population():
 
     '''This class is used to define a population in the simulation.
+
     It takes in the following parameters:
+    self
     state: The state in which the population is located
     country: The country in which the population is located
     population: An array of different person classes
@@ -25,7 +28,7 @@ class Population():
     '''
     # constructor
 
-    def __init__(self, state, country, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0, num_households=2400, npop=6000, num_workplaces=200):
+    def __init__(self, state, country, debugMode, population=[], peopleArray={}, populationSize=0, phaseNum=0, currPhaseDayNum=0, num_households=2400, npop=6000, num_workplaces=200):
 
         self.state = state
         self.country = country
@@ -38,9 +41,8 @@ class Population():
         self.num_households = num_households
         self.npop = npop
         self.num_workplaces = num_workplaces
-
-        ##### Debug flag #####
-        self.debugMode = True
+        self.debugMode = debugMode
+    
 
     def get_dict(self):
         '''
@@ -52,8 +54,8 @@ class Population():
         Returns:
             peopleArray: Dictionary of individuals (objects of the "person" class) with parameters from info available in the generated synthpops population
         '''
-        validate()
-        dataloc = datadir
+        sp.validate()
+        datadir = sp.datadir
         location = 'barnsdall'
         state_location = 'Oklahoma'
         country_location = 'usa'
@@ -65,18 +67,28 @@ class Population():
         num_workplaces = self.num_workplaces
 
         # TODO: default school sizes are still being used
-        population, homes_dic = generate_synthetic_population(npop, dataloc, num_households, num_workplaces, location=location,
+        population, homes_dic = sp.generate_synthetic_population(npop, datadir, num_households, num_workplaces, location=location,
 
                                                                  state_location=state_location, country_location=country_location, sheet_name=sheet_name, use_default=True, return_popdict=True)
+        if (self.debugMode):
+            peopleArray = {}
+            for i in range(npop):
+                person = Person(i)
+                person.setSynthPopParameters(population[i])
+                peopleArray[i] = person
+            self.peopleArray = peopleArray
 
-        peopleArray = {}
-        for i in range(npop):
-            person = Person.Person(i)
-            person.setSynthPopParameters(population[i])
-            peopleArray[i] = person
-        self.peopleArray = peopleArray
+            # We write the people array to a json to be able to use the data without generating a new population everytime
+            try:
+                outfile = open("peopleArray.json", "w")
+                json.dump(peopleArray, outfile, cls=PersonEncoder, indent=4)
+            finally:
+                outfile.close()
 
-        if self.debugMode:
+            # Displays population visualization
+            dp = displayData(population=peopleArray,
+                             from_json=False, file=None)
+            dp.plot_sex()  # Plots sex distribution
             print('=population.py/get_dict: peopleArray length is',
                   len(peopleArray), ' =')
         return peopleArray
@@ -387,3 +399,20 @@ class Population():
 
             self.currPhaseDayNum = 0
             self.phaseNum += 1
+
+# JSONEncoder subclass for Person
+
+
+class PersonEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Person):
+            return {'ID': o.ID, 'age': o.age, 'sex': o.sex, 'householdLocation': o.householdLocation,
+                    'householdContacts': list(o.householdContacts), 'comorbidities': o.comorbidities,
+                    'demographicInfo': o.demographicInfo, 'severityRisk': o.severityRisk,
+                    'currentLocation': o.currentLocation, 'vaccinated': o.vaccinated, 'extendedHousehold': list(o.extendedhousehold),
+                    'COVID_type': o.COVID_type, 'vaccineName': o.vaccineName, 'shotNumber': o.shotNumber,
+                    'daysAfterShot': o.daysAfterShot, 'essentialWorker': o.essentialWorker, 'madeVaccAppt': o.madeVaccAppt,
+                    'vaccApptDate': o.vaccApptDate, 'infectionState': o.infectionState, 'incubation': o.incubation,
+                    'disease': o.disease, 'infectionTimer': o.infectionTimer, 'infectionTrack': o.infectionTrack
+                    }
+        return super().default(o)

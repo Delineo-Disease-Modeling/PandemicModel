@@ -1,11 +1,10 @@
 import random
 import numpy as np
 
-
 class Person:
 
     ''''This function is used to define an individual person in the simulation. 
-
+    
     It takes in the following parameters:
     ID: the ID of the person
     age: the age of the person
@@ -49,11 +48,11 @@ class Person:
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
                          householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
-                         shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
+                         shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0, disease=None):
 
         if extendedhousehold is None:
             self.extendedhousehold = set()
-        if householdContacts is None:  # python specific way of creating mutable defaults
+        if householdContacts is None: #python specific way of creating mutable defaults
             householdContacts = []
         if infectionTrack is None:
             infectionTrack = []
@@ -85,16 +84,12 @@ class Person:
 
     def getextendedhousehold(self):
         return self.extendedhousehold
-
     def addtoextendedhousehold(self, p):
         self.extendedhousehold.add(p)
-
     def getID(self):
         return self.ID
-
     def getInfectionTrack(self):
         return self.infectionTrack
-
     def getinfectionTimer(self):
         return self.infectionTimer
 
@@ -106,7 +101,7 @@ class Person:
         household members are contacts of each other, and everyone in the same school is a contact of each other. Else, return None.
     """
 
-    def setSynthPopParameters(self, synthPopsPersonDict):  # maybe need changes here
+    def setSynthPopParameters(self, synthPopsPersonDict): #maybe need changes here
 
         for k, v in synthPopsPersonDict.items():
             setattr(self, k, v)
@@ -191,7 +186,7 @@ class Person:
         # numComorbidities = len(self.comorbidities) if list
         numComorbidities = self.comorbidities
         # sex not currently accounted for
-        sevRisk = open(r"src\simulation\data\diseasedata\severity_risk.dat", "r")
+        sevRisk = open("diseasedata/severity_risk.dat", "r")
         distrWithComorbidities = {}
         distrWithoutComorbidities = {}
         for lines in sevRisk:
@@ -199,13 +194,12 @@ class Person:
             distrWithComorbidities[int(brackets[0])] = float(brackets[2])
             distrWithoutComorbidities[int(brackets[0])] = float(brackets[1])
         ageCategory = int((self.age // 10)) * 10
-        if ageCategory >= 100:  # temporary fix to no data for 100+
+        if ageCategory >= 100: #temporary fix to no data for 100+
             ageCategory = 90
         if numComorbidities == 0:
             srScore = int(distrWithoutComorbidities[ageCategory])
         else:
-            srScore = int(
-                distrWithComorbidities[ageCategory] * pow(0.75, numComorbidities))
+            srScore = int(distrWithComorbidities[ageCategory] * pow(0.75, numComorbidities))
 
         sevRisk.close()
         return srScore
@@ -241,32 +235,32 @@ class Person:
         else:
             return 3  # 3 = critical
 
-    # called once infected and each day that passes.
-    # Once infected, infection function should update this value to 0.
+    #called once infected and each day that passes.
+    #Once infected, infection function should update this value to 0.
     def incrementInfectionTimer(self):
-        # once passed 15 days, infection is over.
-        # TODO will change depending on severity level.
+        #once passed 15 days, infection is over.
+        #TODO will change depending on severity level.
         if self.infectionTimer >= len(self.infectionTrack) - 1:
             return self.infectionTimer
-        # Otherwise, incremement infectionTimer.
+        #Otherwise, incremement infectionTimer.
         self.infectionTimer += 1
         return self.infectionTimer
 
-    # needs to be called once infected. (and updated each day until 0)
-    # TODO incubation days change based on severityRisk/age?
+    #needs to be called once infected. (and updated each day until 0)
+    #TODO incubation days change based on severityRisk/age?
     def incubationAssignment(self):
-        # get a random number between 1-3 for incubation days
+        #get a random number between 1-3 for incubation days
         randNum = random.randint(1, 3)
         self.incubation = randNum
         return randNum
 
-    # Assign number of days spent at peak state based on severity risk
-    # TODO update according to info support research
+    #Assign number of days spent at peak state based on severity risk
+    #TODO update according to info support research
     def assignNumDaysPeakState(self):
 
         peakStateDays = 0
-        # peakStateDays ranging from 4-10 days, based on severityRisk
-        if self.severityRisk >= 0 & self.severityRisk <= 25:
+        #peakStateDays ranging from 4-10 days, based on severityRisk
+        if self.severityRisk >= 0 & self.severityRisk <=25:
             peakStateDays = 4
 
         elif self.severityRisk >= 25 & self.severityRisk <= 50:
@@ -279,6 +273,7 @@ class Person:
             peakStateDays = 10
         return peakStateDays
 
+
     def assignTrajectory(self):
         peakstate = self.calcInfectionState()
         self.severityRisk = self.calcSeverityRisk()
@@ -289,35 +284,33 @@ class Person:
         for i in range(peakStateDays):
             self.infectionTrack.append(peakstate)
 
-        if self.infectionState == 0:  # asymptomatic
-            # 14 to 21 days for recovery
+        if self.infectionState == 0: #asymptomatic
+            #14 to 21 days for recovery
             randNum = random.randint(14, 21)
             recoveryDaysToBeDivided = randNum
 
-        elif self.infectionState == 1:  # mild
+        elif self.infectionState == 1: #mild
             # 14 to 21 days for recovery
             randNum = random.randint(14, 21)
             recoveryDaysToBeDivided = randNum
 
         elif self.infectionState == 2:
-            # 21 to 42 days for recovery
+            #21 to 42 days for recovery
             randNum = random.randint(21, 42)
             recoveryDaysToBeDivided = randNum
         else:
-            # crticial
+            #crticial
             randNum = random.randint(21, 42)
             recoveryDaysToBeDivided = randNum
         daysleft = randNum - incubation - peakStateDays
         if peakstate != 0:
-            # split evenly through rest of days
-            daysPerState = daysleft // (peakstate)
+            daysPerState = daysleft // (peakstate)  #split evenly through rest of days
         else:
             daysPerState = daysleft
         extraAsymptomatic = 0
         if daysPerState * peakstate < daysleft:
             extraAsymptomatic = daysleft - daysPerState * peakstate
-        # Asymptotic recovery??? no state to go after peak state
-        for i in range(peakstate-1, -1, -1):
+        for i in range(peakstate-1,-1,-1): #Asymptotic recovery??? no state to go after peak state
             for j in range(daysPerState):
                 self.infectionTrack.append(i)
         for j in range(extraAsymptomatic):
@@ -335,7 +328,8 @@ class Person:
         self.shotNumber = shotNumberGiven
         self.daysAfterShot = 0
 
-    # TODO: add way for half vaccination/more vaccines over the required
+
+    #TODO: add way for half vaccination/more vaccines over the required 
 
     def completeVaccinated(self):
         if self.vaccineName == "Moderna" and self.shotNumber == 2 and self.daysAfterShot == 14:
@@ -345,7 +339,7 @@ class Person:
         elif self.vaccineName == "Johnson&Johnson" and self.shotNumber == 1 and self.daysAfterShot == 14:
             self.vaccinated = True
 
-    # TODO: add more vaccine methods and determine values
+    #TODO: add more vaccine methods and determine values
 
     def infectedAfterCompletelyVaccinated(self):
         chance = 0
@@ -358,3 +352,29 @@ class Person:
         self.infectionState = -1 if random.random() < chance else 0
 
         return self.infectionState
+
+    # Person to dict helper method for pandas and data visualization
+    def to_dict(self) -> dict:
+        return {
+            "age": self.age,
+            "sex": self.sex,
+            "household location": self.householdLocation,
+            "household contacts": self.householdContacts,
+            "comorbidities": self.comorbidities,
+            "demographic Info": self.demographicInfo,
+            "severity risk": self.severityRisk,
+            "current location": self.currentLocation,
+            "vaccinated": self.vaccinated,
+            "COVID type": self.COVID_type,
+            "vaccine name": self.vaccineName,
+            "shot number": self.shotNumber,
+            "days after shot": self.daysAfterShot,
+            "essential worker": self.essentialWorker,
+            "made vaccine appt": self.madeVaccAppt,
+            "vacc app date": self.vaccApptDate,
+            "infection state": self.infectionState,
+            "incubation": self.incubation,
+            "disease": self.disease,
+            "infection timer": self.infectionTimer,
+            "infection track": self.infectionTrack
+        }

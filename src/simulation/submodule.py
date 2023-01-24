@@ -1,4 +1,3 @@
-import json
 import networkx as nx
 import random as rnd
 import matplotlib.pyplot as plt
@@ -33,16 +32,15 @@ class Submodule:
     latitude: represents latitude location
     longitude: represents longtitude location
     """
-
-    def __init__(self, id, facilitytype, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0,
-                 Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna": 0, "Pfizer": 0, "Johnson&Johnson": 0}, appointments={}, rate=0, latitude=36.561002, longitude=-96.161577, categories={}):
+    def __init__(self, id, facilitytype, debugMode, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0,
+                 Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0, latitude = 36.561002, longitude = -96.161577, categories = {}):
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
         capacities = {
             'Supermarket': 50,
             'Restaurant': 20,
-            "Retail": 20,  # TODO: there is so much variablity in retail/restaraunt capacities and airflow etc. How can we model them all with one factor?
+            "Retail": 20, #TODO: there is so much variablity in retail/restaraunt capacities and airflow etc. How can we model them all with one factor?
             "School": 20,
             "Hospital": 60,
             "Gym": 30,
@@ -71,7 +69,7 @@ class Submodule:
         self.categories = categories
 
         ##### Debug added 7/14 #####
-        self.debugMode = True
+        self.debugMode = debugMode
 
     def getID(self):
         return self.__id
@@ -123,7 +121,8 @@ class Submodule:
         numGroups = 0  # placeholder
         return numGroups
 
-    # TODO This code will be adapted to fit household model - Likely want to instantiate houses as groups
+
+    #TODO This code will be adapted to fit household model - Likely want to instantiate houses as groups
 
     def createGroups(self):
         """
@@ -150,15 +149,15 @@ class Submodule:
         self.__numGroups = len(groups)
         self.__Groups = groups
 
-    # create groups based on household network
 
+    #create groups based on household network
     def createGroupsHH(self):
         """
         Creates groups in a network of households. Alters numGroups and Groups as necessary.
         Params:
             People(array): array of persons
         """
-        groupsDict = {}  # If we know total number households here, we can just use a list
+        groupsDict = {} # If we know total number households here, we can just use a list
         for person in self.__People:
             # Create new group if household not yet instantiated
             # Else, add to existing household group
@@ -183,10 +182,10 @@ class Submodule:
                 0 <= person.getInfectionState() <= 3]
 
     # This is a potential new function to create the graph, which calcInfection will then traverse
-    # Returns G: The graph
+    #Returns G: The graph
     def createGraph(self):
         sizes = [0] * self.__numGroups
-        print("Number of groups: ", self.__numGroups)
+        print("Number of groups: ",self.__numGroups)
         idList = []
         p = []
         for i in range(self.__numGroups):
@@ -198,22 +197,19 @@ class Submodule:
             tmp_p = [0] * self.__numGroups
             for j in range(self.__numGroups):
                 if j == i:
-                    # If you're in the same group as an infected person, this is the likelihood you are in contact
-                    tmp_p[j] = .8
+                    tmp_p[j] = .8  # If you're in the same group as an infected person, this is the likelihood you are in contact
                 else:
-                    # Likelihood of connections between groups, arbitrary formula - #TODO change to based on number of households
-                    tmp_p[j] = .001
+                    tmp_p[j] = .001  # Likelihood of connections between groups, arbitrary formula - #TODO change to based on number of households
 
             p.append(tmp_p)
         # nx.draw(nx.stochastic_block_model(sizes, p, idList))
         # plt.show()
         # print(idList)
-        # Creates graph based on sizes of groups, prob of edges, list of people
-        G = nx.stochastic_block_model(sizes, p, idList, sparse=True)
+        G = nx.stochastic_block_model(sizes, p, idList, sparse=True)  # Creates graph based on sizes of groups, prob of edges, list of people
         infected_ids = [person.getID() for person in self.getInfected()]
         options = {'node_size': 400, 'alpha': 0.8}
         pos = nx.spring_layout(G)
-        nx.generate_edgelist(G)  # Generates edges
+        nx.generate_edgelist(G) #Generates edges
 
         """
         # hide visualization for now
@@ -263,18 +259,16 @@ class Submodule:
         """
         numperhour = 0
         newlyinfectedathome = []
-        averageinfectiouslength = 24 * 3  # number of days an individual is infectious
-        # total odds of infecting someone whom they are connected to in a household with
-        averageinfectionrate = .2
+        averageinfectiouslength = 24 * 3 # number of days an individual is infectious
+        averageinfectionrate = .2 # total odds of infecting someone whom they are connected to in a household with
         # note this math may need to be worked out more, along with correct, scientific numbers
         peopleDict = {person.getID(): person for person in self.__People}
         infectedAndHome = [person for person in self.__People if
-                           0 <= person.getInfectionState() <= 3 and person.getID() in atHomeIDs]  # array for individuals who are infected at home
-
+                           0 <= person.getInfectionState() <= 3 and person.getID() in atHomeIDs] #array for individuals who are infected at home
+        
         ##### Debug #####
         if self.debugMode:
-            print('=== submodule.py/calcInfection: length of infectedAndHome',
-                  len(infectedAndHome), ' ===')
+                print('=== submodule.py/calcInfection: length of infectedAndHome',len(infectedAndHome), ' ===')
 
         for person in infectedAndHome:
 
@@ -284,15 +278,14 @@ class Submodule:
 
                 if len(neighbor.getInfectionTrack()) > 0:
                     continue
-                # Probability of infection if edge exists
-                if (rnd.random() < (averageinfectionrate/(24*(len(person.getInfectionTrack())-person.getIncubation())))):
+                if (rnd.random() < (averageinfectionrate/(24*(len(person.getInfectionTrack())-person.getIncubation())))): # Probability of infection if edge exists
                     neighbor.assignTrajectory()
                     newlyinfectedathome.append(neighbor)
                     numperhour += 1
         return newlyinfectedathome
 
-    # Wells Riley
 
+    # Wells Riley
     def pulmonaryVentilation(self):
         """
         Returns a number representing the pulmonary ventilation of the infected individuals
@@ -301,23 +294,23 @@ class Submodule:
         Returns:
             A number representing the pulmonary ventilation of infected individuals combined as an average
         """
-        d = {'susceptible': -1,
-             'asymptomatic': 0,
-             'mild':        1,
-             'severe':      2,
-             'critical':    3,
-             'recovered':   4}
+        d = {'susceptible' : -1,
+            'asymptomatic': 0,
+            'mild':        1,
+            'severe':      2,
+            'critical':    3,
+            'recovered':   4}
 
         infected = []
         peopleInfected = self.getInfected()
         for person in peopleInfected:
-            if (person.infectionState == d['critical']):  # critical
+            if (person.infectionState == d['critical']): #critical
                 infected.append(3.4)
-            elif (person.infectionState == d['severe']):  # severe
+            elif (person.infectionState == d['severe']):#severe
                 infected.append(1.4)
-            elif (person.infectionState == d['mild']):  # mild
+            elif (person.infectionState == d['mild']):#mild
                 infected.append(0.55)
-            elif (person.infectionState == d['asymptomatic']):  # asymptomatic
+            elif (person.infectionState == d['asymptomatic']): #asymptomatic
                 infected.append(0.55)
         return sum(infected)/len(infected) if infected else 0
 
@@ -351,35 +344,36 @@ class Submodule:
         # 14 - 48 - wells reilly needs updating
         if facility == 'Gas station' or facility == 'Park' or facility == 'Zoo':
             return 14
-        if facility == 'Retail' or facility == "Restaurant":
+        if facility == 'Retail' or facility =="Restaurant":
             return 15
         if facility == 'Casino' or facility == 'Movie theater' or facility == "Supermarket":
             return 20
         if facility == 'Hospital':
             return 25
-        if facility == 'Gym' or facility == 'Community center' or facility == 'Church' or facility == 'School':
+        if facility == 'Gym' or facility =='Community center' or facility =='Church' or facility == 'School':
             return 48
         if facility == 'Other':
-            return 20
-        return 14  # catch case
+            return 20 
+        return 14 # catch case
+
+
 
     def probability(self, interventions):  # Code for the Wells Reilly Model
         maskwear = interventions["maskWearing"] / 100
-        r = 1 + maskwear  # maskwearing can reduce pulmonary ventilation by up to a factor of 2
+        r = 1 + maskwear # maskwearing can reduce pulmonary ventilation by up to a factor of 2
 
-        p = self.pulmonaryVentilation() / r  # Reduce pulmonary ventilation by factor r
+        p = self.pulmonaryVentilation() / r # Reduce pulmonary ventilation by factor r
 
         Q = self.facVentRate(self.__Facilitytype)
         q = self.quantaGen(self.__Facilitytype)
-        # print(self.__Facilitytype, q)
+        #print(self.__Facilitytype, q)
         I = len(self.getInfected())
         t = 1
 
-        # print("p:",p,"Q:",Q,"q:",q,"I:",I,"prob", 1 - math.exp(-(I*q*p*t)/(Q*100)) )
+        #print("p:",p,"Q:",Q,"q:",q,"I:",I,"prob", 1 - math.exp(-(I*q*p*t)/(Q*100)) )
         temporarytuningfactor = 90
-        # This needs to be fixed so wells reilly is actually implemented with better numbers!
-        return 1 - math.exp(-(I*q*p*t)/(Q*temporarytuningfactor))
-        # return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!
+        return 1 - math.exp(-(I*q*p*t)/(Q*temporarytuningfactor)) # This needs to be fixed so wells reilly is actually implemented with better numbers!
+        #return 1 - math.exp(-(I * q * p * t) / (Q) # Q has been edited such that it is multiplied by a factor for rough parameter tuning, more wells reilly research required!
 
     def restockVaccines(self, restock):
         """
@@ -433,7 +427,3 @@ class Submodule:
         # Reset person's vaccination appointment details
         person.madeVaccAppt = False
         person.vaccApptDate = 0
-
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)

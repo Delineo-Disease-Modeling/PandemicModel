@@ -3,6 +3,7 @@ from . import module as Module
 from . import ValueController
 from . import submodule as Submodule
 from . import phasePlan as PhasePlan
+from jsonCompressionAlgorithm import jsonCompress, jsonDecompress, get_size
 import random
 import json
 import pickle
@@ -12,9 +13,10 @@ from datetime import datetime
 import sciris as sc
 from bisect import bisect_left
 import xlrd
-import requests
-
-
+import os
+import copy
+import hashlib
+import db
 poiID = 0
 
 
@@ -24,10 +26,8 @@ class MasterController:
     an an API layer that kicks off and runs the simulation, and provides the functionaility necessary to package the simulation results into the formats necessary
     for communicating with the frontend and backend.
     '''
-    phasePlan = PhasePlan.PhasePlan(
-        3, [60, 40, 16], [99, 99, 99], [60, 45, 60])
-    values = ValueController.ValueController('Oklahoma', 'Barnsdall', 650000, {
-                                             "MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, phasePlan, 0, 0, 0, [], [], None, 0.2)
+    values = ValueController('Oklahoma', 'Barnsdall', 650000, {"MaskWearing": False, "roomCapacity": 100, "StayAtHome": False}, 1, 0, PhasePlan.PhasePlan(
+        3, [60, 40, 16], [99, 99, 99], [60, 45, 60]), 0, 0, 0, [], [], None, 0.2)
 
     state = values.getState()
     county = values.getCounty()
@@ -66,6 +66,8 @@ class MasterController:
     generalDebugMode = False
     #####
 
+    debugMode = True
+
     def getUserInput(self, state, county, interventions):
         '''
         This function will assign the state, county, and interventions as the user specifies
@@ -86,7 +88,7 @@ class MasterController:
             county - the county passed by the user
             interventions - an dictionary of values corresponding to certain interventions
         '''
-        return Module.Module(self.state, self.county, self.interventions)
+        return Module(self.state, self.county, self.debugMode, self.interventions)
 
     def updateTime(self):
         '''
@@ -177,7 +179,6 @@ class MasterController:
         file.close()
 
         self.poi_cbg_visit_matrix_history = self.visitMatrices['poi_cbg_visit_matrix_history']
-
         self.cbgs_idxs_to_ids = self.visitMatrices['cbgs_idxs_to_ids']
         self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
 
@@ -185,6 +186,8 @@ class MasterController:
         '''
         Used to speed up calcInfectionsHomes because Python does a linear search for checking lists
         '''
+        # print("what u do ")
+        # print(a, x)
         i = bisect_left(a, x)
         if i != len(a) and a[i] == x:
             return i
@@ -221,8 +224,13 @@ class MasterController:
         # For each person that's currently infected, we have to loop through their household group and calculate the chance that
         # the people they share living spaces with get infected
         for current in currentInfected:
+            id = 0
+            try:
+                id = current.getID()["ID"]
+            except:
+                id = current.getID()
 
-            if self.in_list(atHomeIDs, current.getID()) and 0 <= current.getInfectionState() <= 3:
+            if self.in_list(atHomeIDs, id) and 0 <= current.getInfectionState() <= 3:
                 # id's #someone should check that this list is behaving 7/14
                 household_group = list(current.getHouseholdMembers())
                 r = random.randint(1, 24)
@@ -384,6 +392,47 @@ class MasterController:
             id_index_to_add = random.randint(0, len(notAssigned) - 1)
             # Add random person to POI
             facilities[poiID].addPerson(Pop[notAssigned.pop(id_index_to_add)])
+
+    def write_to_simulation_db(self, city, params, response):
+        response_data = copy.deepcopy(response)
+        h = hashlib.sha256()
+        hash_tag_unencoded = str(params).encode()
+        h.update(hash_tag_unencoded)
+        hash_id = h.hexdigest()
+        tag = city + "_" + hash_id
+        query = {"_id": {"$regex": tag}}
+        collection = simulation_data.find(query)
+        ids = [doc["_id"] for doc in collection]
+        compressed = jsonCompress(response_data)
+        print("size of compressed ->", get_size(compressed))
+
+        if len(ids) == 0:
+            idx = tag + "_" + str(1)
+            simulation_data.insert_one({"_id": idx, "data": compressed})
+
+        else:
+            ids.sort(reverse=True, key=lambda x: x[x.index("_") + 1:])
+            last_inserted = ids[0]
+            last_inserted_id = int(
+                last_inserted[last_inserted.rindex("_") + 1:])
+            idx = tag + "_" + str(last_inserted_id + 1)
+            simulation_data.insert_one({"_id": idx, "data": compressed})
+
+    def get_simulation_data(self, id):
+        query = {"_id": id}
+        collection = simulation_data.find(query)
+        docs = [doc["data"] for doc in collection]
+        if len(docs) == 0:
+            return f"Run with ID: {id} not found"
+        else:
+            return jsonDecompress(docs[0])
+
+    def delete_simulation_run(self, id):
+        query = {"_id": id}
+        if (simulation_data.find(query) is not None):
+            simulation_data.delete_one(query)
+        else:
+            return f"Run with ID: {id} not found"
 
     def simulation(self, num_days, currentInfected, interventions, totalInfectedInFacilities,
                    facilities, infectionInFacilitiesDaily, infectionInFacilitiesHourly,
@@ -562,7 +611,7 @@ class MasterController:
                     Pop[extendedtoadd].addtoextendedhousehold(person)
         return Pop
 
-    def run_simulation(self, city, print_infection_breakdown, isAnytown, num_days=7, interventions=None, ApiCall=False):
+    def run_simulation(self, city, print_infection_breakdown, isAnytown, num_days, interventions, ApiCall, usePop=False):
         '''
         Function that initializes and runs the entire simulation. Depends on simulation(), set_households(), and set_interventions(),
         move_people(), and update_status()
@@ -578,6 +627,7 @@ class MasterController:
         interventions = self.set_interventions(interventions)
 
         M = self.createModule()
+        Pop = {}
 
         # Set initial number of infected people in the module
         if city == 'Anytown':
@@ -586,7 +636,67 @@ class MasterController:
             initialInfected = 100
 
         # Population created and returned as array of People class objects
-        Pop = M.createPopulation(city)
+        if usePop:
+            if os.path.exists('./peopleArray.json'):  # population file exist
+                # Pop = {}
+                try:
+                    file = open('./peopleArray.json', 'r')
+                    unformated_peopleArray = json.loads(file.read())
+                    for i in range(len(unformated_peopleArray)):
+                        Pop[i] = Person(unformated_peopleArray[str(i)])
+                        Pop[i].setAllParameters(ID=unformated_peopleArray[str(i)]['ID'], age=unformated_peopleArray[str(i)]['age'],
+                                                sex=unformated_peopleArray[str(
+                                                    i)]['sex'],
+                                                householdLocation=unformated_peopleArray[str(
+                                                    i)]['householdLocation'],
+                                                householdContacts=unformated_peopleArray[str(
+                                                    i)]['householdContacts'],
+                                                comorbidities=unformated_peopleArray[str(
+                                                    i)]['comorbidities'],
+                                                demographicInfo=unformated_peopleArray[str(
+                                                    i)]['demographicInfo'],
+                                                severityRisk=unformated_peopleArray[str(
+                                                    i)]['severityRisk'],
+                                                currentLocation=unformated_peopleArray[str(
+                                                    i)]['currentLocation'],
+                                                vaccinated=unformated_peopleArray[str(
+                                                    i)]['vaccinated'],
+                                                extendedhousehold=unformated_peopleArray[str(
+                                                    i)]['extendedHousehold'],
+                                                COVID_type=unformated_peopleArray[str(
+                                                    i)]['COVID_type'],
+                                                vaccineName=unformated_peopleArray[str(
+                                                    i)]['vaccineName'],
+                                                shotNumber=unformated_peopleArray[str(
+                                                    i)]['shotNumber'],
+                                                daysAfterShot=unformated_peopleArray[str(
+                                                    i)]['daysAfterShot'],
+                                                essentialWorker=unformated_peopleArray[str(
+                                                    i)]['essentialWorker'],
+                                                madeVaccAppt=unformated_peopleArray[str(
+                                                    i)]['madeVaccAppt'],
+                                                vaccApptDate=unformated_peopleArray[str(
+                                                    i)]['vaccApptDate'],
+                                                infectionState=unformated_peopleArray[str(
+                                                    i)]['infectionState'],
+                                                incubation=unformated_peopleArray[str(
+                                                    i)]['incubation'],
+                                                disease=unformated_peopleArray[str(
+                                                    i)]['disease'],
+                                                infectionTimer=unformated_peopleArray[str(
+                                                    i)]['infectionTimer'],
+                                                infectionTrack=unformated_peopleArray[str(i)]['infectionTrack'])
+
+                    # Displays population visualization
+                    dp = displayData(population=Pop, from_json=True, file=None)
+                    dp.plot_sex()  # Plots sex distribution
+                except:
+                    print("File error")
+                finally:
+                    # Close file even if error occurs
+                    file.close()
+        else:
+            Pop = M.createPopulation(city)
 
         # Visit matrix: (CBG x POI) x hour = gives number people from CBG at POI in a given hour
         currentInfected = set()
@@ -618,7 +728,7 @@ class MasterController:
 
         # Instantiate submodules with format {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
-            r'src\simulation\data\core_poi_OKCity.csv')
+            'core_poi_OKCity.csv')
 
         # facilities, totalFacilityCapacities, openHours = M.createFacilities('submodules2.json')
 
@@ -658,22 +768,25 @@ class MasterController:
             facilities, infectionInFacilitiesDaily, infectionInFacilitiesHourly,
             peopleInFacilitiesHourly, infectionInHouseholds, facilityinfections,
             houseinfections, infectionInFacilities, daysDict, openHours, Pop, isAnytown)
+
+        print(
+            f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
+
         # Updated the formatting of the json file
         response = {'Buildings': [
-            {"BuildingName": str(facilities[id].getFacilityType()) + str(id),
-             "InfectedDaily": infectionInFacilitiesHourly[id],
-             "PeopleDaily": peopleInFacilitiesHourly[id],
-             }
-            for id in range(len(facilities))]
-        }  # we should probably have households at least as one large "household"
+                    {"BuildingName": str(facilities[id].getFacilityType()) + str(id),
+                     "InfectedDaily": infectionInFacilitiesHourly[id],
+                     "PeopleDaily": peopleInFacilitiesHourly[id]}
+                    for id in range(len(facilities))]
+                    }  # we should probably have households at least as one large "household"
+        if not ApiCall:
+            self.jsonResponseToFile(response, "output.txt")
+            print("Output written to output.txt")
 
-        if ApiCall == False:
-            print(
-                f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
-            self.jsonResponseToFile(
-                response, r"src\simulation\output\output.json")
-            print("Output written to output.json")
+        if (getDB):
             # TODO: Upload this json to a database based on interventions ran, how long, etc.
+            params = city + str(isAnytown) + str(num_days) + str(interventions)
+            self.write_to_simulation_db(city, params, response)
 
         num = 0
         for each in Pop:
@@ -694,32 +807,35 @@ class MasterController:
         return self.jsonResponse(response)
 
     # TODO: Implement an easier way to run these simultaions for difference cities
+    # Function that runs anytown, OKC, or Baltimore with switch case
+    # To Finish
+    def create_simulation(self, city, print_infection_breakdown, num_days, intervention_list, ApiCall):
+        """
+        Function that runs simulation for different cities
+            Params:
+                city: what city this simulation should be run for, options: Anytown, Baltimore, OKC
+                print_infection_breakdown: boolean, whether or not to print infection breakdown
+                num_days: number of days to run simulation for
+                interventions: dictionary of interventions
+        """
 
-    # Function to run Anytown
-    def createSimulation(self, name, print_infection_breakdown, num_days, intervention_list, ApiCall=False):
-        if name == 'AnyTown':
+        if city == 'Anytown':
             self.loadVisitMatrix(
                 r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
-            return self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
-                                       num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=ApiCall)
-        elif name == 'BaltimoreMD':
-            self.loadVisitMatrix(
-                'simulation\data\BaltimoreMD_Jan06_fullweek_dict.pkl')
-            return self.run_simulation(city='BaltimoreMD', print_infection_breakdown=print_infection_breakdown,
-                                       num_days=num_days, interventions=intervention_list, isAnytown=False, ApiCall=ApiCall)
-        elif name == 'OKCity':
+            self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=ApiCall)
+        elif city == 'Oklahoma_City' or city == 'OKC':
             self.loadVisitMatrix(
                 r'src\simulation\data\OKCity_Jan06_fullweek_dict.pkl')
-            return self.run_simulation(city='OKCity', print_infection_breakdown=print_infection_breakdown,
-                                       num_days=num_days, interventions=intervention_list, isAnytown=False, ApiCall=ApiCall)
-        elif name == 'COVID_UI':
+            self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=False, ApiCall=ApiCall)
+        elif city == 'Baltimore':
             self.loadVisitMatrix(
-                'simulation\data\Anytown_Jan06_fullweek_dict.pkl')
-
-        self.loadVisitMatrix(
-            r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
-        return self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
-                                   num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=ApiCall)
+                r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+            self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown,
+                                num_days=num_days, interventions=intervention_list, isAnytown=False, ApiCall=ApiCall)
+        else:
+            print("Invalid city input")
 
     def implementPhaseDay(self, currDay, phaseNum, phaseDay, phasePlan, population, facilities):
         '''
@@ -816,6 +932,23 @@ class MasterController:
             # Round the sum and append to the list
             totals.append(round(total_sum))
 
+        # Uncomment the line below to print out the list of sums
+        # print(totals)
+
+    # TODO: use this to get the simulation results from the database
+    # def httpRequest(self):
+        # Make a GET request
+        # r = requests.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+        # Guys... you're a genius.
+
+        # Check for error
+        # if (r != 200):
+            # print("Error sending HTTP request")
+            # return
+
+        # Print content
+        # print(r.content)
+
     def return_json_okc(self):
         json_file = 'dummy.json'
         file = open(json_file, 'r')
@@ -830,13 +963,25 @@ class MasterController:
 runTest is for testing the code base with preset values. Please run this out of test_master.py.
 '''
 
+getDB = False
+
 
 def runTest():
     mc = MasterController()
     mc.runFacilityTests(r'src\simulation\data\facilites_info.txt')
-    mc.createSimulation('Anytown', False, 2, {})
+    # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
+    mc.create_simulation('Anytown', False, 2, {}, ApiCall=True)
     mc.excelToJson(r'src\simulation\data\OKC_Data.xls',
                    r'src\simulation\data\OKC_Data.json')
+
+    if (getDB):
+        print(db.get_data())
+
+    # Clears json from file directory, later this can be removed if file is on DB
+    if os.path.exists('./peopleArray.json'):
+        os.remove('./peopleArray.json')
+    else:
+        print("The file does not exist")
 
 
 '''
@@ -846,6 +991,7 @@ runSimulation is for testing the code base with preset values. Please run this o
 
 def runSimulation(location, print_infection_breakdown, num_days, intervention_list, ApiCall=False):
     mc = MasterController()
-    response = mc.createSimulation(location, print_infection_breakdown,
-                                   num_days, intervention_list, ApiCall=ApiCall)
+    response = mc.create_simulation(location, print_infection_breakdown,
+                                    num_days, intervention_list, ApiCall=ApiCall)
     return response
+

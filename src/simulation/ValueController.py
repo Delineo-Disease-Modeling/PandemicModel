@@ -1,10 +1,10 @@
-from . import phasePlan as PhasePlan
+from phasePlan import PhasePlan
 
 
 class ValueController:
-    def __init__(self, state: str, county: str, population: int, interventions: set, dayOfWeek: int, timeOfDay: int,
-                 phasePlan: PhasePlan, currDay: int, phaseNum: int, phaseDay: int, infecFacilitiesTot: list, infecHousesTot: list,
-                 visitMatrices, averageHouseholdInfectionRate: float) -> None:
+    def __init__(self, state: str, county: str, population: int, interventions: set, dayOfWeek: int, timeOfDay: int, 
+                    phasePlan: PhasePlan, currDay: int, phaseNum: int, phaseDay: int, infecFacilitiesTot: list, infecHousesTot: list,
+                    visitMatrices, averageHouseholdInfectionRate: float) -> None:
         # TODO: INIT WITH APIController
         """Initializer for ValueController
         Args:
@@ -41,7 +41,7 @@ class ValueController:
         self.__infecFacilitiesTot = infecFacilitiesTot
         self.__infecHousesTot = infecHousesTot
 
-        self.__visitMatrices = visitMatrices  # Save matrices
+        self.__visitMatrices = visitMatrices # Save matrices
 
         self.__averageHouseholdInfectionRate = averageHouseholdInfectionRate
         return
@@ -60,7 +60,7 @@ class ValueController:
 
     def getDayOfWeek(self):
         return self.__dayOfWeek
-
+    
     def getTimeOfDay(self):
         return self.__timeOfDay
 
@@ -87,3 +87,4 @@ class ValueController:
 
     def getAverageHouseholdInfectionRate(self):
         return self.__averageHouseholdInfectionRate
+

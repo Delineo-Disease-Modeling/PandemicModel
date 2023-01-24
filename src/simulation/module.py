@@ -1,7 +1,9 @@
-from . import population as Population
-from . import submodule as Submodule
+from population import Population
+from submodule import Submodule
 import json
 import random
+import pandas as pd
+import math
 import pandas as pd
 import math
 from datetime import datetime
@@ -14,20 +16,22 @@ from datetime import datetime
 class Module:
 
     # Initalizer for the module with parameters for the state and county
-    def __init__(self, State, County, Interventions):
+    def __init__(self, State, County, debugMode, Interventions):
         self.__State = State
         self.__County = County
+        self.debugMode = debugMode
 
     def createPopulationObj(self):  # Creates a population object
-        Pop =  Population.Population(self.__State, self.__County)
+        Pop = Population(self.__State, self.__County, self.debugMode)
         return Pop
 
     def createPopulation(self, city):  # Creates a population object for a specific city
         print("createPop function")
         if city == 'Anytown':
-            Pop = Population.Population(self.__State, self.__County).get_dict()
+            Pop = Population(self.__State, self.__County,
+                             self.debugMode).get_dict()
         if city == 'Oklahoma_City':
-            Pop =  Population.Population(self.__State, self.__County, num_households=250000,
+            Pop = Population(self.__State, self.__County,  self.debugMode, num_households=250000,
                              npop=650000, num_workplaces=24000).get_dict()
         return Pop
 
@@ -71,7 +75,7 @@ class Module:
 
     # Creates a facility object for every facility in the txt file. Data is based off of the txt file
     def createFacilitiesTXT(self, filename, verbose):
-        with open(filename) as f:
+        with open('facilites_info.txt') as f:
             lines = f.readlines()
             lines = lines[:-1]
         totalCapacities = 0
@@ -128,7 +132,7 @@ class Module:
                     # cap = 20
 
                 totalCapacities += cap
-                nextFacility = Submodule.Submodule(id=facilities_ID, facilitytype=facility_type,
+                nextFacility = Submodule(id=facilities_ID, facilitytype=facility_type, debugMode = self.debugMode,
                                          capacity=cap, categories=category[index], hours=hours, days=days)
                 facilities[facilities_ID] = nextFacility
                 for h in hours:
@@ -203,8 +207,8 @@ class Module:
                 facilityName = 'Other'
             totalCapacities += cap
 
-            nextFacility = Submodule.Submodule(id=int(key), facilitytype=facilityName, capacity=cap,
-                                     latitude=row[9], longitude=row[10], categories=categoryList, hours=hours, days=days)
+            nextFacility = Submodule(id=int(key), facilitytype=facilityName, capacity=cap,
+                                     latitude=row[9], longitude=row[10], categories=categoryList, hours=hours, days=days, debugMode=self.debugMode)
             facilities[int(key)] = nextFacility
             if days:
                 for timeInterval in hours[days[0]]:
@@ -214,11 +218,9 @@ class Module:
                         openHours[i].add(nextFacility)
             key = key + 1
 
-        ##### Debug Added 7/14 #####
-        debugMode = True
-
-        if debugMode:
+        if self.debugMode:
             print(len(facilities))
-        ##### Debug Added 7/14 #####
 
         return facilities, totalCapacities, openHours
+
+    
