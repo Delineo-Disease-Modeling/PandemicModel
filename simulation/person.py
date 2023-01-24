@@ -48,7 +48,7 @@ class Person:
     def setAllParameters(self, ID, age=0, sex=0, householdLocation=0, householdMembers=None, comorbidities=0, demographicInfo=0,
                          severityRisk=0, currentLocation=0, infectionState=-1, incubation=0, infectionTimer=-1, infectionTrack=None,
                          householdContacts=None, extendedhousehold=None, vaccinated=False, COVID_type="", vaccineName="",
-                         shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0):
+                         shotNumber=0, daysAfterShot=0, essentialWorker=False, madeVaccAppt=False, vaccApptDate=0, disease=None):
 
         if extendedhousehold is None:
             self.extendedhousehold = set()
@@ -353,3 +353,28 @@ class Person:
 
         return self.infectionState
 
+    # Person to dict helper method for pandas and data visualization
+    def to_dict(self) -> dict:
+        return {
+            "age": self.age,
+            "sex": self.sex,
+            "household location": self.householdLocation,
+            "household contacts": self.householdContacts,
+            "comorbidities": self.comorbidities,
+            "demographic Info": self.demographicInfo,
+            "severity risk": self.severityRisk,
+            "current location": self.currentLocation,
+            "vaccinated": self.vaccinated,
+            "COVID type": self.COVID_type,
+            "vaccine name": self.vaccineName,
+            "shot number": self.shotNumber,
+            "days after shot": self.daysAfterShot,
+            "essential worker": self.essentialWorker,
+            "made vaccine appt": self.madeVaccAppt,
+            "vacc app date": self.vaccApptDate,
+            "infection state": self.infectionState,
+            "incubation": self.incubation,
+            "disease": self.disease,
+            "infection timer": self.infectionTimer,
+            "infection track": self.infectionTrack
+        }

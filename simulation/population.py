@@ -3,6 +3,9 @@ import synthpops.synthpops as sp
 #import synthpops as sp
 from person import Person
 import random
+import json
+from json import JSONEncoder
+from displayData import displayData
 
 
 class Population():
@@ -76,6 +79,18 @@ class Population():
             person.setSynthPopParameters(population[i])
             peopleArray[i] = person
         self.peopleArray = peopleArray
+
+        # We write the people array to a json to be able to use the data without generating a new population everytime
+        try:
+            outfile = open("peopleArray.json", "w")
+            json.dump(peopleArray, outfile, cls=PersonEncoder, indent=4)
+        finally:
+            outfile.close()
+
+        # Displays population visualization
+        dp = displayData(population=peopleArray, from_json=False, file=None)
+        dp.plot_sex() # Plots sex distribution
+
 
         if self.debugMode:
             print('=population.py/get_dict: peopleArray length is', len(peopleArray),' =')
@@ -387,3 +402,18 @@ class Population():
 
             self.currPhaseDayNum = 0
             self.phaseNum += 1
+
+# JSONEncoder subclass for Person
+class PersonEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Person):
+            return {'ID': o.ID, 'age': o.age, 'sex': o.sex, 'householdLocation': o.householdLocation,
+                    'householdContacts': list(o.householdContacts), 'comorbidities': o.comorbidities,
+                    'demographicInfo': o.demographicInfo, 'severityRisk': o.severityRisk,
+                    'currentLocation' : o.currentLocation, 'vaccinated': o.vaccinated, 'extendedHousehold': list(o.extendedhousehold),
+                    'COVID_type': o.COVID_type, 'vaccineName': o.vaccineName, 'shotNumber': o.shotNumber,
+                    'daysAfterShot': o.daysAfterShot, 'essentialWorker': o.essentialWorker, 'madeVaccAppt':o.madeVaccAppt,
+                    'vaccApptDate': o.vaccApptDate, 'infectionState': o.infectionState, 'incubation': o.incubation,
+                    'disease': o.disease, 'infectionTimer': o.infectionTimer, 'infectionTrack': o.infectionTrack
+                    }
+        return super().default(o)
