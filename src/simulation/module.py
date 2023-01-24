@@ -207,7 +207,7 @@ class Module:
                 facilityName = 'Other'
             totalCapacities += cap
 
-            nextFacility = Submodule(id=int(key), facilitytype=facilityName, capacity=cap,
+            nextFacility = Submodule.Submodule(id=int(key), facilitytype=facilityName, capacity=cap,
                                      latitude=row[9], longitude=row[10], categories=categoryList, hours=hours, days=days, debugMode=self.debugMode)
             facilities[int(key)] = nextFacility
             if days:
