@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # This script is used to deploy a new package. Please run it from the root of the project.
 git pull
 cd src
