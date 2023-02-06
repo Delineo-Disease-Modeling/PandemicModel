@@ -1,8 +1,11 @@
 from . import person as Person
 from . import module as Module
+from .household import Household, Population
+from .household import Person as Individual
 from . import ValueController
 from . import submodule as Submodule
 from . import phasePlan as PhasePlan
+import json
 from .jsonCompressionAlgorithm import jsonCompress, jsonDecompress, get_size
 import random
 import json
@@ -10,6 +13,7 @@ import pickle
 import pandas as pd
 import math
 from datetime import datetime
+import yaml
 import sciris as sc
 from bisect import bisect_left
 import xlrd
@@ -17,8 +21,9 @@ import os
 import copy
 import hashlib
 from . import db as db
-import sys
-
+from queue import PriorityQueue
+import matplotlib.pyplot as plt
+import pandas as pd
 poiID = 0
 
 
@@ -55,6 +60,21 @@ class MasterController:
 
     # total odds of infecting someone whom they are connected to in a household with
     averageHouseholdInfectionRate = values.getAverageHouseholdInfectionRate()
+
+    people = {} # dictionary of every person with their id as key
+    facilities = {} # dictionary of every facility with their name as key
+
+    pq = PriorityQueue() # (timestep, facility)
+    priorities = []
+
+    # for plotting
+    infected_locations = {}
+    days=[]
+    numCurrentInfected=[]
+    facilities_infection = []
+    all_facilities = []
+    household_infection = []
+    daily_facility_infection = []
 
     '''TOOD: For interventions, we have to take out assigned variables and assign them based off of the values provided by user. There are a lot of assigned variables that are randomly assigned'''
 
@@ -461,8 +481,92 @@ class MasterController:
             Pop: list of people in the population
             isAnytown: boolean, whether or not the simulation is in the Anytown scenario
         '''
-        # TODO: retention rate within facilities- currently no one stays in a facility longer than one hour, pending ML team
+        
+        total_infected = {0:10}
+        total = 10
+        num_infected = {0:10} # (timestep : total infected)
+        for t in range(0, 10*24*60, 60):
+            num_infected[t] = 10
+        
+        # pq includes both facilities + households
+        while not self.pq.empty():
+            m, facility = self.pq.get()
 
+            # iterate over each individual in the facility at timestep
+            for person in facility.getPeople(m):
+                # Probability of infection in facility i
+                # Probability of infection is assigned here
+                prob = facility.probability(interventions)
+
+                person = self.people[person]
+
+                # Don't re-infect
+                if len(person.getInfectionTrack()) > 0:  # continue if already infected
+                    continue
+
+                temp = random.uniform(0, 1)
+
+                if person.getVaccinatedStatus():
+                    # effect of vaccination is 20-fold decrease in chance of infection. (95% decrease)
+                    # NOTE: Multiplying by 20 is the same as dividing prob by 20, we're not increasing the
+                    # chance of infection we're just getting temp into the same scale as prob
+                    temp = 20 * temp
+                
+                #if temp < prob:  # Infect
+
+                # update disease state
+                person.assignTrajectory()
+                total = total + 1
+                total_infected[m] = total
+                self.infected_locations[facility.getName()] = self.infected_locations[facility.getName()] + 1
+
+                # add to queue facilities during infectious period 
+                for t in range(m, m + 10*60*24, 60):
+                    person.getInfectionTrack().append(t)
+                    
+                    ### for plotting
+                    if (t) in num_infected:
+                        num_infected[t] = num_infected[t] + 1
+                    else:
+                        num_infected[t] = 1
+                    ###
+
+                    if t in person.path:
+                        f = person.getPath(t)
+                        if not t in self.priorities:
+                            self.pq.put((t, self.facilities[f]))
+                            self.priorities.append(t)
+
+        total_infected[87840] = total
+
+        print("-- Results --")
+        print("Total infected:", total)
+        plt.figure(1)
+        plt.plot(list(total_infected.keys()), list(total_infected.values()))
+        plt.title('Total Infected')
+        plt.xlabel('Time (minutes)')
+        plt.ylabel('Number of Total Infected')
+
+        plt.figure(2)
+        plt.plot(list(num_infected.keys()), list(num_infected.values()))
+        plt.title('Currently Infected')
+        plt.xlabel('Time (minutes)')
+        plt.ylabel('Number of Currently Infected')
+
+        plt.figure(3)
+        df = pd.DataFrame({
+            'Locations': list(self.infected_locations.keys()),
+            'Values': list(self.infected_locations.values())
+        })
+        df = df.sort_values(by=['Values'])
+        df = df.tail(10)
+        plt.barh(y=df.Locations, width=df.Values)
+        plt.xlabel("Number of Total Infected")
+        plt.ylabel("Location")
+        plt.title("Top 10 Locations of Infected People")
+        plt.tight_layout()
+        plt.show()   
+        '''
         tested = set()
         for h in range(num_days * 24):
 
@@ -473,28 +577,38 @@ class MasterController:
             if h % 24 == 0:
                 currentInfected, tested = self.update_status(
                     interventions, currentInfected, tested)
+                
+                # for plotting purposes
+                self.days.append(h/24)
+                self.numCurrentInfected.append(len(currentInfected))
+
+                if len(infectionInHouseholds) == 0:
+                    self.household_infection.append(0)
+                else:
+                    self.household_infection.append(infectionInHouseholds[-1])
+                self.daily_facility_infection.append(totalInfectedInFacilities[-1])
 
             # Initialize current hour's total infections by previous hour
             totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
 
-            dayOfWeek = (h // 24) % 7
-            hourOfDay = h % 24
+            # dayOfWeek = (h // 24) % 7
+            # hourOfDay = h % 24
 
-            for id in facilities:
-                ##### loopDebugMode #####
-                if self.loopDebugMode:
-                    print('===master.py/simulation: looping facilities 1/2===')
-                facility = facilities[id]
-                facility.setVisitors(0)
-                facility.clearPeople()
+            # for id in facilities:
+            #     ##### loopDebugMode #####
+            #     if self.loopDebugMode:
+            #         print('===master.py/simulation: looping facilities 1/2===')
+            #     facility = facilities[id]
+            #     facility.setVisitors(0)
+            #     facility.clearPeople()
 
             # Move agents throughout facilities
-            facilities, notAssigned = self.move_people(
-                facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h, isAnytown)
+            # facilities, notAssigned = self.move_people(
+            #     facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h, isAnytown)
 
             # Updating the list of people infected via spread within household
-            infectedathome = self.calcInfectionsHomes(
-                notAssigned, Pop, currentInfected)
+            # infectedathome = self.calcInfectionsHomes( # NOTE: households infection calculation is different 
+            #     notAssigned, Pop, currentInfected)
 
             # Update the currentInfected list for the whole simulation
             for each in infectedathome:
@@ -507,6 +621,7 @@ class MasterController:
             # Updating the number of infections that occured in households this timestep
             numinfectedathome = len(infectedathome)
             houseinfections += numinfectedathome
+            total_home_infected += numinfectedathome
 
             # Updating the list that keeps track of household infections throughout course of simulation
             if h == 0:
@@ -566,10 +681,12 @@ class MasterController:
                         totalInfectedInFacilities[-1] += 1
                         infectionInFacilitiesDaily[i][h // 24] += 1
                         infectionInFacilitiesHourly[i][h] += 1
-
+        
+                total_facility_infected += finalInfectionNumber
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
 
+        '''
         return (totalInfectedInFacilities,
                 facilities, infectionInFacilitiesHourly,
                 peopleInFacilitiesHourly, facilityinfections,
@@ -600,19 +717,19 @@ class MasterController:
             intervention_list["vaccinatedPercent"] = 0
         return intervention_list
 
-    def set_households(self, Pop):
-        '''
-        Add people to random households who are randomly selected from population
-            Params:
-                Pop: list of people in the population
-        '''
-        for person in Pop:
-            for i in range(9):
-                extendedtoadd = random.randint(0, len(Pop) - 1)
-                if Pop[extendedtoadd] != Pop[person] and extendedtoadd not in Pop[person].getHouseholdMembers():
-                    Pop[person].addtoextendedhousehold(extendedtoadd)
-                    Pop[extendedtoadd].addtoextendedhousehold(person)
-        return Pop
+    # def set_households(self, Pop):
+    #     '''
+    #     Add people to random households who are randomly selected from population
+    #         Params:
+    #             Pop: list of people in the population
+    #     '''
+    #     for person in Pop:
+    #         for i in range(9):
+    #             extendedtoadd = random.randint(0, len(Pop) - 1)
+    #             if Pop[extendedtoadd] != Pop[person] and extendedtoadd not in Pop[person].getHouseholdMembers():
+    #                 Pop[person].addtoextendedhousehold(extendedtoadd)
+    #                 Pop[extendedtoadd].addtoextendedhousehold(person)
+    #     return Pop
 
     def run_simulation(self, city, print_infection_breakdown, isAnytown, num_days, interventions, ApiCall, usePop=False):
         '''
@@ -713,14 +830,30 @@ class MasterController:
 
         notInfected = [*range(len(Pop))]  # list from 1 to num in pop
         for i in range(initialInfected):
-            nextInfected = notInfected.pop(random.randint(0,
-                                                          len(notInfected) - 1))
+            
+            # nextInfected = notInfected.pop(random.randint(0,
+            #                                               len(notInfected) - 1))
+            
+            # # adding to current infected
+            # currentInfected.add(Pop[nextInfected])
+            # # function which makes someone start sickness trajectory
+            # Pop[nextInfected].assignTrajectory()
+            # # Pop[nextInfected].setInfectionState()
 
-            # adding to current infected
-            currentInfected.add(Pop[nextInfected])
-            # function which makes someone start sickness trajectory
-            Pop[nextInfected].assignTrajectory()
-            # Pop[nextInfected].setInfectionState()
+            person = self.people[i]
+            # update disease state
+            person.assignTrajectory()
+            currentInfected.add(person)
+
+            # add to queue facilities during infectious period 
+            for t in range(60, 10*60*24, 60):
+                person.getInfectionTrack().append(t)
+                if t in person.path:
+                    f = person.getPath(t)
+                    if not t in self.priorities:
+                        self.pq.put((t, self.facilities[f]))
+                        self.priorities.append(t)
+
 
         # randomly assigning vaccinated people
         vaccinatedIDs = random.sample(range(0, len(Pop)), numVaccinated)
@@ -753,7 +886,7 @@ class MasterController:
         infectionInHouseholds = []
         infectionInHouseholdsDaily = [0 for day in range(num_days)]
 
-        Pop = self.set_households(Pop)
+        # Pop = self.set_households(Pop)
         daysDict = {
             0: 'Sun',
             1: 'M',
@@ -764,7 +897,13 @@ class MasterController:
             6: 'Sat'
         }
 
-        numFacilities = len(facilities)
+        numFacilities = len(self.facilities)
+        
+        print(f'\n-- Simulation Info for {self.county}, {self.state} --')
+        print("Simulation duration:", num_days, "days")
+        print("Number of facilities:", numFacilities)
+        print("Number of people:", len(self.people))
+        print("Number of initially infected:", initialInfected, "\n")
 
         totalInfectedInFacilities, facilities, infectionInFacilitiesHourly, peopleInFacilitiesHourly, facilityinfections, houseinfections, infectionInFacilities, Pop = self.simulation(
             num_days, currentInfected, interventions, totalInfectedInFacilities,
@@ -772,8 +911,8 @@ class MasterController:
             peopleInFacilitiesHourly, infectionInHouseholds, facilityinfections,
             houseinfections, infectionInFacilities, daysDict, openHours, Pop, isAnytown)
 
-        print(
-            f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
+        # print(
+        #     f'Results for {self.county}, {self.state} over {num_days} days')  # , file=f)
 
         # Updated the formatting of the json file
         response = {'Buildings': [
@@ -798,16 +937,126 @@ class MasterController:
 
         # f = open("simulationOutput.txt","w")
         # if print_infection_breakdown:
-        #     f.write("Initial infections:", initialInfected)
-        #     f.write("Total infections in households:", houseinfections)
-        #     f.write("Total infections in facilities:", facilityinfections)
-        # f.write("Total infections:", num)
+        #     f.write("Initial infections: " + str(initialInfected) + "\n")
+        #     f.write("Total infections in households: "+ str(houseinfections) + '\n')
+        #     f.write("Total infections in facilities: "+ str(facilityinfections)+'\n')
+        # f.write("Total infections: "+ str(num)+"\n")
         # f.close()
 
-        self.infecFacilitiesTot = totalInfectedInFacilities
-        self.infecHousesTot = infectionInHouseholds
+        # self.infecFacilitiesTot = totalInfectedInFacilities
+        # self.infecHousesTot = infectionInHouseholds
 
         return self.jsonResponse(response)
+
+    def load_people(self, households_file):
+        def household_constructor(loader, node):
+            # Extract the YAML data from the node
+            data = loader.construct_mapping(node)
+
+            # Create a new Household object from the YAML data
+            return Household(**data)
+        
+        def person_constructor(loader, node):
+            # Extract the YAML data from the node
+            data = loader.construct_mapping(node)
+
+            # Create a new Person object from the YAML data
+            return Individual(**data)
+
+        yaml.constructor.SafeConstructor.add_constructor(
+            'tag:yaml.org,2002:python/object:__main__.Household',
+            household_constructor
+        )
+
+        yaml.constructor.SafeConstructor.add_constructor(
+            'tag:yaml.org,2002:python/object:__main__.Person',
+            person_constructor
+        )
+
+        with open(households_file, mode='r') as hhstream:
+            data = yaml.safe_load(hhstream)
+
+        # Populate people dictionary with all the people in the simulation 
+        for household_data in data:
+            for household in household_data:
+                for person in household.population:
+                    self.people[person.id] = Person.Person(person.id, age=person.age, sex=person.sex, householdLocation=person.household)
+
+    def load_facilities(self, facilities_file):
+        with open(facilities_file) as citystream:
+            self.facilities = yaml.full_load(citystream) # dictionary with key = facility name
+        #print(facilities['American Heritage Bank'])
+
+    def load_paths(self, movement_poi, movement_hh):
+        with open(movement_poi) as f:
+            data_poi = json.load(f)
+
+        with open(movement_hh) as f:
+            data_hh = json.load(f)
+
+        # TODO: fix once algorithms team sends correct data files
+        self.facilities = {k[k.rindex('_')+1:]:{} for k in list(data_poi['timestep_60'].keys())}
+        self.households = {k:{} for k in list(data_hh['timestep_60'].keys())}
+
+        # TODO: use separate dicts
+        self.facilities.update(self.households)
+                
+        # update faciltiies' people dict 
+        # update people's paths 
+        for timestep in data_poi:
+            for facility in data_poi[timestep]:
+                for t in data_poi[timestep][facility]:
+                    for d in t:
+                        facility_dict = self.facilities[facility[facility.rindex('_')+1:]]
+                        if 'people' not in facility_dict:
+                            facility_dict['people'] = {}
+
+                        h = int(timestep[timestep.index('_')+1:])
+
+                        if timestep not in facility_dict['people']:
+                            facility_dict['people'][h] = [d['id']]
+                        else:
+                            facility_dict['people'][h].append(d['id'])
+
+                        self.people[d['id']].setPath(h, facility[facility.rindex('_')+1:])
+                        
+
+        # for timestep in data_hh:
+        #     for house in data_hh[timestep]:
+        #         for d in data_hh[timestep][house]:
+        #             hh_dict = self.households[house]
+        #             if 'people' not in hh_dict:
+        #                 hh_dict['people'] = {}
+                    
+        #             h = int(timestep[timestep.index('_')+1:])
+
+        #             if timestep not in hh_dict['people']:
+        #                 hh_dict['people'][h] = [d['id']]
+        #             else:
+        #                 hh_dict['people'][h].append(d['id'])
+
+        #             self.people[d['id']].setPath(h, house)
+
+        # for now, combine facilities and households in one dict
+        for timestep in data_hh:
+            for house in data_hh[timestep]:
+                for d in data_hh[timestep][house]:
+                    hh_dict = self.facilities[house]
+                    if 'people' not in hh_dict:
+                        hh_dict['people'] = {}
+                    
+                    h = int(timestep[timestep.index('_')+1:])
+
+                    if timestep not in hh_dict['people']:
+                        hh_dict['people'][h] = [d['id']]
+                    else:
+                        hh_dict['people'][h].append(d['id'])
+
+                    self.people[d['id']].setPath(h, house)
+
+        self.facilities = {k : Submodule.Submodule(name = k, id=0, facilitytype='Other', people=v['people'], capacity=20, debugMode=False) for k,v in self.facilities.items()}
+        self.infected_locations = {k : 0 for k in self.facilities.keys()}
+
 
     # TODO: Implement an easier way to run these simultaions for difference cities
     # Function that runs anytown, OKC, or Baltimore with switch case
@@ -822,9 +1071,10 @@ class MasterController:
                 interventions: dictionary of interventions
         """
 
-        if city == 'Anytown':
-            self.loadVisitMatrix(
-                'simulation/data/Anytown_Jan06_fullweek_dict.pkl')
+        if city == 'Anytown':           
+            self.load_people('simulation/data/households.yaml')
+            self.load_facilities('simulation/data/barnsdall.yaml')
+            self.load_paths('simulation/data/result_poi.json', 'simulation/data/result_hh.json')
             self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                                 num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=ApiCall)
         elif city == 'Oklahoma_City' or city == 'OKC':
@@ -972,9 +1222,10 @@ getDB = False
 def runTest():
     mc = MasterController()
     #Change for mac
-    mc.runFacilityTests('simulation/data/facilites_info.txt')
+    #mc.runFacilityTests('simulation/data/facilites_info.txt')
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.create_simulation('Anytown', False, 2, {}, ApiCall=True)
+    print()
+    mc.create_simulation('Anytown', True, 61, {}, ApiCall=True)
     #Change for mac
     mc.excelToJson('simulation/data/OKC_Data.xls',
                    'simulation/data/OKC_Data.json')
@@ -986,7 +1237,8 @@ def runTest():
     if os.path.exists('./peopleArray.json'):
         os.remove('./peopleArray.json')
     else:
-        print("The file does not exist")
+        # print("The file does not exist")
+        print()
 
 
 '''

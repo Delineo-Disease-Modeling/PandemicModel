@@ -75,6 +75,8 @@ class Person:
         self.madeVaccAppt = madeVaccAppt
         self.vaccApptDate = vaccApptDate
 
+        self.path = {}
+
         # -1: normal, 0: asymp, 1: mild, 2: severe, 3: critical, 4: recovered
         self.infectionState = infectionState
         self.incubation = incubation
@@ -100,6 +102,12 @@ class Person:
         available are households ('H'), schools ('S'), and workplaces ('W'). Contacts in these layers are clustered and thus form a network composed of groups of people interacting with each other. For example, all
         household members are contacts of each other, and everyone in the same school is a contact of each other. Else, return None.
     """
+
+    def getPath(self, timestep):
+        return self.path[timestep]
+
+    def setPath(self, timestep, facility):
+        self.path[timestep] = facility
 
     def setSynthPopParameters(self, synthPopsPersonDict): #maybe need changes here
 

@@ -32,9 +32,10 @@ class Submodule:
     latitude: represents latitude location
     longitude: represents longtitude location
     """
-    def __init__(self, id, facilitytype, debugMode, capacity=None, hours=[], days=[], numGroups=0, Groups=[], People=[], Area=0, Contact=0, Mobility=0,
+    def __init__(self, id, facilitytype, debugMode, people={}, capacity=None, hours=[], days=[], numGroups=0, name = "", Groups=[], People=[], Area=0, Contact=0, Mobility=0,
                  Density=0, Cleanliness=0, Infected=[], vaccineStock={"Moderna" : 0, "Pfizer" : 0, "Johnson&Johnson": 0}, appointments={}, rate=0, latitude = 36.561002, longitude = -96.161577, categories = {}):
         # Either initialize parameterized or empty and fill in with methods.
+        self.name = name
         self.__id = id
         self.__Facilitytype = facilitytype
         capacities = {
@@ -47,6 +48,7 @@ class Submodule:
             "Other": 20
 
         }
+        self.people = people
         self.__Capacity = capacities[facilitytype] if facilitytype in capacities else 20
         self.__Visitors = 0  # the current number of customers in the facility
         self.__Hours = hours
@@ -77,6 +79,12 @@ class Submodule:
     def getFacilityType(self):
         return self.__Facilitytype
 
+    def getPeople(self, timestep):
+        return self.people[timestep]
+
+    def setPeople(self, timestep, p):
+        self.people[timestep] = p;
+
     def getCapacity(self):
         return self.__Capacity
 
@@ -85,6 +93,9 @@ class Submodule:
 
     def getHours(self):
         return self.__Hours
+    
+    def getName(self):
+        return self.name
 
     def getVisitors(self):
         return self.__Visitors
@@ -92,8 +103,8 @@ class Submodule:
     def setVisitors(self, num):
         self.__Visitors = num
 
-    def getPeople(self):
-        return self.__People
+    # def getPeople(self):
+    #     return self.__People
 
     def addPerson(self, person):
         self.__People.append(person)
