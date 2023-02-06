@@ -5,7 +5,7 @@ with open(r"docs/README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="Delineo",
-    version="0.3.4",
+    version="0.3.6",
     author="Delineo",
     author_email="delineodiseasemodeling@gmail.com",
     description="Delineo is a disease modeling project that aims to provide a simple and easy to use interface for disease modeling.",
@@ -51,7 +51,7 @@ setuptools.setup(
                                                                'data/demographics/contact_matrices_152_countries/usa/Oklahoma/household size distributions/*',
                                                                'data/demographics/contact_matrices_152_countries/usa/Oklahoma/age_distributions/*',
                                                                ]},
-    python_requires="<=3.6 , >=3.7",
+    python_requires=">=3.6",
     install_requires=[
     ],  # external packages as dependencies
 )
