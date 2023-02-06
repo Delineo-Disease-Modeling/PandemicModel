@@ -17,6 +17,8 @@ import os
 import copy
 import hashlib
 from . import db as db
+import sys
+
 poiID = 0
 
 
@@ -729,7 +731,7 @@ class MasterController:
 
         # Instantiate submodules with format {id: submodule}, int, {hour: set of facilities open}
         facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
-            r'src\simulation\data\core_poi_OKCity.csv')
+            'simulation/data/core_poi_OKCity.csv')
 
         # facilities, totalFacilityCapacities, openHours = M.createFacilities('submodules2.json')
 
@@ -781,7 +783,7 @@ class MasterController:
                     for id in range(len(facilities))]
                     }  # we should probably have households at least as one large "household"
         if not ApiCall:
-            self.jsonResponseToFile(response,  r"src\simulation\output\output.json")
+            self.jsonResponseToFile(response,  "simulation/output/output.json")
             print("Output written to output.txt")
 
         if (getDB):
@@ -822,17 +824,17 @@ class MasterController:
 
         if city == 'Anytown':
             self.loadVisitMatrix(
-                r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+                'simulation/data/Anytown_Jan06_fullweek_dict.pkl')
             self.run_simulation(city='Anytown', print_infection_breakdown=print_infection_breakdown,
                                 num_days=num_days, interventions=intervention_list, isAnytown=True, ApiCall=ApiCall)
         elif city == 'Oklahoma_City' or city == 'OKC':
             self.loadVisitMatrix(
-                r'src\simulation\data\OKCity_Jan06_fullweek_dict.pkl')
+                'simulation/data/OKCity_Jan06_fullweek_dict.pkl')
             self.run_simulation('Oklahoma_City', print_infection_breakdown=print_infection_breakdown,
                                 num_days=num_days, interventions=intervention_list, isAnytown=False, ApiCall=ApiCall)
         elif city == 'Baltimore':
             self.loadVisitMatrix(
-                r'src\simulation\data\Anytown_Jan06_fullweek_dict.pkl')
+                'simulation/data/Anytown_Jan06_fullweek_dict.pkl')
             self.run_simulation('Baltimore', print_infection_breakdown=print_infection_breakdown,
                                 num_days=num_days, interventions=intervention_list, isAnytown=False, ApiCall=ApiCall)
         else:
@@ -969,11 +971,13 @@ getDB = False
 
 def runTest():
     mc = MasterController()
-    mc.runFacilityTests(r'src\simulation\data\facilites_info.txt')
+    #Change for mac
+    mc.runFacilityTests('simulation/data/facilites_info.txt')
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
     mc.create_simulation('Anytown', False, 2, {}, ApiCall=True)
-    mc.excelToJson(r'src\simulation\data\OKC_Data.xls',
-                   r'src\simulation\data\OKC_Data.json')
+    #Change for mac
+    mc.excelToJson('simulation/data/OKC_Data.xls',
+                   'simulation/data/OKC_Data.json')
 
     if (getDB):
         print(db.get_data())
