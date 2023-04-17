@@ -1,6 +1,8 @@
 import random
 import numpy as np
 
+###change every day-based implementation to hour-based###
+
 class Person:
 
     ''''This function is used to define an individual person in the simulation. 
@@ -250,7 +252,7 @@ class Person:
     #TODO incubation days change based on severityRisk/age?
     def incubationAssignment(self):
         #get a random number between 1-3 for incubation days
-        randNum = random.randint(1, 3)
+        randNum = random.randint(1*24, 3*24)
         self.incubation = randNum
         return randNum
 
@@ -261,16 +263,16 @@ class Person:
         peakStateDays = 0
         #peakStateDays ranging from 4-10 days, based on severityRisk
         if self.severityRisk >= 0 & self.severityRisk <=25:
-            peakStateDays = 4
+            peakStateDays = 4*24
 
         elif self.severityRisk >= 25 & self.severityRisk <= 50:
-            peakStateDays = 6
+            peakStateDays = 6*24
 
         elif self.severityRisk >= 50 & self.severityRisk <= 75:
-            peakStateDays = 8
+            peakStateDays = 8*24
 
         else:
-            peakStateDays = 10
+            peakStateDays = 10*24
         return peakStateDays
 
 
@@ -286,21 +288,21 @@ class Person:
 
         if self.infectionState == 0: #asymptomatic
             #14 to 21 days for recovery
-            randNum = random.randint(14, 21)
+            randNum = random.randint(14*24, 21*24)
             recoveryDaysToBeDivided = randNum
 
         elif self.infectionState == 1: #mild
             # 14 to 21 days for recovery
-            randNum = random.randint(14, 21)
+            randNum = random.randint(14*24, 21*24)
             recoveryDaysToBeDivided = randNum
 
         elif self.infectionState == 2:
             #21 to 42 days for recovery
-            randNum = random.randint(21, 42)
+            randNum = random.randint(21*24, 42*24)
             recoveryDaysToBeDivided = randNum
         else:
             #crticial
-            randNum = random.randint(21, 42)
+            randNum = random.randint(21*24, 42*24)
             recoveryDaysToBeDivided = randNum
         daysleft = randNum - incubation - peakStateDays
         if peakstate != 0:
