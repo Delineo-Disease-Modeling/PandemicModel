@@ -8,6 +8,8 @@ import pandas as pd
 import math
 from datetime import datetime
 
+import csv
+
 # Description:
 #   This module represents the populations of the simulation. It contains the population and the submodules that are used to create the facilties of the simulation from several files.
 #   This module has these capabilities: Creating a population, moving a population, creating facilties for the population
@@ -25,11 +27,11 @@ class Module:
         Pop = Population.Population(self.__State, self.__County, self.debugMode)
         return Pop
 
-    def createPopulation(self, city):  # Creates a population object for a specific city
+    def createPopulation(self, city, npop):  # Creates a population object for a specific city
         print("createPop function")
         if city == 'Anytown':
             Pop = Population.Population(self.__State, self.__County,
-                             self.debugMode).get_dict()
+                             self.debugMode, npop=npop).get_dict()
         if city == 'Oklahoma_City':
             Pop = Population.Population(self.__State, self.__County,  self.debugMode, num_households=250000,
                              npop=650000, num_workplaces=24000).get_dict()
@@ -128,8 +130,7 @@ class Module:
                 else:
                     # If facility type does not appear in submodule.py we should skip it #
                     break
-                    # facility_type = 'Other'
-                    # cap = 20
+                    # facility_type = 'O
 
                 totalCapacities += cap
                 nextFacility = Submodule.Submodule(id=facilities_ID, facilitytype=facility_type, debugMode = self.debugMode,
@@ -222,5 +223,36 @@ class Module:
             print(len(facilities))
 
         return facilities, totalCapacities, openHours
-
     
+    def createFacilitiesCSV2(self):
+        df = pd.read_csv(r'D:\Delineo\facilities_information.csv')
+        dfList = df.values.tolist()
+        facilities = dict()
+        totalCapacities = 0
+        openHours = {hour: set() for hour in range(24)}
+        
+        for row in dfList:
+            cap = 0
+            hours = {"Mon": [["9:00", "17:00"]], "Tue": [["9:00", "17:00"]],
+                         "Wed": [["9:00", "17:00"]], "Thu": [["9:00", "17:00"]],
+                         "Fri": [["9:00", "17:00"]], "Sat": [["9:00", "17:00"]],
+                         "Sun": [["9:00", "17:00"]]}
+            days = list(hours.keys())
+            # basically don't need variable capacity for now
+            cap = 10000
+            totalCapacities += cap
+
+            nextFacility = Submodule.Submodule(id=int(row[0]), facilitytype=str(row[10]), capacity=cap,
+                                     latitude=row[5], longitude=row[4], categories=str(row[10]), hours=hours, days=days, debugMode=self.debugMode)
+            facilities[int(row[0])] = nextFacility
+            if days:
+                for timeInterval in hours[days[0]]:
+                    start = int(timeInterval[0].split(':')[0])
+                    end = int(timeInterval[1].split(':')[0])
+                    for i in range(start, end):
+                        openHours[i].add(nextFacility)
+
+        if self.debugMode:
+            print(len(facilities))
+
+        return facilities, totalCapacities, openHours
