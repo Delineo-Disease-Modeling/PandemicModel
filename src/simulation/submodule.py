@@ -37,17 +37,26 @@ class Submodule:
         # Either initialize parameterized or empty and fill in with methods.
         self.__id = id
         self.__Facilitytype = facilitytype
-        capacities = {
-            'Supermarket': 50,
-            'Restaurant': 20,
-            "Retail": 20, #TODO: there is so much variablity in retail/restaraunt capacities and airflow etc. How can we model them all with one factor?
-            "School": 20,
-            "Hospital": 60,
-            "Gym": 30,
-            "Other": 20
-
-        }
-        self.__Capacity = capacities[facilitytype] if facilitytype in capacities else 20
+        # capacities = {
+        #     '0': 20,
+        #     '1': 60,
+        #     '2': 50, #TODO: there is so much variablity in retail/restaraunt capacities and airflow etc. How can we model them all with one factor?
+        #     '3': 20,
+        #     '4': 20,
+        #     '5': 30,
+        #     '6': 30,
+        #     '7': 20,
+        #     '8': 60,
+        #     '9': 50,
+        #     '10': 20,
+        #     '11': 30,
+        #     '12': 30,
+        #     '13': 30,
+        #     '14': 40,
+        # }
+        # basically don't need variable capacity for now
+        self.__Capacity = 10000
+        #capacities[facilitytype] if facilitytype in capacities else 20
         self.__Visitors = 0  # the current number of customers in the facility
         self.__Hours = hours
         self.__Days = days
@@ -322,15 +331,14 @@ class Submodule:
         Returns:
             Either ventRate (should represent the vent rate for a facility that is defined in the method) or 2.5
         """
-        facilities = [set(['Church', 'Prison']),
-                      set(['Airplane']),
-                      set(['Casino', 'Airport', 'Supermarket',
-                           'Restaurant', 'Retail', 'School']),
-                      set(['Movie theater']),
-                      set(['Community center', 'Gym', 'Spa']),
-                      set(['Nursing home', 'Hospital']),
-                      set(['Gas station', 'Park', 'Zoo']),
-                      set(['Other'])]
+        facilities = [set(['0', '1']),
+                      set(['2']),
+                      set(['3', '4', '5']),
+                      set(['6', '7']),
+                      set(['8']),
+                      set(['9']),
+                      set(['11', '13','14']),
+                      set(['12'])]
         # 50 is placeholder for outdoor facilities. todo: find actual air flow rate
         ventRate = [2.5, 3.5, 3.8, 5, 10, 13, 50, 10]
         # todo add more types of facilities
