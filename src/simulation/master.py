@@ -17,9 +17,11 @@ import os
 import copy
 import hashlib
 from . import db as db
-import sys
-
 poiID = 0
+
+import codecs
+import csv
+from natsort import natsorted
 
 
 class MasterController:
@@ -171,19 +173,35 @@ class MasterController:
 
     def loadVisitMatrix(self, filename):
         '''
-        Load full visit matrix from a pickle file
-        Parameters:
-            filename (string): pickle file to read from
-        Returns:
-            (obj): visit matrix with CBGs in x-axis and POIs in y-axis,
+        replace the original loadVisitMatrix and generate visit_matrix from csv files
         '''
-        file = open(filename, 'rb')
-        self.visitMatrices = pickle.load(file)
-        file.close()
+        path =r'D:\Delineo\ExampleOutputs'
+        files = os.listdir(path)
+        # sort base on numeric numbers of name
+        sorted_files = natsorted(files)
+        filelist=[]
+        for file in sorted_files:
+            if not os.path.isdir(path+file):
+                f_name = str(file)
+                tr = '\\'
+                filename = path + tr + f_name
+                filelist.append(filename)
 
-        self.poi_cbg_visit_matrix_history = self.visitMatrices['poi_cbg_visit_matrix_history']
-        self.cbgs_idxs_to_ids = self.visitMatrices['cbgs_idxs_to_ids']
-        self.pois_idxs_to_ids = self.visitMatrices['pois_idxs_to_ids']
+        # dictionary mapping the hour and a dictionary of facility and people in it
+        visit_matrix = {}
+        for i in range (0, len(filelist)):
+            # dictionary mapping facility id and a list of people ids in that facility
+            facility_people_dict = {}
+            for j in range (0, 75):
+                facility_people_dict[j] = []
+            with codecs.open(filelist[i], encoding='utf-8-sig') as f:
+                for row in csv.DictReader(f, skipinitialspace=True):
+                    if int(row['facility_id']) >= 0:
+                        facility_people_dict[int(row['facility_id'])].append(row['ID'])
+            visit_matrix[i] = facility_people_dict
+            f.close
+        self.poi_cbg_visit_matrix_history = visit_matrix
+        
 
     def BinSearch(self, a, x):
         '''
@@ -270,7 +288,7 @@ class MasterController:
 
     def update_status(self, interventions, currentInfected, tested):
         '''
-        Update everyone's infection status at the beginning of each day
+        Update everyone's infection status at the end of each hour (beginning of each day)
         Params:
             interventions: dictionary of interventions
             currentInfected: list of all currently infected agents
@@ -314,7 +332,7 @@ class MasterController:
 
         return (currentInfected, tested)
 
-    def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, hourOfWeek, isAnytown):
+    def move_people(self, facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, h, isAnytown):
         '''
         Add people to facilities based on data in visit matrices. Loads in the data matrix and uses df.apply() to dump people into POI columns
         Params:
@@ -328,7 +346,7 @@ class MasterController:
             hourOfWeek: hour of the week
             isAnytown: boolean, whether or not the simulation is in the Anytown scenario
         '''
-
+        # Does not consider open hour for now
         # Array of facility submodules that are both open and not full
         openFacilities = {id: facility for id, facility in facilities.items()
                           # Finds days of week facility is open
@@ -339,21 +357,30 @@ class MasterController:
         notAssigned = [*range(len(Pop))]
 
         # Assign people to facilities based on visit matrices
-        # mod resets h to be the hour in current week ie all mondays at midnight will be 0
-        hourVisitMatrix = self.poi_cbg_visit_matrix_history[hourOfWeek % 168]
-        dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
+        # mod resets h to be the hour in current week ie all mondays at midnight will be 
+        hourVisitMatrix = self.poi_cbg_visit_matrix_history[h]
+        #hourVisitMatrix = createVisitMatrix[hourOfWeek % 168]
+        #dfVisitMatrix = pd.DataFrame(hourVisitMatrix.todense())
+        #print("type of dfVisitMatrix", type(dfVisitMatrix))
         # Sum all CBGs (converts dataframe to series)
-        dfVisitMatrix = dfVisitMatrix.sum(axis=1)
+        #dfVisitMatrix = dfVisitMatrix.sum(axis=1)
 
         # Use the apply function on the dataframe to move people for each facilitiy
-        dfVisitMatrix.to_frame().apply(lambda row: self.move_people_in_facility(
-            facilities, notAssigned, interventions, row, Pop, openFacilities, isAnytown), axis=1)
-
+        #dfVisitMatrix.to_frame().apply(lambda row: self.move_people_in_facility(
+            #facilities, notAssigned, interventions, row, Pop, openFacilities, isAnytown), axis=1)
+        
+        for facility_id in hourVisitMatrix.keys():
+            for people_id in hourVisitMatrix[facility_id]:
+                facilities[int(facility_id)].addPerson(Pop[int(people_id)])
+        notAssigned.remove(int(people_id))
+    
         # returns updated facilities and notAssigned
         return (facilities, notAssigned)
+                
 
     def move_people_in_facility(self, facilities, notAssigned, interventions, row, Pop, openFacilities, isAnytown):
         '''
+        Currently not in use. The factionality is achieved in move_people 
         Takes in a specific facility and fills it to maximum capacity with people assigned to the facility. Will stop
         if it runs out of people OR the limit is reached.
         Params:
@@ -463,16 +490,122 @@ class MasterController:
         '''
         # TODO: retention rate within facilities- currently no one stays in a facility longer than one hour, pending ML team
 
+        # tested = set()
+        # #openFacilityCounter = 0
+        # for h in range(num_days * 24):
+
+        #     ### generalDebugMode ###
+        #     if self.generalDebugMode:
+        #         print('master.py/simulation: Hour ', h)
+
+        #     #if h % 24 == 0:
+        #     # currentInfected, tested = self.update_status(
+        #     #         interventions, currentInfected, tested)
+
+        #     # Initialize current hour's total infections by previous hour
+        #     totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
+
+        #     dayOfWeek = (h // 24) % 7
+        #     hourOfDay = h % 24
+            
+        #     if (hourOfDay in range(9,18)):
+        #         for id in facilities:
+        #         ##### loopDebugMode #####
+        #             if self.loopDebugMode:
+        #                 print('===master.py/simulation: looping facilities 1/2===')
+        #             facility = facilities[id]
+        #             facility.setVisitors(0)
+        #             facility.clearPeople()
+
+        #         # Move agents throughout facilities
+        #         facilities, notAssigned = self.move_people(facilities, Pop, interventions, daysDict, openHours, dayOfWeek, hourOfDay, openFacilityCounter, isAnytown)
+        #         openFacilityCounter += 1
+        #         # Loop through all facilities to assign infection spread
+        #         for i in range(len(facilities)):
+
+        #             ##### loopDebugMode #####
+        #             if self.loopDebugMode:
+        #                 print('===master.py/simulation: looping facilities 2/2===')
+
+        #             if daysDict[dayOfWeek] not in facilities[i].getDays():
+        #                 infectionInFacilities[i].append('Not open')
+        #                 continue
+        #             if facilities[i] not in openHours[hourOfDay]:
+        #                 infectionInFacilities[i].append('Not open')
+        #                 continue
+        #             initialInfectionNumber = len(facilities[i].getInfected())
+        #             finalInfectionNumber = initialInfectionNumber
+
+        #             # Probability of infection in facility i
+        #             # Probability of infection is assigned here
+        #             prob = facilities[i].probability(interventions)
+
+        #             # get number of people in facilities
+        #             peopleInFacilitiesHourly[i][h] = len(facilities[i].getPeople())
+        #             for person in facilities[i].getPeople():
+        #                 ##### loopDebugMode #####
+        #                 if self.loopDebugMode:
+        #                     print('===master.py/simulation: looping person in facilities')
+        #                 # Don't re-infect
+        #                 if len(person.getInfectionTrack()) > 0:  # continue if already infected
+
+        #                     continue
+
+        #                 temp = random.uniform(0, 1)
+
+        #                 if person.getVaccinatedStatus():
+        #                     # effect of vaccination is 20-fold decrease in chance of infection. (95% decrease)
+        #                     # NOTE: Multiplying by 20 is the same as dividing prob by 20, we're not increasing the
+        #                     # chance of infection we're just getting temp into the same scale as prob
+        #                     temp = 20 * temp
+
+        #                 # temp = random.uniform(0, 1)
+        #                 if temp < prob:  # Infect
+
+        #                     person.assignTrajectory()
+        #                     currentInfected.add(person)
+
+        #                     # Update statistics
+        #                     finalInfectionNumber += 1
+        #                     facilityinfections += 1
+        #                     totalInfectedInFacilities[-1] += 1
+        #                     infectionInFacilitiesDaily[i][h // 24] += 1
+        #                     infectionInFacilitiesHourly[i][h] += 1
+
+        #             infectionInFacilities[i].append(
+        #                 [initialInfectionNumber, finalInfectionNumber])
+
+        #     else:
+        #         notAssigned = [*range(len(Pop))]
+        #         # Updating the list of people infected via spread within household
+        #         infectedathome = self.calcInfectionsHomes(
+        #             notAssigned, Pop, currentInfected)
+
+        #         # Update the currentInfected list for the whole simulation
+        #         for each in infectedathome:
+        #             ##### loopDebugMode #####
+        #             if self.loopDebugMode:
+        #                 print('===master.py/simulation: looping infectedathome===')
+        #             ##### loopDebugMode #####
+        #             currentInfected.add(each)
+
+        #         # Updating the number of infections that occured in households this timestep
+        #         numinfectedathome = len(infectedathome)
+        #         houseinfections += numinfectedathome
+                # # Updating the list that keeps track of household infections throughout course of simulation
+                # if h == 0:
+                #     infectionInHouseholds.append(numinfectedathome)
+                # else:
+                #     infectionInHouseholds.append(
+                #         numinfectedathome + infectionInHouseholds[h - 1])
+
+
         tested = set()
         for h in range(num_days * 24):
 
             ### generalDebugMode ###
             if self.generalDebugMode:
                 print('master.py/simulation: Hour ', h)
-
-            if h % 24 == 0:
-                currentInfected, tested = self.update_status(
-                    interventions, currentInfected, tested)
 
             # Initialize current hour's total infections by previous hour
             totalInfectedInFacilities.append(totalInfectedInFacilities[-1])
@@ -570,6 +703,42 @@ class MasterController:
                 infectionInFacilities[i].append(
                     [initialInfectionNumber, finalInfectionNumber])
 
+
+            currentInfected, tested = self.update_status(interventions, currentInfected, tested)
+                
+            path =r'D:\Delineo\ExampleOutputs - Outputs'
+            relative_path = '..\..\..\ExampleOutputs - Outputs'
+            files = os.listdir(path)
+            sorted_files = natsorted(files)
+            list=[]
+            for file in sorted_files:
+                if not os.path.isdir(path+file):
+                    f_name = str(file)
+                    tr = '\\'
+                    filename = relative_path + tr + f_name
+                    list.append(filename)
+
+            filename_to_write_to = list[h]
+            file_to_write_to = pd.read_csv(filename_to_write_to)
+
+            infection_state_list = [None] * len(file_to_write_to.index)
+            for i in range (0, len(file_to_write_to.index)):
+                infection_state_list[Pop[i].ID] = Pop[i].infectionState
+            # infection_state_list = [-1] * len(file_to_write_to.index)
+            # for person in currentInfected:
+            #     try:
+            #         infection_state_list[int(person.ID)] = person.infectionState
+            #     except:
+            #         pass
+
+            file_to_write_to['infection_state'] = infection_state_list
+            file_to_write_to.to_csv(filename_to_write_to, index = False)
+                
+            if (h % 24 == 0):
+                print("day", h//24)
+                print("num of current infected", len(currentInfected))
+                print("num of infection from households", houseinfections)
+
         return (totalInfectedInFacilities,
                 facilities, infectionInFacilitiesHourly,
                 peopleInFacilitiesHourly, facilityinfections,
@@ -614,7 +783,7 @@ class MasterController:
                     Pop[extendedtoadd].addtoextendedhousehold(person)
         return Pop
 
-    def run_simulation(self, city, print_infection_breakdown, isAnytown, num_days, interventions, ApiCall, usePop=False):
+    def run_simulation(self, city, print_infection_breakdown, isAnytown, num_days, interventions, ApiCall, usePop=False, npop=10000):
         '''
         Function that initializes and runs the entire simulation. Depends on simulation(), set_households(), and set_interventions(),
         move_people(), and update_status()
@@ -634,7 +803,7 @@ class MasterController:
 
         # Set initial number of infected people in the module
         if city == 'Anytown':
-            initialInfected = 10
+            initialInfected =10
         else:
             initialInfected = 100
 
@@ -699,7 +868,10 @@ class MasterController:
                     # Close file even if error occurs
                     file.close()
         else:
-            Pop = M.createPopulation(city)
+            Pop = M.createPopulation(city, npop)
+        
+        print("total number of peope:")
+        print(len(Pop))
 
         # Visit matrix: (CBG x POI) x hour = gives number people from CBG at POI in a given hour
         currentInfected = set()
@@ -728,10 +900,11 @@ class MasterController:
         # Setting vaccinated people in population
         for v in vaccinatedIDs:
             Pop[v].setVaccinated(True)
-
+        
         # Instantiate submodules with format {id: submodule}, int, {hour: set of facilities open}
-        facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
-            'simulation/data/core_poi_OKCity.csv')
+        # facilities, totalFacilityCapacities, openHours = M.createFacilitiesCSV(
+        #     'simulation/data/core_poi_OKCity.csv')
+        facilities, totalCapacities, openHours = M.createFacilitiesCSV2()
 
         # facilities, totalFacilityCapacities, openHours = M.createFacilities('submodules2.json')
 
@@ -795,6 +968,7 @@ class MasterController:
         for each in Pop:
             if len(Pop[each].getInfectionTrack()) > 0:
                 num += 1
+        print("total infections", num)
 
         # f = open("simulationOutput.txt","w")
         # if print_infection_breakdown:
@@ -886,11 +1060,12 @@ class MasterController:
         '''
         M = self.createModule()
 
-        facilities, totalCapacities, openHours = M.createFacilitiesTXT(
-            filename, False)
-        self.testFacilitiesByCategory(facilities, 'Full-Service Restaurants')
+        facilities, totalCapacities, openHours = M.createFacilitiesCSV2()
+        # facilities, totalCapacities, openHours = M.createFacilitiesTXT(
+        #     filename, False)
+        self.testFacilitiesByCategory(facilities, '0')
         self.testDayTimeAvailability(openHours, 'T', 11)
-        self.testFacilitiesByType(facilities, 'Church')
+        self.testFacilitiesByType(facilities, '0')
 
     def testDayTimeAvailability(self, openHours, day, hour):
         sc.heading("Testing facilities open on " + str(day) + ", "+str(hour))
@@ -916,6 +1091,7 @@ class MasterController:
                 found.append(facility.getID())
         print("Should find: 495")
         print("Found: " + str(len(found)))
+        print(found)
 
     def sumVisitMatrices(self):
         '''
@@ -974,7 +1150,7 @@ def runTest():
     #Change for mac
     mc.runFacilityTests('simulation/data/facilites_info.txt')
     # interventions = {"maskWearing":100,"stayAtHome":True,"contactTracing":100,"dailyTesting":100,"roomCapacity": 100, "vaccinatedPercent": 50}
-    mc.create_simulation('Anytown', False, 2, {}, ApiCall=True)
+    mc.create_simulation('Anytown', False, 61, {}, ApiCall=True)
     #Change for mac
     mc.excelToJson('simulation/data/OKC_Data.xls',
                    'simulation/data/OKC_Data.json')
