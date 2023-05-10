@@ -512,7 +512,7 @@ class MasterController:
                     # chance of infection we're just getting temp into the same scale as prob
                     temp = 20 * temp
                 
-                #if temp < prob:  # Infect
+                #if temp < prob:  # Infect, add in once all data needed for is given from algos team
 
                 # update disease state
                 person.assignTrajectory()
@@ -717,20 +717,6 @@ class MasterController:
             intervention_list["vaccinatedPercent"] = 0
         return intervention_list
 
-    # def set_households(self, Pop):
-    #     '''
-    #     Add people to random households who are randomly selected from population
-    #         Params:
-    #             Pop: list of people in the population
-    #     '''
-    #     for person in Pop:
-    #         for i in range(9):
-    #             extendedtoadd = random.randint(0, len(Pop) - 1)
-    #             if Pop[extendedtoadd] != Pop[person] and extendedtoadd not in Pop[person].getHouseholdMembers():
-    #                 Pop[person].addtoextendedhousehold(extendedtoadd)
-    #                 Pop[extendedtoadd].addtoextendedhousehold(person)
-    #     return Pop
-
     def run_simulation(self, city, print_infection_breakdown, isAnytown, num_days, interventions, ApiCall, usePop=False):
         '''
         Function that initializes and runs the entire simulation. Depends on simulation(), set_households(), and set_interventions(),
@@ -827,19 +813,7 @@ class MasterController:
             (len(Pop) * interventions["vaccinatedPercent"])/100)
 
         # Assign initial infection state status for each person
-
-        notInfected = [*range(len(Pop))]  # list from 1 to num in pop
         for i in range(initialInfected):
-            
-            # nextInfected = notInfected.pop(random.randint(0,
-            #                                               len(notInfected) - 1))
-            
-            # # adding to current infected
-            # currentInfected.add(Pop[nextInfected])
-            # # function which makes someone start sickness trajectory
-            # Pop[nextInfected].assignTrajectory()
-            # # Pop[nextInfected].setInfectionState()
-
             person = self.people[i]
             # update disease state
             person.assignTrajectory()
